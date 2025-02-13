@@ -1,0 +1,63 @@
+<div id="contentFullDescription">
+    <div class="flex flex-row justify-between w-[299px] box-sizing-border">
+        <div th:if="${disableMainContent == null}" class="flex flex-col cursor-pointer">
+            <h1 class="w-full break-words font-['Quicksand'] font-bold text-[16px] leading-[1] text-[#0C8FC2] mt-2 mb-2 md:mb-4 flex items-center"
+                onclick="toggleContentDescription()">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                Back Home
+            </h1>
+        </div>
+    </div>
+
+    <div id="workout" class="flex flex-col md:flex-row mb-4">
+        <div class="md:w-1/2 lg:w-2/5 xl:w-1/3">
+            <img th:src="${content.coverUrl}" alt="${content.title}"
+                 class="rounded-lg w-full h-auto object-contain">
+        </div>
+
+        <div class="md:w-1/2 lg:w-3/5 xl:w-2/3 md:pl-4">
+            <div class="text-center mb-2">
+                <h1 class="font-['Figtree'] font-bold text-2xl leading-[1] text-[#181818] inline-block"
+                    th:text="${content.title}"></h1>
+                <form class="ml-2 cursor-pointer inline-block"
+                      th:classappend="${starred} ? 'fas' : 'far'"
+                      hx-post="/toggleFavorite"
+                      hx-trigger="click"
+                      hx-swap="outerHTML">
+                    <input type="hidden" th:name="id" th:value="${content.id}">
+                    <input type="hidden" th:name="starred" th:value="${starred}">
+                    <i class="fa-star text-[#0C8FC2]"
+                       th:classappend="${starred} ? 'fas' : 'far'"></i>
+                </form>
+            </div>
+
+            <div class="flex flex-wrap justify-center font-inter mt-2">
+                <div th:each="tag : ${content.tags}" class="p-2">
+                    <a th:href="@{'/tag/' + ${tag.name.getDisplayName().toLowerCase().replace('_', '-').replace(' ','-') + ''}}"
+                       th:text="${tag.name.getDisplayName()}"
+                       class="inline-block px-4 rounded-lg border border-[#0C8FC2] text-white bg-[#0C8FC2] hover:bg-[#0A75A0]">
+                    </a>
+                </div>
+            </div>
+
+            <div class="font-['Inter'] font-normal text-sm leading-[1] text-[#7F7F7F]
+                  sm:text-base text-center m-3"
+                 th:text="${content.description}"></div>
+
+            <div class="text-center"> <div class="text-center">
+                <a th:href="@{'/printable/' + ${content.id} + '/download'}"
+                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+                    Download
+                </a>
+                <button th:onclick="'openAndPrint(\'/printable/' + ${content.id} + '/print\')'"
+                        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 ml-2">
+                    Print
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>

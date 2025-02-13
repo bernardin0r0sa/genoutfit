@@ -1,0 +1,21 @@
+<div>
+    <div id="authContent" class="text-center">
+    <h2 class="text-2xl font-bold mb-4 text-center">Register</h2>
+    <form hx-post="/auth/register" hx-target="#rdtc" hx-swap="innerHTML" hx-on:htmx:afterRequest="handleRedirect(event)" class="flex flex-col">
+        <input type="text" name="name" placeholder="Name" required class="mb-4 p-2 border border-[#B7BFC5] rounded">
+        <input type="email" name="email" placeholder="Email" required class="mb-4 p-2 border border-[#B7BFC5] rounded">
+        <input type="password" name="password" placeholder="Password" required class="mb-4 p-2 border border-[#B7BFC5] rounded">
+        <button type="submit" class="bg-[#0C8FC2] hover:bg-[#0C85B8] text-white py-2 rounded">Register</button>
+    </form>
+    </div>
+    <!-- Loading spinner -->
+    <div id="loading-spinner" class="absolute inset-0 flex items-center justify-center mx-auto my-auto bg-white bg-opacity-75 hidden">
+        <div class="absolute inset-0 flex items-center justify-center mx-auto my-auto border-t-4 border-blue-500 border-solid rounded-full animate-spin w-8 h-8"></div>
+    </div>
+    <div class="text-center mt-4">
+        <a href="/login" class="text-[#0C8FC2] hover:underline">Login</a>
+    </div>
+
+    <div id="rdtc" class="hidden">
+    </div>
+</div>

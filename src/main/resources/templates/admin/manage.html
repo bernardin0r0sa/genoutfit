@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Workouts</title>
+  <link href="/dist/output.css" rel="stylesheet" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" type="image/png" href="/assets/logoOnly.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org/dist/htmx.min.js"></script>
+  <script src="/js/minified/app.min.js"></script>
+</head>
+<body>
+<div class="container mx-auto p-4">
+  <h1>Manage Workouts</h1>
+
+  <table class="table-auto w-full">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Image</th>
+      <th>Favorite</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="planData : ${workoutPlans}">
+      <td th:text="${planData.plan.id}"></td>
+      <td th:text="${planData.plan.name}"></td>
+      <td>
+        <img th:src="${planData.plan.image}" alt="Workout Image" class="h-16 w-auto">
+      </td>
+      <td th:text="${planData.isFavorited ? 'Yes' : 'No'}"></td>
+      <td>
+        <a th:href="@{/admin/edit/{id}(id=${planData.plan.id})}" class="text-blue-500 hover:underline">Edit</a> |
+        <a th:href="@{/admin/delete/{id}(id=${planData.plan.id})}" class="text-red-500 hover:underline"
+           hx-confirm="Are you sure you want to delete this workout plan?">Delete</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+    <div th:if="${workoutPlansPage.totalPages > 1}" class="mt-4">
+    <ul class="pagination flex">
+      <li th:class="${workoutPlansPage.number == 0} ? 'disabled' : ''">
+        <a th:href="@{/admin/manage(page=${workoutPlansPage.number - 1})}" class="px-3 py-2 rounded-l bg-gray-200 text-gray-700 hover:bg-gray-300">«</a>
+      </li>
+      <li th:each="i : ${#numbers.sequence(0, workoutPlansPage.totalPages - 1)}" th:class="${workoutPlansPage.number == i} ? 'active' : ''">
+        <a th:href="@{/admin/manage(page=${i})}" class="px-3 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300" th:text="${i + 1}"></a>
+      </li>
+      <li th:class="${workoutPlansPage.number == workoutPlansPage.totalPages - 1} ? 'disabled' : ''">
+        <a th:href="@{/admin/manage(page=${workoutPlansPage.number + 1})}" class="px-3 py-2 rounded-r bg-gray-200 text-gray-700 hover:bg-gray-300">»</a>
+      </li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

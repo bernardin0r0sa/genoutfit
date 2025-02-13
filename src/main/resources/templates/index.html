@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" th:content="${ogPageDescription}"/>
+
+    <!-- OpenGraph -->
+    <meta property="og:title" th:content="${ogPageTitle}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" th:content="@{${ogCurrentUrl}}" />
+    <meta property="og:image" th:content="@{${ogImageUrl}}" />
+    <meta property="og:description" th:content="${ogPageDescription}" />
+    <meta property="og:logo" content="https://thecraftjoy.com/assets/logoOnly.png"/>
+
+
+    <title th:text="${ogPageTitle}">The Craft Joy</title>
+
+    <!-- Favicon link -->
+    <link rel="shortcut icon" type="image/png" href="/assets/logoOnly.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org/dist/htmx.min.js"></script>
+    <script src="/js/minified/app.min.js"></script>
+    <style>
+    </style>
+
+    <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="01ab86ea-3798-49d6-936c-d8f528bccea6";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7Q75GW4WBC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-7Q75GW4WBC');
+</script>
+<script>
+function openAndPrint(url) {
+    var printWindow = window.open(url, '_blank');
+    printWindow.onload = function() {
+        setTimeout(function() {
+            printWindow.print();
+        }, 1000);
+    };
+}
+</script>
+
+<body>
+<div class="bg-[#F5F5F5] flex flex-col sm:flex-row p-4 md:pl-0">
+    <div class="bg-[#181818] rounded-lg relative flex flex-col items-center p-4 md:p-8 mx-0 sm:mx-4">
+
+        <div class="md:hidden flex items-center">
+            <button id="menu-toggle" class="text-white focus:outline-none">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>
+        </div>
+
+
+        <div class="flex flex-col items-start justify-center flex-shrink-0 h-[65px]">
+            <a href="/home">
+                <img src="/assets/logoSite.svg" alt="Logo" class="w-[170px]">
+            </a>
+        </div>
+        <div class="hidden md:flex flex-col w-full" id="sidebar-menu">
+            <div class="font-inter text-sm md:text-base">
+                <a href="/home"
+                   class="mb-3">
+                    <div class="text-[#7F7F7F] mb-3">Home</div>
+                </a>
+                <a href="/favorites"
+                   class="mb-3">
+                    <div class="text-[#7F7F7F] mb-3">Favorites</div>
+                </a>
+
+            </div>
+
+            <div class="text-white font-inter font-medium text-base md:text-lg border-b border-gray-800 pt-4 pb-2">
+                Categories
+            </div>
+            <div class="font-inter text-sm md:text-base">
+                <a href="/category/coloring-book">
+                    <div class="text-[#7F7F7F] mb-3">Coloring Book</div>
+                </a>
+                <a href="/category/word-search">
+                    <div class="text-[#7F7F7F] mb-3">Word Search</div>
+                </a>
+                <a href="/category/crossword">
+                    <div class="text-[#7F7F7F] mb-3">Crossword</div>
+                </a>
+                <a href="/category/sudoku">
+                    <div class="text-[#7F7F7F] mb-3">Sudoku</div>
+                </a>
+
+                <a href="/category/activity">
+                    <div class="text-[#7F7F7F] mb-3">Activity</div>
+                </a>
+            </div>
+
+            <div class="font-inter text-sm md:text-base pt-4">
+                <a href="/auth/signout" class="flex items-center text-[#7F7F7F] hover:text-[#6A6A6A] transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 flex items-center justify-center"></i>
+                    <span>Sign out</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+    <div class="w-full sm:w-auto mt-4 sm:mt-0">
+        <div class="flex flex-col w-full">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="rounded-lg bg-white flex flex-col p-4 md:p-8 w-full md:w-auto hidden"
+                     id="contentDescription"></div>
+
+                <div th:if="${showContentDescription!=null}">
+                    <div th:replace="~{fragments/contentDescription}"></div>
+                </div>
+
+                <div th:if="${disableMainContent == null}">
+                    <div class="rounded-lg bg-white flex flex-col p-4 md:p-8 w-full md:w-auto" id="mainContent">
+
+                        <div id="searchContainer"
+                             class="rounded-lg border-1 border-[#B7BFC5] bg-white relative mb-4 md:mb-8 min-w-[250px]">
+                            <div class="absolute left-3 flex flex-row">
+                                <form id="searchForm" class="absolute flex flex-row" hx-trigger="submit"
+                                      hx-swap="innerHTML" hx-target="#contentList" hx-boost="true" hx-get="/search">
+                                    <div class="flex flex-row justify-between w-40 md:w-52">
+                                        <input type="text" name="keyword" id="keyword"
+                                               class="inline-block w-[calc(100%-24px)] break-words font-['Inter'] font-normal text-sm leading-5 text-[#B7BFC5]"
+                                               placeholder="Search Here...">
+                                        <div class="bg-[#B7BFC5] w-1 h-6"></div>
+                                    </div>
+                                    <div class="flex w-6 h-6 ml-2">
+                                        <button type="submit">
+                                            <img src="/assets/vectors/search_5_x2.svg" alt="Search Icon">
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div id="contentList">
+                            <div th:replace="~{fragments/contentList}"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <footer class="rounded-lg bg-white flex flex-col p-4 md:p-8 w-full md:w-auto">
+                <div class="container mx-auto flex flex-col items-center justify-between">
+                    <div class="flex flex-col items-center mb-4 md:mb-0">
+                        <img src="/assets/logoSiteBLK.svg" alt="Footer Logo" class="w-[270px]">
+                        <p>© 2024 All rights reserved.</p>
+                    </div>
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="mb-2 md:mb-0 md:mr-4 font-inter">
+                            <a href="/privacy" class="text-[#7F7F7F] mb-3 hover:text-white mx-2">Privacy Policy</a>
+                            <a href="/terms" class="text-[#7F7F7F] mb-3 hover:text-white mx-2">Terms of Service</a>
+                        </div>
+                        <div class="flex space-x-4">
+                            <a href="https://x.com/caliWorkPlan" target="_blank" class="text-[#7F7F7F] hover:text-white">
+                                <i class="fab fa-twitter text-lg"></i>
+                            </a>
+                            <a href="https://www.pinterest.com/thecraftjoy/" target="_blank" class="text-[#7F7F7F] hover:text-white">
+                                <i class="fab fa-pinterest text-lg"></i>
+                            </a>
+                            <a href="https://www.instagram.com/thecraftjoy/" target="_blank" class="text-[#7F7F7F] hover:text-white">
+                                <i class="fab fa-instagram text-lg"></i>
+                            </a>
+                            <a href="https://www.facebook.com/thecraftjoy" target="_blank" class="text-[#7F7F7F] hover:text-white">
+                                <i class="fab fa-facebook text-lg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- Include the modal fragment -->
+    <div id="modal-container"></div>
+
+</div>
+</body>
+</html>

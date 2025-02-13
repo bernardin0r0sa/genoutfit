@@ -1,0 +1,5 @@
+<style>
+    .blurred {
+        filter: blur(8px); /* Adjust the blur intensity as needed */
+    }
+</style>

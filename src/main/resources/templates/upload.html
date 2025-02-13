@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/logoOnly.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/logoOnly.png">
+
+    <title>TimelessLoveAI - Submit Your Photos</title>
+    <script src="/js/minified/app.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#F495B1',
+                        secondary: '#FBB9C5',
+                        dark: '#242628',
+                        light: '#EBAEBB',
+                        accent: '#7E5462',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #F495B1;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="6fff2477-09d3-48bc-9f1f-35b97258fda6";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L4FWW1J5PC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L4FWW1J5PC');
+</script>
+<body class="bg-white">
+<!-- Navigation -->
+<nav class="fixed w-full bg-white/90 backdrop-blur z-50 border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
+                <img src="/assets/logoOnlyBLK.png" alt="TimelessLoveAI Logo" class="h-10 w-10 rounded-lg mr-3">
+                <span class="text-xl font-light text-dark">TimelessLoveAI</span>
+            </a>
+            <div>
+                <a href="/" class="text-primary hover:text-accent px-4 py-2 rounded-lg border border-primary hover:border-accent">
+                    Home
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="flex-grow">
+<!-- Submission Form Section -->
+<section class="pt-24 pb-16 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-6">
+            Submit Your Photos
+        </h1>
+        <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Upload 8 photos (4 for you and 4 for your partner) to create your love story.
+        </p>
+        <form id="photoForm" class="max-w-2xl mx-auto" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                <input type="email" id="email" name="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+            </div>
+
+            <!-- Drag-and-Drop Upload -->
+            <div class="mb-4">
+                <label class="block text-lg font-medium text-dark mb-2">Upload Photos</label>
+                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary">
+                    <input id="photosInput" type="file" accept="image/jpeg, image/png" class="hidden" multiple>
+                    <label for="photosInput" class="cursor-pointer text-primary hover:text-accent font-medium">
+                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Drag & drop or click to upload photos
+                    </label>
+                    <p class="text-sm text-gray-500 mt-2">Upload up to 8 photos (JPEG/PNG only, max size 10MB).</p>
+                </div>
+                <div id="fileList" class="mt-4 text-gray-600 text-sm"></div>
+                <p id="errorMessage" class="text-red-500 text-sm mt-2 hidden">You can only upload up to 8 photos.</p>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-primary hover:bg-accent text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Submit Photos
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+</main>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-12 mt-auto">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center">
+            <p>&copy; 2025 TimelessLoveAI. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

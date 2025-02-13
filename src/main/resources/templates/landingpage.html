@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/logoOnly.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logoOnly.png">
+
+
+  <title>TimelessLoveAI - See Your Love Story Through Time</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#F495B1',
+                        secondary: '#FBB9C5',
+                        dark: '#242628',
+                        light: '#EBAEBB',
+                        accent: '#7E5462',
+                    }
+                }
+            }
+        }
+    </script>
+  <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="6fff2477-09d3-48bc-9f1f-35b97258fda6";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L4FWW1J5PC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L4FWW1J5PC');
+</script>
+
+<style>
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+@keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-scroll {
+    animation: scroll 25s linear infinite;
+    display: flex;
+    width: calc(280px * 6); /* Adjust this based on the number of images and their width */
+  }
+
+  .animate-scroll:hover {
+    animation-play-state: paused;
+  }
+
+    @keyframes slide {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(20px);
+    }
+  }
+
+  .animate-chevron-1 {
+    animation: slide 1s infinite alternate;
+  }
+</style>
+<body class="bg-white">
+<!-- Minimal Navigation -->
+<nav class="fixed w-full bg-white/90 backdrop-blur z-50 border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
+        <img src="/assets/logoOnlyBLK.png" alt="TimelessLoveAI Logo" class="h-10 w-10 rounded-lg mr-3">
+        <span class="text-xl font-light text-dark">TimelessLoveAI</span>
+      </a>
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="#pricing" class="text-dark hover:text-primary">Pricing</a>
+        <a href="#faq" class="text-dark hover:text-primary">FAQ</a>
+        <a href="#pricing" class="text-primary hover:text-accent px-4 py-2 rounded-lg border border-primary hover:border-accent">
+          Get Started
+        </a>
+      </div>
+      <div class="md:hidden flex items-center">
+        <button id="mobile-menu-button" class="text-dark hover:text-primary focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden">
+    <a href="#pricings" class="block px-4 py-2 text-dark hover:text-primary">Pricing</a>
+    <a href="#faq" class="block px-4 py-2 text-dark hover:text-primary">FAQ</a>
+    <a href="#pricing" class="block px-4 py-2 text-primary hover:text-accent border border-primary hover:border-accent rounded-lg">
+      Get Started
+    </a>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="pt-24 pb-16">
+  <div class="grid grid-cols-1 md:grid-cols-2 justify-items-center 2xl:min-h-[calc(100dvh-350px)] min-h-auto px-3 md:px-0">
+    <!-- Left Column - Content -->
+    <div class="flex flex-col md:justify-start justify-center items-center max-w-[500px] py-16 text-center md:text-left">
+      <h1 class="lg:text-[56px] text-[36px] font-extrabold text-dark lg:leading-[62px] leading-[42px]">
+        See Your Love Story Through Time Together
+      </h1>
+      <p class="text-base text-gray-600 mt-6">
+        Experience the magic of AI to visualize your relationship's journey through the decades. From your 20s to your golden years, see how your love grows older together.
+      </p>
+      <div class="flex w-full justify-center md:justify-start mt-8">
+        <a href="#pricing">
+          <button class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-accent text-white rounded-full h-[62px] px-7 text-lg font-semibold transition-colors">
+            Create Your Timeline ✨
+          </button>
+        </a>
+      </div>
+      <!-- Feature Tags -->
+      <div class="mt-16 flex justify-center md:justify-start w-full">
+        <div class="flex flex-wrap gap-3">
+          <span class="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm">
+            ✨ AI-Powered
+          </span>
+          <span class="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm">
+            🎁 13 Unique Photos
+          </span>
+          <span class="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm">
+            ⚡️ Quick Delivery
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column - Image Showcase -->
+    <div class="flex flex-col gap-6 justify-center items-center p-4">
+      <!-- Infinite Rolling Slideshow -->
+      <div class="relative w-full max-w-[544px] overflow-hidden">
+        <div class="flex gap-4 animate-scroll">
+          <!-- First set of images -->
+          <img src="/assets/images/golden.jpg" alt="Your golden years together" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img src="/assets/images/nyc.jpg" alt="Your middle years together" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img src="/assets/images/effeil.jpg" alt="Your early years together" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <!-- Duplicate set of images for seamless loop -->
+          <img src="/assets/images/golden.jpg" alt="Your golden years together" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img src="/assets/images/nyc.jpg" alt="Your middle years together" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img src="/assets/images/effeil.jpg" alt="Your early years together" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+        </div>
+      </div>
+
+      <!-- Sample Photos Section
+      <div class="relative w-full max-w-[544px] bg-white p-4">
+        <div class="flex justify-between items-center">
+          <img
+                  src="/assets/images/guyPhotos2.png"
+                  alt="Guy photo"
+                  class="w-[35%] aspect-square object-cover"
+          >
+          <div class="flex-1 h-[2px] mx-4 bg-gray-200 relative">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-400">
+              • • •
+            </div>
+          </div>
+          <img
+                  src="/assets/images/girlPhotos.png"
+                  alt="Girl Photo"
+                  class="w-[35%] aspect-square object-cover"
+          >
+        </div>
+      </div> -->
+    </div>
+  </div>
+</section>
+
+<section>
+  <!-- Timeline Showcase -->
+  <div class="mt-16">
+    <h3 class="text-2xl font-semibold text-center mb-8">Your Journey Through the Years</h3>
+    <div class="relative">
+
+      <!-- Scrollable timeline -->
+      <div class="overflow-x-auto hide-scrollbar pb-[6.25rem]">
+        <div class="flex gap-4 min-w-max px-4">
+          <div class="flex-shrink-0 w-60">
+            <img src="/assets/images/20s.jpg" alt="20s" class="w-full h-40 object-cover rounded-lg shadow-md hover:scale-105 transition-transform">
+            <p class="text-center mt-2 font-medium">Your 20s</p>
+            <p class="text-center text-sm text-gray-600">Blossoming Love</p>
+          </div>
+          <div class="flex-shrink-0 w-60">
+            <img src="/assets/images/30s.jpg" alt="30s" class="w-full h-40 object-cover rounded-lg shadow-md hover:scale-105 transition-transform">
+            <p class="text-center mt-2 font-medium">Your 30s</p>
+            <p class="text-center text-sm text-gray-600">Tying the Knot</p>
+          </div>
+          <div class="flex-shrink-0 w-60">
+            <img src="/assets/images/40s.jpg" alt="40s" class="w-full h-40 object-cover rounded-lg shadow-md hover:scale-105 transition-transform">
+            <p class="text-center mt-2 font-medium">Your 40s</p>
+            <p class="text-center text-sm text-gray-600">Luxury Living</p>
+          </div>
+          <div class="flex-shrink-0 w-60">
+            <img src="/assets/images/50s.jpg" alt="50s" class="w-full h-40 object-cover rounded-lg shadow-md hover:scale-105 transition-transform">
+            <p class="text-center mt-2 font-medium">Your 50s</p>
+            <p class="text-center text-sm text-gray-600">Romantic escapes in paradise</p>
+          </div>
+          <div class="flex-shrink-0 w-60">
+            <img src="/assets/images/60s.jpg" alt="60s" class="w-full h-40 object-cover rounded-lg shadow-md hover:scale-105 transition-transform">
+            <p class="text-center mt-2 font-medium">Your 60s</p>
+            <p class="text-center text-sm text-gray-600">Golden years begin</p>
+          </div>
+          <div class="flex-shrink-0 w-60">
+            <img src="/assets/images/80s.jpg" alt="80s" class="w-full h-40 object-cover rounded-lg shadow-md hover:scale-105 transition-transform">
+            <p class="text-center mt-2 font-medium">Your 80s</p>
+            <p class="text-center text-sm text-gray-600">A lifetime of love</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<!-- How It Works -->
+
+<section class="relative mx-auto mb-32 max-w-6xl rounded-lg bg-white py-12 shadow-2xl backdrop-blur-lg">
+  <div class="absolute inset-0 rounded-lg opacity-30 blur-md" style="background: radial-gradient(circle, rgba(255, 255, 255, 0.7), transparent 70%);"></div>
+  <h2 class="relative z-10 mb-12 flex items-center justify-center text-center text-3xl font-extrabold text-dark md:text-4xl">How It Works</h2>
+  <div class="relative z-10 flex flex-col items-center md:flex-row md:items-stretch md:justify-between md:space-x-8">
+    <div class="mb-40 flex flex-col items-center text-center md:mb-0 md:w-[calc(50%-2rem)]">
+      <div class="mb-4 flex items-center">
+        <div class="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary">
+          <span class="text-xl font-bold text-white">1</span>
+        </div>
+        <h3 class="text-xl font-semibold text-dark lg:text-3xl">Upload Your Photos</h3>
+      </div>
+      <p class="mb-6 max-w-md text-xl text-gray-600 md:text-lg lg:text-xl">Upload a few photos of you and your partner to build an AI model that captures your look and features.</p>
+      <div class="relative h-32 w-full">
+        <div class="absolute" style="top: 19.2813%; left: 12.0724%; transform: rotate(-12.5668deg); z-index: 4; filter: brightness(1);">
+          <img src="/assets/images/guy1.jpg" alt="Subject photo 1" loading="lazy" class="h-32 w-32 object-cover shadow-lg" style="border: 6px solid white; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.08) 0px 1px 3px;">
+        </div>
+        <div class="absolute" style="top: 17.3405%; left: 36.7582%; transform: rotate(-14.6999deg); z-index: 2; filter: brightness(1);">
+          <img src="/assets/images/guy2.jpg" alt="Subject photo 2" loading="lazy" class="h-32 w-32 object-cover shadow-lg" style="border: 6px solid white; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.08) 0px 1px 3px;">
+        </div>
+        <div class="absolute" style="top: 19.8881%; left: 52.9514%; transform: rotate(-13.6899deg); z-index: 0; filter: brightness(1;">
+          <img src="/assets/images/guy3.jpg" alt="Subject photo 3" loading="lazy" class="h-32 w-32 object-cover shadow-lg" style="border: 6px solid white; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.08) 0px 1px 3px;">
+        </div>
+        <div class="absolute" style="top: 68.9885%; left: 12.6246%; transform: rotate(-3.7149deg); z-index: 1; filter: brightness(1);">
+          <img src="/assets/images/girl1.jpg" alt="Subject photo 4" loading="lazy" class="h-32 w-32 object-cover shadow-lg" style="border: 6px solid white; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.08) 0px 1px 3px;">
+        </div>
+        <div class="absolute" style="top: 67.5909%; left: 32.0615%; transform: rotate(1.07665deg); z-index: 5; filter: brightness(1);">
+          <img src="/assets/images/girl2.jpg" alt="Subject photo 5" loading="lazy" class="h-32 w-32 object-cover shadow-lg" style="border: 6px solid white; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.08) 0px 1px 3px;">
+        </div>
+        <div class="absolute" style="top: 67.9898%; left: 53.2902%; transform: rotate(4.16696deg); z-index: 3; filter: brightness(1);">
+          <img src="/assets/images/girl3.jpg" alt="Subject photo 6" loading="lazy" class="h-32 w-32 object-cover shadow-lg" style="border: 6px solid white; box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px, rgba(0, 0, 0, 0.08) 0px 1px 3px;">
+        </div>
+      </div>
+    </div>
+    <div class="relative !ml-0 hidden md:flex md:w-16 md:flex-col md:items-center md:justify-center">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right h-12 w-12 animate-chevron-1 text-primary">
+        <path d="m9 18 6-6-6-6"></path>
+      </svg>
+    </div>
+    <div class="flex flex-col items-center text-center md:w-[calc(50%-2rem)]">
+      <div class="mb-4 flex items-center">
+        <div class="mr-3 flex h-9 w-9 items-center justify-center rounded-full bg-primary">
+          <span class="text-xl font-bold text-white">2</span>
+        </div>
+        <h3 class="text-xl font-semibold text-dark lg:text-3xl">See Your Journey</h3>
+      </div>
+      <p class="mb-6 max-w-md text-xl text-gray-600 md:text-lg lg:text-xl">Receive several photos of your love life in the future, from your 20s to your 80s, showcasing your journey together.</p>
+      <div class="grid grid-cols-5 gap-0.5">
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_20_1.jpg" alt="AI-generated photo 1" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="0">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_20_2.jpg" alt="AI-generated photo 2" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="20">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_20_3.jpg" alt="AI-generated photo 3" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="40">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_30_1.jpg" alt="AI-generated photo 4" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="60">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_30_2.jpg" alt="AI-generated photo 5" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="80">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_40_1.jpg" alt="AI-generated photo 6" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="100">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_40_2.jpg" alt="AI-generated photo 7" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="120">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_50_1.jpg" alt="AI-generated photo 8" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="140">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_50_2.jpg" alt="AI-generated photo 9" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="160">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_60_1.jpg" alt="AI-generated photo 10" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="180">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_60_2.jpg" alt="AI-generated photo 11" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="200">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_80_1.jpg" alt="AI-generated photo 12" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="220">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+        <div class="group relative overflow-hidden rounded-md transition-transform duration-300 hover:z-50 hover:scale-150 hover:rounded-lg">
+          <img src="/assets/images/age_80_2.jpg" alt="AI-generated photo 13" loading="lazy" class="aspect-square h-24 w-24 object-cover aos-init aos-animate" data-aos="slide-right" data-aos-delay="240">
+          <div class="absolute inset-0 rounded-lg ring-inset ring-black/20 group-hover:ring-2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-dark">
+      Create Your Love Timeline
+    </h2>
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="p-8">
+        <h3 class="text-2xl font-bold text-center mb-4">Special Launch Offer</h3>
+        <div class="text-center mb-4">
+          <span class="text-2xl text-gray-500 line-through">$15.99</span>
+          <span class="text-5xl font-bold ml-2">$12.99</span>
+          <p class="text-sm text-primary mt-1">Limited Time 18% Discount!</p>
+        </div>
+        <ul class="mb-8 space-y-3">
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            <span>13 Professional Photos Across Different Ages</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            <span>Iconic Locations & Beautiful Settings</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            <span>High Resolution, Print-Ready Images</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            <span>Delivery Within 30-60 Minutes</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            <span>One-Time Payment, No Subscription</span>
+          </li>
+          <li class="flex items-center">
+            <svg class="w-5 h-5 text-primary mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            <span>100% Satisfaction Guarantee</span>
+          </li>
+        </ul>
+        <a href="/upload" class="block w-full bg-primary hover:bg-accent text-white py-3 rounded-lg transition-colors text-center font-medium">
+          Create Your Timeline Now
+        </a>
+        <p class="text-sm text-gray-500 mt-4 text-center">
+          Early adopter pricing - Limited time offer!
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="py-16 bg-white">
+  <div class="mx-auto max-w-screen-xl px-4">
+    <!-- Header -->
+    <div class="mx-auto max-w-2xl text-center mb-12">
+      <p class="text-sm sm:text-base text-gray-600">
+        👑 You have full ownership of your love story photos
+      </p>
+      <h2 class="mt-3 text-3xl font-bold text-dark">
+        Frequently Asked Questions
+      </h2>
+      <p class="mt-3 text-lg text-gray-600">
+        Can't find what you're looking for? Reach out to us at
+        <a href="mailto:info@timelessloveai.com" class="text-primary hover:text-accent">
+          info@timelessloveai.com
+        </a>
+      </p>
+    </div>
+
+    <!-- FAQ Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+      <!-- FAQ Item 1 -->
+      <div>
+        <p class="text-lg font-bold text-dark mb-2">
+          What is TimelessLoveAI?
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          TimelessLoveAI is an innovative service that uses advanced AI technology to create a beautiful timeline of your relationship, showing how you and your partner will look together through different stages of life.
+        </p>
+      </div>
+
+      <!-- FAQ Item 2 -->
+      <div>
+        <p class="text-lg font-bold text-dark mb-2">
+          How many photos do I need to upload?
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          For best results, we recommend uploading 4 clear photos of each person (8 total). These should be clear face shots from different angles to ensure the most accurate results.
+        </p>
+      </div>
+
+      <!-- FAQ Item 3 -->
+      <div>
+        <p class="text-lg font-bold text-dark mb-2">
+          How long does it take to receive my photos?
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          You'll receive your complete timeline of 13 beautiful photos within 30-60 minutes of placing your order. We'll send them directly to your email.
+        </p>
+      </div>
+
+      <!-- FAQ Item 4 -->
+      <div>
+        <p class="text-lg font-bold text-dark mb-2">
+          What will I receive?
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          You'll receive 13 high-resolution photos showing you and your partner at different life stages, from your 20s through your 80s. Each photo is carefully crafted in different settings and scenarios.
+        </p>
+      </div>
+
+      <!-- FAQ Item 5 -->
+      <div>
+        <p class="text-lg font-bold text-dark mb-2">
+          How do you handle our photos?
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          We take your privacy seriously. Your photos are used only to generate your timeline and are automatically deleted after 24 hours. We never share or use your photos for any other purpose.
+        </p>
+      </div>
+
+      <!-- FAQ Item 6 -->
+      <div>
+        <p class="text-lg font-bold text-dark mb-2">
+          What if I'm not satisfied with the results?
+        </p>
+        <p class="text-gray-600 leading-relaxed">
+          We offer a satisfaction guarantee. If you're not happy with your photos, contact our support team within 24 hours and we'll work with you to make it right or provide a refund.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-12">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center">
+      <p>&copy; 2025 TimelessLoveAI. All rights reserved.</p>
+      <div class="mt-4">
+        <a href="/privacy" class="text-primary hover:text-accent">Privacy Policy</a> |
+        <a href="/terms" class="text-primary hover:text-accent">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
+<script>
+  // Image rotation logic
+  function rotateImages() {
+    const cards = document.querySelectorAll('.group');
+
+    cards.forEach(card => {
+      const images = card.querySelectorAll('.stacked-image');
+      let currentIndex = 0;
+
+      setInterval(() => {
+        images.forEach((img, index) => {
+          img.style.opacity = index === currentIndex ? '1' : '0';
+        });
+
+        currentIndex = (currentIndex + 1) % images.length;
+      }, 3000);
+    });
+  }
+
+  // Timeline scroll logic
+  function initializeTimelineScroll() {
+    const scrollContainer = document.querySelector('.overflow-x-auto');
+    const leftButton = scrollContainer.previousElementSibling;
+    const rightButton = scrollContainer.nextElementSibling;
+
+    leftButton.addEventListener('click', () => {
+      scrollContainer.scrollBy({ left: -300, behavior: 'smooth' });
+    });
+
+    rightButton.addEventListener('click', () => {
+      scrollContainer.scrollBy({ left: 300, behavior: 'smooth' });
+    });
+  }
+
+  // Initialize everything when the page loads
+  document.addEventListener('DOMContentLoaded', () => {
+    rotateImages();
+    initializeTimelineScroll();
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  });
+</script>
+</body>
+</html>

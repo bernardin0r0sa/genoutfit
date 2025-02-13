@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/logoOnly.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/logoOnly.png">
+
+
+  <title>TimelessLoveAI - Payment Success</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#F495B1',
+                        secondary: '#FBB9C5',
+                        dark: '#242628',
+                        light: '#EBAEBB',
+                        accent: '#7E5462',
+                    }
+                }
+            }
+        }
+    </script>
+  <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="6fff2477-09d3-48bc-9f1f-35b97258fda6";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-L4FWW1J5PC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-L4FWW1J5PC');
+</script>
+<body class="bg-white">
+<!-- Navigation -->
+<nav class="fixed w-full bg-white/90 backdrop-blur z-50 border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <a href="/" class="flex items-center hover:opacity-80 transition-opacity">
+        <img src="/assets/logoOnlyBLK.png" alt="TimelessLoveAI Logo" class="h-10 w-10 rounded-lg mr-3">
+        <span class="text-xl font-light text-dark">TimelessLoveAI</span>
+      </a>
+      <div>
+        <a href="/" class="text-primary hover:text-accent px-4 py-2 rounded-lg border border-primary hover:border-accent">
+          Home
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="flex-grow">
+<!-- Success Section -->
+<section class="pt-24 pb-16 px-4">
+  <div class="max-w-7xl mx-auto text-center">
+    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-dark mb-6">
+      Thank You!
+    </h1>
+    <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
+       th:text="'Thank you for your order! We\'ll send the generated photos to ' + (${customerEmail} ?: 'your email address') + ' as soon as they\'re ready. This process typically takes between 30-60 minutes, depending on current system load.'">
+    </p>
+
+    <!-- Add a helpful note about checking spam/junk folders -->
+    <p class="text-sm text-gray-500 mb-8 max-w-2xl mx-auto">
+      Please check your spam/junk/promotion folder if you don't see our email in your inbox.
+    </p>
+
+    <div class="flex justify-center gap-4 mb-12">
+      <a href="/" class="bg-primary hover:bg-accent text-white px-8 py-4 rounded-lg text-lg font-medium transition-all">
+        Go to Home
+      </a>
+    </div>
+  </div>
+</section>
+</main>
+
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-12 mt-auto">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center">
+      <p>&copy; 2025 TimelessLoveAI. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

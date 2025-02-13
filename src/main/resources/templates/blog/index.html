@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="canonical" th:href="@{${@environment.getProperty('site.url')} + '/blog'}" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog - The Craft Joy</title>
+
+  <link rel="shortcut icon" type="image/png" href="/assets/logoOnly.png">
+
+  <meta name="title" content="Blog - The Craft Joy">
+  <meta name="description" content="Discover creative activities and inspiration for seniors">
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="English">
+
+  <style>
+    .text-craft-blue {
+      color: #0C8FC2;
+    }
+    .bg-craft-blue {
+      background-color: #0C8FC2;
+    }
+    .hover\:bg-craft-blue-dark:hover {
+      background-color: #0C85B8;
+    }
+  </style>
+</head>
+<body class="bg-white dark:bg-gray-900">
+
+<header class="fixed top-0 w-full bg-white shadow-md z-50">
+  <div class="container mx-auto flex items-center justify-between px-4 py-4">
+    <a href="/" class="flex items-center">
+      <img src="/assets/logoOnly.png" alt="The Craft Joy Logo" class="h-8 mr-2">
+      <span class="self-center text-xl font-semibold">The Craft Joy</span>
+    </a>
+    <div class="flex items-center space-x-4">
+      <a class="inline-block px-6 py-3 text-craft-blue font-medium rounded-lg border border-craft-blue hover:bg-craft-blue-dark" href="/?ref=blog" target="_blank">
+        <span class="button__text">Learn more</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="container mx-auto px-4 pt-24">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="posts-container">
+    <div th:each="post : ${posts}" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <a th:href="@{'/blog/' + ${post.slug}}" class="block hover:shadow-lg transition-shadow duration-300">
+        <img th:src="${post.featuredImageUrl}"
+             th:alt="${post.title}"
+             class="w-full h-48 object-cover">
+        <div class="p-6">
+          <h2 class="text-xl font-semibold mb-2">
+                <span th:text="${post.title}" class="hover:text-craft-blue">
+                </span>
+          </h2>
+          <p class="text-gray-600 mb-4" th:text="${post.excerpt}"></p>
+          <span class="text-craft-blue hover:underline">
+                Read More →
+            </span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <div id="loading" class="hidden text-center py-8">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-craft-blue mx-auto"></div>
+  </div>
+</main>
+
+<script>
+    // Modify your current code to add intersection observer
+document.addEventListener('DOMContentLoaded', () => {
+    // Create intersection observer for infinite scroll
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const loadingElement = document.getElementById('loading');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !loading && hasMore) {
+                loadMorePosts();
+            }
+        });
+    }, options);
+
+    // Observe the loading element
+    if (loadingElement) {
+        observer.observe(loadingElement);
+    }
+
+    // Initial load check
+    if (window.innerHeight >= document.documentElement.scrollHeight && currentPage === 0) {
+        loadMorePosts();
+    }
+});
+
+let currentPage = 0;
+let loading = false;
+let hasMore = true;
+
+function loadMorePosts() {
+    if (loading || !hasMore) return;
+
+    loading = true;
+    const loadingElement = document.getElementById('loading');
+    loadingElement.classList.remove('hidden');
+
+    fetch(`/blog/api/posts?page=${++currentPage}`)
+        .then(response => response.json())
+        .then(posts => {
+            if (!posts || posts.length === 0) {
+                hasMore = false;
+                loadingElement.classList.add('hidden');
+                return;
+            }
+
+            const container = document.getElementById('posts-container');
+            posts.forEach(post => {
+                const postElement = createPostElement(post);
+                container.appendChild(postElement);
+            });
+
+            // Check if we should load more after rendering
+            if (window.innerHeight >= document.documentElement.scrollHeight) {
+                loadMorePosts();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading posts:', error);
+            hasMore = false;
+        })
+        .finally(() => {
+            loading = false;
+            if (!hasMore) {
+                loadingElement.classList.add('hidden');
+            }
+        });
+}
+
+function createPostElement(post) {
+    const div = document.createElement('div');
+    div.className = 'bg-white rounded-lg shadow-md overflow-hidden';
+
+    // Add null check for featuredImageUrl
+    const imageUrl = post.featuredImageUrl || '/path/to/default/image.jpg';
+
+    div.innerHTML = `
+        <a href="/blog/${post.slug}" class="block hover:shadow-lg transition-shadow duration-300">
+            <img src="${imageUrl}"
+                 alt="${post.title}"
+                 class="w-full h-48 object-cover"
+                 onerror="this.onerror=null; this.src='/path/to/fallback/image.jpg';">
+            <div class="p-6">
+                <h2 class="text-xl font-semibold mb-2">
+                    <span class="hover:text-craft-blue">${post.title}</span>
+                </h2>
+                <div class="flex items-center text-sm text-gray-500 mb-4">
+                    <span>${formatDate(post.publishedDate)}</span>
+                    <span class="mx-2">·</span>
+                    <span>${post.readingTime} min read</span>
+                </div>
+                <p class="text-gray-600 mb-4">${post.excerpt || ''}</p>
+                <span class="text-craft-blue hover:underline">Read More →</span>
+            </div>
+        </a>
+    `;
+    return div;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+    </script>
+
+
+<footer class="bg-white dark:bg-gray-800" th:replace="~{fragments/footer}"></footer>
+
+</body>
+</html>
