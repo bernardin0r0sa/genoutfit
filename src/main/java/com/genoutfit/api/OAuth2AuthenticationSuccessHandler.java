@@ -32,7 +32,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
 
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        String token = tokenProvider.createToken((java.nio.file.attribute.UserPrincipal) userPrincipal);
+        String token = tokenProvider.createToken(userPrincipal);
 
         targetUrl = UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)
