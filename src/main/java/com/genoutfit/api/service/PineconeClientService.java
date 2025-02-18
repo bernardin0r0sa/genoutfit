@@ -19,11 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class PineconeClient {
+public class PineconeClientService {
 
     @Autowired
     private PineconeConfig pineconeConfig;
@@ -31,10 +30,14 @@ public class PineconeClient {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @org.springframework.beans.factory.annotation.Value("${PINECONE_INDEX_NAME}")
+    private String indexName;
+
+
     public List<OutfitVector> search(Map<String, Object> criteria, int limit) {
         try {
             PineconeConnection connection = new PineconeConnection(pineconeConfig);
-            Index index = new Index(connection, "outfits");
+            Index index = new Index(connection, indexName);
 
             // Convert metadata criteria to Struct filter
             Struct.Builder filterBuilder = Struct.newBuilder();

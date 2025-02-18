@@ -18,7 +18,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     public OAuth2AuthenticationSuccessHandler(
             JwtTokenProvider tokenProvider,
-            @Value("${app.oauth2.redirectUri}") String redirectUri) {
+            @Value("${BASE_URL}/oauth2/callback/google")  String redirectUri) {
         this.tokenProvider = tokenProvider;
         this.redirectUri = redirectUri;
     }

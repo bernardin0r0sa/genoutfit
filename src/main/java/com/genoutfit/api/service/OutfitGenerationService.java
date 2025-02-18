@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OutfitGenerationService {
     @Autowired
-    private PineconeClient pineconeClient;
+    private PineconeClientService pineconeClientService;
 
     @Autowired
     private FalAiClient falAiClient;
@@ -283,7 +282,7 @@ public class OutfitGenerationService {
         }
 
         try {
-            return pineconeClient.search(searchCriteria, 5);
+            return pineconeClientService.search(searchCriteria, 5);
         } catch (Exception e) {
             log.error("Error finding similar outfits: {}", e.getMessage());
             throw new RuntimeException("Failed to find similar outfits", e);

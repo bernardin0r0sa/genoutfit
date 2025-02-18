@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class PineconeConfig {
-    @Value("${pinecone.api-key}")
+    @Value("${PINECONE_API_KEY}")
     private String apiKey;
 
     @Bean
