@@ -56,4 +56,10 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public User getUserById(String userId) throws Exception {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User"+userId));
+        return user;
+    }
 }
