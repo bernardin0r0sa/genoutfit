@@ -44,13 +44,13 @@ public class OutfitGenerationService {
     @Autowired
     private R2StorageService r2StorageService;
 
-    @Value("${app.generation.max-attempts}")
+    @Value("${GENERATION_MAX_ATTEMPTS}")
     private int maxAttempts;
 
-    @Value("${app.base-url}")
+    @Value("${BASE_URL}")
     private String baseUrl;
 
-    @Value("${app.placeholder-image}")
+    @Value("${PLACEHOLDER_IMAGE_URL}")
     private String placeholderImageUrl;
 
     // Store pending outfit generations
