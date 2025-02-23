@@ -41,6 +41,9 @@ public class PineconeClientService {
             Map<String, Object> filterCriteria = new HashMap<>();
             Map<String, Object> vectorCriteria = new HashMap<>(criteria);
 
+            criteria = new HashMap<>();
+            criteria.put("gender", "MALE");
+
             // Move gender to filter criteria and remove from vector criteria
             /*if (criteria.containsKey("gender")) {
                 filterCriteria.put("gender", criteria.get("gender"));
@@ -81,7 +84,7 @@ public class PineconeClientService {
                     null,              // Sparse values
                     null,                      // No namespace, using default
                     "default",                 // Using 'default' namespace
-                    null,                    // Metadata filter
+                    filter,                    // Metadata filter
                     true,                      // Include values
                     true                       // Include metadata
             );

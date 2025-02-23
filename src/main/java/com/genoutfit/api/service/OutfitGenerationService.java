@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OutfitGenerationService {
     @Autowired
-    private PineconeClientService pineconeClientService;
+    private OutfitReferenceService outfitReferenceService;
 
     @Autowired
     private FalAiClient falAiClient;
@@ -282,7 +282,7 @@ public class OutfitGenerationService {
         }
 
         try {
-            return pineconeClientService.search(searchCriteria, 5);
+            return outfitReferenceService.search(searchCriteria, 5);
         } catch (Exception e) {
             log.error("Error finding similar outfits: {}", e.getMessage());
             throw new RuntimeException("Failed to find similar outfits", e);
