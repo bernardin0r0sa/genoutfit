@@ -7,4 +7,6 @@ public class OutfitRequestDto {
     private Occasion occasion;
     private String customOccasion;
     private boolean usePreviousPreferences;
+    private boolean newVariation;  // Added field for requesting new variation
+
 }

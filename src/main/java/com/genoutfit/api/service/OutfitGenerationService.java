@@ -3,6 +3,7 @@ package com.genoutfit.api.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.genoutfit.api.RateLimiter;
 import com.genoutfit.api.model.*;
+import com.genoutfit.api.repository.OutfitHistoryRepository;
 import com.genoutfit.api.repository.OutfitRepository;
 import com.genoutfit.api.repository.PromptTemplateRepository;
 import com.google.gson.JsonObject;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -44,6 +46,9 @@ public class OutfitGenerationService {
     @Autowired
     private R2StorageService r2StorageService;
 
+    @Autowired
+    private OutfitHistoryRepository outfitHistoryRepository;
+
     @Value("${GENERATION_MAX_ATTEMPTS}")
     private int maxAttempts;
 
@@ -56,9 +61,27 @@ public class OutfitGenerationService {
     // Store pending outfit generations
     private final Map<String, OutfitGenerationTask> pendingGenerations = new ConcurrentHashMap<>();
 
+    // Track used outfits per user
+    private final Map<String, Set<String>> userUsedOutfits = new ConcurrentHashMap<>();
+
     public OutfitResponseDto initiateOutfitGeneration(String userId, OutfitRequestDto request) throws Exception {
         User user = userService.getUserById(userId);
         List<OutfitVector> similarOutfits = findSimilarOutfits(user, request.getOccasion());
+
+        // If requesting new outfit with same characteristics
+        if (request.isNewVariation() && !similarOutfits.isEmpty()) {
+            Set<String> usedOutfits = userUsedOutfits.getOrDefault(userId, Collections.emptySet());
+
+            // Check if THIS user has seen all outfits
+            boolean allUsed = similarOutfits.stream()
+                    .allMatch(outfit -> usedOutfits.contains(outfit.getId()));
+
+            if (allUsed) {
+                log.info("User {} has seen all outfits for these criteria, resetting their history", userId);
+                resetUserOutfitHistory(userId);
+            }
+        }
+
         List<String> prompts = generatePrompts(user, request.getOccasion(), similarOutfits);
 
         // Create outfit with placeholder images initially
@@ -98,39 +121,31 @@ public class OutfitGenerationService {
     private void generateSingleImage(String outfitId, String prompt, int imageIndex) throws Exception {
         for (int attempt = 0; attempt < maxAttempts; attempt++) {
             try {
-                // Acquire rate limit permission
                 rateLimiter.acquirePermission();
 
-                // Prepare webhook URL
                 String webhookUrl = baseUrl + "/api/outfits/webhook/" + outfitId + "/" + imageIndex;
 
-                // Prepare generation input
                 Map<String, Object> generationInput = new HashMap<>();
                 generationInput.put("prompt", prompt);
                 generationInput.put("image_size", "portrait_4_3");
                 generationInput.put("num_inference_steps", 28);
                 generationInput.put("guidance_scale", 7.5);
 
-                // Submit generation request
                 JsonObject generationResult = falAiClient.submitToFalApi(
                         "fal-ai/flux/dev",
                         generationInput,
                         webhookUrl
                 );
 
-                // If we're using webhooks, we don't need to update here
-                // The webhook controller will handle it
                 log.info("Image generation request submitted for outfit {} image {}",
                         outfitId, imageIndex);
 
-                // Store request ID for tracking
                 String requestId = generationResult.get("request_id").getAsString();
                 OutfitGenerationTask task = pendingGenerations.get(outfitId);
                 if (task != null) {
                     task.setRequestId(imageIndex, requestId);
                 }
 
-                // Break out of retry loop on success
                 break;
 
             } catch (Exception e) {
@@ -138,23 +153,15 @@ public class OutfitGenerationService {
                 if (attempt == maxAttempts - 1) {
                     throw new RuntimeException("Failed to generate image after " + maxAttempts + " attempts");
                 }
-                // Add exponential backoff
-                try {
-                    Thread.sleep((long) Math.pow(2, attempt) * 1000);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("Image generation interrupted", ie);
-                }
+                Thread.sleep((long) Math.pow(2, attempt) * 1000);
             }
         }
     }
 
     public void handleImageGenerationWebhook(String outfitId, int imageIndex, JsonObject result) {
         try {
-            // Extract image URL from result
             String falImageUrl = extractImageUrl(result);
 
-            // Retrieve outfit and user information
             Outfit outfit = outfitRepository.findById(outfitId)
                     .orElseThrow(() -> new RuntimeException("Outfit not found: " + outfitId));
 
@@ -162,23 +169,19 @@ public class OutfitGenerationService {
             String userId = user.getId();
             String occasion = outfit.getOccasion().name().toLowerCase();
 
-            // Upload the image to R2 storage to make it permanent
             String permanentImageUrl = r2StorageService.uploadFile(falImageUrl, userId, occasion);
             log.info("Image stored permanently at: {}", permanentImageUrl);
 
-            // Update outfit in database with the permanent URL
             List<String> currentImages = outfit.getImageUrls();
             if (imageIndex < currentImages.size()) {
                 currentImages.set(imageIndex, permanentImageUrl);
                 outfit.setImageUrls(currentImages);
                 outfitRepository.save(outfit);
 
-                // Update generation task status
                 OutfitGenerationTask task = pendingGenerations.get(outfitId);
                 if (task != null) {
                     task.setImageComplete(imageIndex, permanentImageUrl);
 
-                    // If all images are complete, remove from pending
                     if (task.isComplete()) {
                         pendingGenerations.remove(outfitId);
                     }
@@ -190,7 +193,6 @@ public class OutfitGenerationService {
             log.error("Error handling webhook for outfit {} image {}: {}",
                     outfitId, imageIndex, e.getMessage());
 
-            // Update task with error
             OutfitGenerationTask task = pendingGenerations.get(outfitId);
             if (task != null) {
                 task.setImageError(imageIndex, e.getMessage());
@@ -201,7 +203,6 @@ public class OutfitGenerationService {
     public OutfitGenerationStatus getOutfitGenerationStatus(String outfitId) {
         OutfitGenerationTask task = pendingGenerations.get(outfitId);
         if (task == null) {
-            // Check if outfit exists and all images are non-placeholder
             try {
                 Outfit outfit = outfitRepository.findById(outfitId)
                         .orElseThrow(() -> new RuntimeException("Outfit not found"));
@@ -212,7 +213,6 @@ public class OutfitGenerationService {
                 if (allImagesGenerated) {
                     return new OutfitGenerationStatus(true, outfit.getImageUrls(), Collections.emptyList());
                 } else {
-                    // Task is missing but outfit has placeholders - probably an error
                     return new OutfitGenerationStatus(false, outfit.getImageUrls(),
                             Collections.singletonList("Generation in progress"));
                 }
@@ -223,6 +223,53 @@ public class OutfitGenerationService {
         }
 
         return task.getStatus();
+    }
+
+    private List<String> generatePrompts(User user, Occasion occasion, List<OutfitVector> similarOutfits) {
+        if (similarOutfits.isEmpty()) {
+            throw new RuntimeException("No matching outfits found");
+        }
+
+        // Get all outfit IDs this user has seen
+        List<String> usedOutfitIds = outfitHistoryRepository.findOutfitIdsByUserId(user.getId());
+
+        log.info("User {} has previously seen {} outfits", user.getId(), usedOutfitIds.size());
+
+        // Filter out outfits this user has already seen
+        List<OutfitVector> availableOutfits = similarOutfits.stream()
+                .filter(outfit -> !usedOutfitIds.contains(outfit.getId()))
+                .collect(Collectors.toList());
+
+        log.info("Found {} available outfits not yet shown to user {}",
+                availableOutfits.size(), user.getId());
+
+        // If user has seen all outfits, use all outfits
+        if (availableOutfits.isEmpty()) {
+            log.info("User {} has seen all available outfits, using full set", user.getId());
+            availableOutfits = similarOutfits;
+        }
+
+        // Select random outfit from available ones
+        OutfitVector selectedOutfit = availableOutfits.get(
+                new Random().nextInt(availableOutfits.size())
+        );
+
+        // Record this outfit as shown to user
+        OutfitHistory history = new OutfitHistory(user.getId(), selectedOutfit.getId(), occasion);
+        outfitHistoryRepository.save(history);
+
+        log.info("Selected outfit {} for user {}. Recorded in history.",
+                selectedOutfit.getId(), user.getId());
+
+        // Generate prompts using selected outfit
+        String userDescription = getUserDescription(user);
+        String clothingDescription = formatClothingPieces(selectedOutfit.getClothingPieces());
+
+        List<PromptTemplate> templates = promptTemplateRepository.findByOccasion(occasion);
+
+        return templates.stream()
+                .map(template -> formatPrompt(template, userDescription, clothingDescription))
+                .collect(Collectors.toList());
     }
 
     private String getUserDescription(User user) {
@@ -243,15 +290,22 @@ public class OutfitGenerationService {
         return description.toString();
     }
 
-    private List<String> generatePrompts(User user, Occasion occasion, List<OutfitVector> similarOutfits) {
-        String userDescription = getUserDescription(user);
-        String clothingDescription = formatClothingPieces(similarOutfits.get(0).getClothingPieces());
+    private List<OutfitVector> findSimilarOutfits(User user, Occasion occasion) {
+        Map<String, Object> searchCriteria = new HashMap<>();
+        searchCriteria.put("occasion", occasion.name());
+        searchCriteria.put("gender", user.getGender().name());
+        searchCriteria.put("bodyType", user.getBodyType().name());
 
-        List<PromptTemplate> templates = promptTemplateRepository.findByOccasion(occasion);
+        if (user.getStylePreferences() != null && !user.getStylePreferences().isEmpty()) {
+            searchCriteria.put("style", new ArrayList<>(user.getStylePreferences()));
+        }
 
-        return templates.stream()
-                .map(template -> formatPrompt(template, userDescription, clothingDescription))
-                .collect(Collectors.toList());
+        try {
+            return outfitReferenceService.search(searchCriteria, 5);
+        } catch (Exception e) {
+            log.error("Error finding similar outfits: {}", e.getMessage());
+            throw new RuntimeException("Failed to find similar outfits", e);
+        }
     }
 
     private String formatPrompt(PromptTemplate template, String userDescription, String clothingDescription) {
@@ -270,25 +324,6 @@ public class OutfitGenerationService {
         return prompt + " " + template.getStyleNotes();
     }
 
-    private List<OutfitVector> findSimilarOutfits(User user, Occasion occasion) {
-        Map<String, Object> searchCriteria = new HashMap<>();
-        searchCriteria.put("occasion", occasion.name());
-        searchCriteria.put("gender", user.getGender().name());
-        searchCriteria.put("bodyType", user.getBodyType().name());
-
-        // Add style preferences if available
-        if (user.getStylePreferences() != null && !user.getStylePreferences().isEmpty()) {
-            searchCriteria.put("style", new ArrayList<>(user.getStylePreferences()));
-        }
-
-        try {
-            return outfitReferenceService.search(searchCriteria, 5);
-        } catch (Exception e) {
-            log.error("Error finding similar outfits: {}", e.getMessage());
-            throw new RuntimeException("Failed to find similar outfits", e);
-        }
-    }
-
     private String formatClothingPieces(Map<String, List<String>> clothingPieces) {
         if (clothingPieces == null || clothingPieces.isEmpty()) {
             return "a stylish outfit";
@@ -296,7 +331,6 @@ public class OutfitGenerationService {
 
         StringBuilder description = new StringBuilder();
 
-        // Start with main pieces
         if (clothingPieces.containsKey("top")) {
             description.append(String.join(" and ", clothingPieces.get("top")));
         }
@@ -306,19 +340,16 @@ public class OutfitGenerationService {
             description.append(String.join(" and ", clothingPieces.get("bottom")));
         }
 
-        // Add outerwear if present
         if (clothingPieces.containsKey("outerwear")) {
             description.append(", topped with ")
                     .append(String.join(" and ", clothingPieces.get("outerwear")));
         }
 
-        // Add shoes
         if (clothingPieces.containsKey("shoes")) {
             description.append(", complemented by ")
                     .append(String.join(" and ", clothingPieces.get("shoes")));
         }
 
-        // Add accessories
         if (clothingPieces.containsKey("accessories")) {
             description.append(", accessorized with ")
                     .append(String.join(", ", clothingPieces.get("accessories")));
@@ -348,14 +379,12 @@ public class OutfitGenerationService {
             outfit.setOccasion(occasion);
             outfit.setImageUrls(generatedImages);
 
-            // Set clothing details from the most similar outfit
             if (!similarOutfits.isEmpty()) {
                 OutfitVector primaryOutfit = similarOutfits.get(0);
                 outfit.setClothingDetails(formatClothingPieces(primaryOutfit.getClothingPieces()));
                 outfit.setVectorId(primaryOutfit.getId());
             }
 
-            // Store the prompts used for reference
             List<PromptTemplate> templates = promptTemplateRepository.findByOccasion(occasion);
             String promptsJson = objectMapper.writeValueAsString(
                     templates.stream()
@@ -381,4 +410,35 @@ public class OutfitGenerationService {
                 .createdAt(outfit.getCreatedAt())
                 .build();
     }
+
+    // Method to get count of unused outfits
+    public int getUnusedOutfitCount(String userId, Occasion occasion) throws Exception {
+        List<OutfitVector> allOutfits = findSimilarOutfits(userService.getUserById(userId), occasion);
+        List<String> usedOutfitIds = outfitHistoryRepository.findOutfitIdsByUserId(userId);
+
+        int unusedCount = (int) allOutfits.stream()
+                .filter(outfit -> !usedOutfitIds.contains(outfit.getId()))
+                .count();
+
+        log.info("User {} has {} unused outfits available for occasion {}",
+                userId, unusedCount, occasion);
+
+        return unusedCount;
+    }
+
+    // Method to reset user's outfit history
+    public void resetUserOutfitHistory(String userId) {
+        outfitHistoryRepository.deleteByUserId(userId);
+        log.info("Reset outfit history for user {}", userId);
+    }
+
+    // Debug method to compare histories between users
+    public void debugOutfitHistory(String userId1, String userId2, String outfitId) {
+        boolean user1HasSeen = outfitHistoryRepository.existsByUserIdAndOutfitId(userId1, outfitId);
+        boolean user2HasSeen = outfitHistoryRepository.existsByUserIdAndOutfitId(userId2, outfitId);
+
+        log.info("Outfit {} status: User1 has seen it: {}, User2 has seen it: {}",
+                outfitId, user1HasSeen, user2HasSeen);
+    }
+
 }
