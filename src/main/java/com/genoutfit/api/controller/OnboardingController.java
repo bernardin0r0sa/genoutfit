@@ -1,88 +1,84 @@
 package com.genoutfit.api.controller;
 
-import com.genoutfit.api.model.ProfileDto;
+import com.genoutfit.api.model.OnboardingStatus;
 import com.genoutfit.api.model.User;
 import com.genoutfit.api.model.UserPrincipal;
 import com.genoutfit.api.service.StripeService;
-import com.stripe.model.Event;
-import com.stripe.model.checkout.Session;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
 import com.genoutfit.api.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.*;
 
-import static com.genoutfit.api.model.OnboardingStatus.*;
-
-@RestController
-@RequestMapping("/api/onboarding")
-@RequiredArgsConstructor
+@Controller
+@RequestMapping("/onboarding")
 public class OnboardingController {
-    private final UserService userService;
-    private final StripeService stripeService;
 
-    @GetMapping("/status")
-    public ResponseEntity<?> getOnboardingStatus(@AuthenticationPrincipal UserPrincipal userPrincipal) throws Exception {
-        User user = userService.getCurrentUser(userPrincipal);
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private StripeService stripeService;
 
-        return ResponseEntity.ok(Map.of(
-                "status", user.getOnboardingStatus(),
-                "nextStep", getNextStep(user),
-                "isProfileComplete", user.getOnboardingStatus().ordinal() >= PROFILE_COMPLETED.ordinal(),
-                "isPremiumUser", user.isPremiumUser()
+
+    @GetMapping("/profile")
+    public String showProfileForm(Model model, HttpServletRequest request, Authentication authentication) {
+        // Add style options to model
+        model.addAttribute("styleOptions", Arrays.asList(
+                "Casual", "Business", "Formal", "Streetwear",
+                "Bohemian", "Minimalist", "Vintage", "Athletic"
         ));
+
+        model.addAttribute("content", "profile :: profile");
+        model.addAllAttributes(Collections.singleton(createOpenGraphData(
+                "Complete Your Profile - OutfitGenerator",
+                request.getRequestURL().toString(),
+                "/assets/images/profile-banner.jpg",
+                "Complete your profile to get personalized outfit recommendations"
+        )));
+        return "index";
     }
 
-    @PostMapping("/profile")
-    public ResponseEntity<?> completeProfile(
-            @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Valid @RequestBody ProfileDto profileDto) throws Exception {
-
-        User user = userService.updateProfile(userPrincipal.getId(), profileDto);
-
-        return ResponseEntity.ok(Map.of(
-                "status", "success",
-                "nextStep", "/preview"
-        ));
-    }
-
-    @PostMapping("/preview-complete")
-    public ResponseEntity<?> completePreview(@AuthenticationPrincipal UserPrincipal userPrincipal) throws Exception {
+    @GetMapping("/payment")
+    public String showPayment(Model model, HttpServletRequest request, Authentication authentication) throws Exception {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userService.getCurrentUser(userPrincipal);
-        user.setOnboardingStatus(PAYMENT_PENDING);
+
+        // Update user status to PAYMENT_PENDING
+        user.setOnboardingStatus(OnboardingStatus.PAYMENT_PENDING);
         userService.saveUser(user);
 
         // Create Stripe checkout session
         String checkoutUrl = stripeService.createCheckoutSession(user.getEmail(), user.getId());
 
-        return ResponseEntity.ok(Map.of(
-                "checkoutUrl", checkoutUrl
-        ));
+        // Redirect to Stripe checkout
+        return "redirect:" + checkoutUrl;
     }
 
-    @PostMapping("/webhook/stripe")
-    public ResponseEntity<?> stripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) throws Exception {
-        Event event = stripeService.constructEvent(payload, sigHeader);
-
-        if ("checkout.session.completed".equals(event.getType())) {
-            Session session = (Session) event.getData().getObject();
-            String userId = session.getMetadata().get("userId");
-
-            userService.activatePremiumUser(userId);
-        }
-
-        return ResponseEntity.ok().build();
+    @GetMapping("/success")
+    public String showSuccess(Model model, HttpServletRequest request) {
+        model.addAttribute("content", "success :: success");
+        model.addAllAttributes(Collections.singleton(createOpenGraphData(
+                "Payment Successful - OutfitGenerator",
+                request.getRequestURL().toString(),
+                "/assets/images/success-banner.jpg",
+                "Thank you for becoming a premium member"
+        )));
+        return "index";
     }
 
-    private String getNextStep(User user) {
-        return switch (user.getOnboardingStatus()) {
-            case NEW -> "/onboarding/profile";
-            case PROFILE_COMPLETED -> "/onboarding/preview";
-            case PAYMENT_PENDING -> "/onboarding/payment";
-            case COMPLETED -> "/dashboard";
-        };
+    private Map<String, String> createOpenGraphData(String title, String url, String imageUrl, String description) {
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("ogPageTitle", title);
+        attributes.put("ogCurrentUrl", url);
+        attributes.put("ogImageUrl", imageUrl);
+        attributes.put("ogPageDescription", description);
+        return attributes;
     }
 }

@@ -74,9 +74,18 @@ public class R2StorageService {
                 log.info("Successfully uploaded image to R2: {}", key);
             }
 
-            // Generate a permanent URL
-            URL permanentUrl = r2Client.getUrl(bucketName, key);
-            return permanentUrl.toString();
+            // Generate a presigned URL with a long but reasonable expiration (1 year)
+            // For an MVP with 100 users, this is a practical balance between security and simplicity
+            Date expiration = new Date();
+            expiration.setTime(expiration.getTime() + 365L * 24L * 60L * 60L * 1000L); // 1 year
+
+            GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                    new GeneratePresignedUrlRequest(bucketName, key)
+                            .withMethod(HttpMethod.GET)
+                            .withExpiration(expiration);
+
+            URL presignedUrl = r2Client.generatePresignedUrl(generatePresignedUrlRequest);
+            return presignedUrl.toString();
 
         } catch (Exception e) {
             log.error("Failed to process image from URL {}: {}", imageUrl, e.getMessage());

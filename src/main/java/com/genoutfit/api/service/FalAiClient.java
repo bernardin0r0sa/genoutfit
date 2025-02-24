@@ -21,10 +21,15 @@ public class FalAiClient {
     @Autowired
     private FalClient falClient;
 
-    private  OkHttpClient okHttpClient;
+    private final OkHttpClient okHttpClient;
 
     @Value("${fal.api.key}")
     private String falApiKey;
+
+    public FalAiClient() {
+        this.okHttpClient = new OkHttpClient.Builder()
+                .build();
+    }
 
     public JsonObject submitToFalApi(String endpoint, Map<String, Object> input, String webhookUrl) throws IOException {
         // Construct URL with fal_webhook parameter

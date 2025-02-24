@@ -3,6 +3,7 @@ package com.genoutfit.api.controller;
 import com.genoutfit.api.JwtTokenProvider;
 import com.genoutfit.api.model.*;
 import com.genoutfit.api.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,64 +14,46 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/api/auth")
-@RequiredArgsConstructor
+@Controller
 public class AuthController {
-    private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;
-    private final PasswordEncoder passwordEncoder;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody EmailSignupRequest request) {
-        if (userService.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Email already registered"));
-        }
-
-        // Create user with email/password
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setProvider(AuthProvider.LOCAL);
-        user.setOnboardingStatus(OnboardingStatus.NEW);
-        userService.saveUser(user);
-
-        // Generate auth token
-        String token = tokenProvider.createToken(UserPrincipal.create(user));
-
-        return ResponseEntity.ok(new AuthResponse(token));
+    @GetMapping("/login")
+    public String login(Model model, HttpServletRequest request) {
+        model.addAttribute("content", "login :: login");
+        model.addAllAttributes(createOpenGraphData(
+                "Log In - OutfitGenerator",
+                request.getRequestURL().toString(),
+                "/assets/images/login-banner.jpg",
+                "Log in to your OutfitGenerator account"
+        ));
+        return "index";
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(),
-                            loginRequest.getPassword()
-                    )
-            );
+    @GetMapping("/register")
+    public String register(Model model, HttpServletRequest request) {
+        model.addAttribute("content", "register :: register");
+        model.addAllAttributes(createOpenGraphData(
+                "Sign Up - OutfitGenerator",
+                request.getRequestURL().toString(),
+                "/assets/images/signup-banner.jpg",
+                "Create your OutfitGenerator account"
+        ));
+        return "index";
+    }
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-            String token = tokenProvider.createToken(userPrincipal);
-
-            return ResponseEntity.ok(new AuthResponse(token));
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of(
-                            "error", "Invalid credentials",
-                            "message", e.getMessage() != null ? e.getMessage() : "Authentication failed"
-                    ));
-        }
+    private Map<String, String> createOpenGraphData(String title, String url, String imageUrl, String description) {
+        Map<String, String> attributes = new HashMap<>();
+        attributes.put("ogPageTitle", title);
+        attributes.put("ogCurrentUrl", url);
+        attributes.put("ogImageUrl", imageUrl);
+        attributes.put("ogPageDescription", description);
+        return attributes;
     }
 }

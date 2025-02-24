@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.*;
 public class OutfitWebhookController {
     private final OutfitGenerationService outfitGenerationService;
 
+    @Value("${API_WEBHOOK_KEY}")
+    private String apiWebhookKey;
+
     /**
      * Webhook endpoint for Fal.ai to call when image generation is complete
      */
@@ -23,7 +28,13 @@ public class OutfitWebhookController {
     public ResponseEntity<?> handleGenerationWebhook(
             @PathVariable String outfitId,
             @PathVariable int imageIndex,
-            @RequestBody String payload) {
+            @RequestBody String payload,
+            @RequestParam("apiKey") String requestApiKey) {
+
+        // Validate the API key
+        if (!apiWebhookKey.equals(requestApiKey)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid API key");
+        }
 
         try {
             log.info("Received webhook for outfit {} image {}", outfitId, imageIndex);

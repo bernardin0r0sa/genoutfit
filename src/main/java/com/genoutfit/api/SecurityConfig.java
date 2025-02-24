@@ -48,8 +48,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/oauth2/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/","/login","/register","/auth/**", "/oauth2/**", "/api/auth/**").permitAll()
                         .requestMatchers("/api/onboarding/**").authenticated()
+                        .requestMatchers("/api/outfits/webhook/**").permitAll()
                         .requestMatchers("/api/**").hasRole("PAID_USER")
                 )
                 // Disable form login since we're using a REST API

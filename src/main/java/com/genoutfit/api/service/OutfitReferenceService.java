@@ -31,7 +31,7 @@ public class OutfitReferenceService {
 
             String bodyTypeStr = criteria.containsKey("bodyType") ?
                     criteria.get("bodyType").toString() : "MEDIUM";
-            String bodyTypeJson = String.format("\"%s\"", bodyTypeStr.toLowerCase());
+            String bodyTypeJson = String.format("\"%s\"", bodyTypeStr.toLowerCase().replace("_", "-"));
 
             String occasionStr = criteria.containsKey("occasion") ?
                     criteria.get("occasion").toString() : "CASUAL_OUTING";

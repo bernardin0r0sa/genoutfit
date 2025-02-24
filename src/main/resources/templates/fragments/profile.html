@@ -1,0 +1,32 @@
+<div th:fragment="profile">
+  <h2>Complete Your Profile</h2>
+  <form id="profileForm" th:action="@{/api/onboarding/profile}" method="post">
+    <select name="ethnicity" required>
+      <option value="">Select Ethnicity</option>
+      <option th:each="ethnicity : ${T(com.genoutfit.api.model.Ethnicity).values()}"
+              th:value="${ethnicity}" th:text="${ethnicity.displayName}">Ethnicity</option>
+    </select>
+    <select name="bodyType" required>
+      <option value="">Select Body Type</option>
+      <option th:each="bodyType : ${T(com.genoutfit.api.model.BodyType).values()}"
+              th:value="${bodyType}" th:text="${bodyType.displayName}">Body Type</option>
+    </select>
+    <select name="gender" required>
+      <option value="">Select Gender</option>
+      <option th:each="gender : ${T(com.genoutfit.api.model.Gender).values()}"
+              th:value="${gender}" th:text="${gender.displayName}">Gender</option>
+    </select>
+    <input type="number" name="height" placeholder="Height (cm)" required>
+    <input type="number" name="age" placeholder="Age" required min="13">
+    <div class="style-prefs">
+      <label>Style Preferences (optional)</label>
+      <div class="checkbox-group">
+        <label th:each="style : ${styleOptions}">
+          <input type="checkbox" name="stylePreferences" th:value="${style}">
+          <span th:text="${style}"></span>
+        </label>
+      </div>
+    </div>
+    <button type="submit" class="btn">Save Profile</button>
+  </form>
+</div>

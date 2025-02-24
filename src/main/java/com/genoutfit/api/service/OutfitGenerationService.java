@@ -6,12 +6,12 @@ import com.genoutfit.api.model.*;
 import com.genoutfit.api.repository.OutfitHistoryRepository;
 import com.genoutfit.api.repository.OutfitRepository;
 import com.genoutfit.api.repository.PromptTemplateRepository;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -58,31 +58,48 @@ public class OutfitGenerationService {
     @Value("${PLACEHOLDER_IMAGE_URL}")
     private String placeholderImageUrl;
 
+    @Value("${API_WEBHOOK_KEY}")
+    private String apiWebhookKey;
+
+
+
     // Store pending outfit generations
     private final Map<String, OutfitGenerationTask> pendingGenerations = new ConcurrentHashMap<>();
-
-    // Track used outfits per user
-    private final Map<String, Set<String>> userUsedOutfits = new ConcurrentHashMap<>();
 
     public OutfitResponseDto initiateOutfitGeneration(String userId, OutfitRequestDto request) throws Exception {
         User user = userService.getUserById(userId);
         List<OutfitVector> similarOutfits = findSimilarOutfits(user, request.getOccasion());
 
-        // If requesting new outfit with same characteristics
-        if (request.isNewVariation() && !similarOutfits.isEmpty()) {
-            Set<String> usedOutfits = userUsedOutfits.getOrDefault(userId, Collections.emptySet());
-
-            // Check if THIS user has seen all outfits
-            boolean allUsed = similarOutfits.stream()
-                    .allMatch(outfit -> usedOutfits.contains(outfit.getId()));
-
-            if (allUsed) {
-                log.info("User {} has seen all outfits for these criteria, resetting their history", userId);
-                resetUserOutfitHistory(userId);
-            }
+        if (similarOutfits.isEmpty()) {
+            throw new RuntimeException("No matching outfits found");
         }
 
-        List<String> prompts = generatePrompts(user, request.getOccasion(), similarOutfits);
+        // Get unused outfits
+        List<String> usedOutfitIds = outfitHistoryRepository.findOutfitIdsByUserId(userId);
+        List<OutfitVector> availableOutfits = similarOutfits.stream()
+                .filter(outfit -> !usedOutfitIds.contains(outfit.getId()))
+                .collect(Collectors.toList());
+
+        // If all outfits used, reset history and use all outfits
+        if (availableOutfits.isEmpty()) {
+            log.info("User {} has seen all outfits, resetting history", userId);
+            resetUserOutfitHistory(userId);
+            availableOutfits = similarOutfits;
+        }
+
+        // Select random outfit here, in the main method
+        OutfitVector selectedOutfit = availableOutfits.get(
+                new Random().nextInt(availableOutfits.size())
+        );
+
+        // Record this outfit as shown to user
+        OutfitHistory history = new OutfitHistory(userId, selectedOutfit.getId(), request.getOccasion());
+        outfitHistoryRepository.save(history);
+
+        log.info("Selected outfit {} for user {}. Recorded in history.",
+                selectedOutfit.getId(), userId);
+
+        List<String> prompts = generatePrompts(user, request.getOccasion(), selectedOutfit);
 
         // Create outfit with placeholder images initially
         List<String> placeholderImages = new ArrayList<>();
@@ -90,7 +107,7 @@ public class OutfitGenerationService {
             placeholderImages.add(placeholderImageUrl);
         }
 
-        Outfit outfit = createAndSaveOutfit(user, request.getOccasion(), placeholderImages, similarOutfits);
+        Outfit outfit = createAndSaveOutfit(user, request.getOccasion(), placeholderImages, selectedOutfit);
 
         // Start async image generation
         startAsyncImageGeneration(outfit.getId(), prompts);
@@ -123,7 +140,7 @@ public class OutfitGenerationService {
             try {
                 rateLimiter.acquirePermission();
 
-                String webhookUrl = baseUrl + "/api/outfits/webhook/" + outfitId + "/" + imageIndex;
+                String webhookUrl = baseUrl + "/api/outfits/webhook/" + outfitId + "/" + imageIndex+"?apiKey="+apiWebhookKey;
 
                 Map<String, Object> generationInput = new HashMap<>();
                 generationInput.put("prompt", prompt);
@@ -225,41 +242,7 @@ public class OutfitGenerationService {
         return task.getStatus();
     }
 
-    private List<String> generatePrompts(User user, Occasion occasion, List<OutfitVector> similarOutfits) {
-        if (similarOutfits.isEmpty()) {
-            throw new RuntimeException("No matching outfits found");
-        }
-
-        // Get all outfit IDs this user has seen
-        List<String> usedOutfitIds = outfitHistoryRepository.findOutfitIdsByUserId(user.getId());
-
-        log.info("User {} has previously seen {} outfits", user.getId(), usedOutfitIds.size());
-
-        // Filter out outfits this user has already seen
-        List<OutfitVector> availableOutfits = similarOutfits.stream()
-                .filter(outfit -> !usedOutfitIds.contains(outfit.getId()))
-                .collect(Collectors.toList());
-
-        log.info("Found {} available outfits not yet shown to user {}",
-                availableOutfits.size(), user.getId());
-
-        // If user has seen all outfits, use all outfits
-        if (availableOutfits.isEmpty()) {
-            log.info("User {} has seen all available outfits, using full set", user.getId());
-            availableOutfits = similarOutfits;
-        }
-
-        // Select random outfit from available ones
-        OutfitVector selectedOutfit = availableOutfits.get(
-                new Random().nextInt(availableOutfits.size())
-        );
-
-        // Record this outfit as shown to user
-        OutfitHistory history = new OutfitHistory(user.getId(), selectedOutfit.getId(), occasion);
-        outfitHistoryRepository.save(history);
-
-        log.info("Selected outfit {} for user {}. Recorded in history.",
-                selectedOutfit.getId(), user.getId());
+    private List<String> generatePrompts(User user, Occasion occasion, OutfitVector selectedOutfit) {
 
         // Generate prompts using selected outfit
         String userDescription = getUserDescription(user);
@@ -360,11 +343,27 @@ public class OutfitGenerationService {
 
     private String extractImageUrl(JsonObject result) {
         try {
-            return result.getAsJsonArray("images")
-                    .get(0)
-                    .getAsJsonObject()
-                    .get("url")
-                    .getAsString();
+            // Ensure "payload" exists
+            if (!result.has("payload") || result.get("payload").isJsonNull()) {
+                throw new RuntimeException("Missing or null 'payload' in response");
+            }
+
+            JsonObject payload = result.getAsJsonObject("payload");
+
+            // Ensure "images" exists inside "payload"
+            if (!payload.has("images") || payload.get("images").isJsonNull()) {
+                throw new RuntimeException("Missing or null 'images' array in payload");
+            }
+
+            JsonArray images = payload.getAsJsonArray("images");
+
+            // Ensure "images" array is not empty
+            if (images.size() == 0) {
+                throw new RuntimeException("Empty 'images' array in payload");
+            }
+
+            // Extract URL
+            return images.get(0).getAsJsonObject().get("url").getAsString();
         } catch (Exception e) {
             log.error("Failed to extract image URL from response: {}", result);
             throw new RuntimeException("Invalid response format from Fal.ai", e);
@@ -372,18 +371,16 @@ public class OutfitGenerationService {
     }
 
     private Outfit createAndSaveOutfit(User user, Occasion occasion, List<String> generatedImages,
-                                       List<OutfitVector> similarOutfits) {
+                                       OutfitVector selectedOutfit) {
         try {
             Outfit outfit = new Outfit();
             outfit.setUser(user);
             outfit.setOccasion(occasion);
             outfit.setImageUrls(generatedImages);
 
-            if (!similarOutfits.isEmpty()) {
-                OutfitVector primaryOutfit = similarOutfits.get(0);
-                outfit.setClothingDetails(formatClothingPieces(primaryOutfit.getClothingPieces()));
-                outfit.setVectorId(primaryOutfit.getId());
-            }
+            // Use the selected outfit directly
+            outfit.setClothingDetails(formatClothingPieces(selectedOutfit.getClothingPieces()));
+            outfit.setVectorId(selectedOutfit.getId());
 
             List<PromptTemplate> templates = promptTemplateRepository.findByOccasion(occasion);
             String promptsJson = objectMapper.writeValueAsString(
