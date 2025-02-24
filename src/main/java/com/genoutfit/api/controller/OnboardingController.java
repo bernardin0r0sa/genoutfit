@@ -35,7 +35,7 @@ public class OnboardingController {
                 "Bohemian", "Minimalist", "Vintage", "Athletic"
         ));
 
-        model.addAttribute("content", "profile :: profile");
+        model.addAttribute("content", "fragments/profile");
         model.addAllAttributes(Collections.singleton(createOpenGraphData(
                 "Complete Your Profile - OutfitGenerator",
                 request.getRequestURL().toString(),
@@ -63,7 +63,7 @@ public class OnboardingController {
 
     @GetMapping("/success")
     public String showSuccess(Model model, HttpServletRequest request) {
-        model.addAttribute("content", "success :: success");
+        model.addAttribute("content", "fragments/success");
         model.addAllAttributes(Collections.singleton(createOpenGraphData(
                 "Payment Successful - OutfitGenerator",
                 request.getRequestURL().toString(),

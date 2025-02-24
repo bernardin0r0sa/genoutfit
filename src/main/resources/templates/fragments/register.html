@@ -1,3 +1,4 @@
+<!-- This is the register fragment file (register.html) -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -7,18 +8,32 @@
 <div th:fragment="register">
     <h2>Create Account</h2>
     <p>Get started with your OutfitGenerator account</p>
+
     <form id="registerForm" th:action="@{/api/auth/register}" method="post">
         <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password (6-20 characters)" required minlength="6" maxlength="20">
-        <button type="submit" class="btn">Sign Up</button>
-        <p>Or Continue With</p>
-        <div class="social-login">
-            <a href="/oauth2/authorize/google" class="google-btn">
-                <i class="fab fa-google"></i> Google
-            </a>
+
+        <div class="password-field">
+            <input type="password" id="register-password" name="password"
+                   placeholder="Password (6-20 characters)" required minlength="6" maxlength="20">
+            <span class="password-toggle" onclick="toggleRegisterPassword()">
+                <i class="far fa-eye"></i>
+            </span>
         </div>
-        <p>Already have an account? <a href="/login">Log in</a></p>
+
+        <button type="submit" class="btn">Sign Up</button>
     </form>
+
+    <div class="divider">Or Continue With</div>
+
+    <div class="social-login">
+        <a href="/oauth2/authorize/google" class="google-btn">
+            <i class="fab fa-google"></i> Google
+        </a>
+    </div>
+
+    <div style="text-align: center; margin-top: 24px;">
+        <p>Already have an account? <a href="/login">Log in</a></p>
+    </div>
 </div>
 </body>
 </html>

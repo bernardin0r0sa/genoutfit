@@ -1,19 +1,14 @@
+<!-- This is the success fragment file (success.html) -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Payment Success</title>
+    <title>Payment Success</title>
 </head>
 <body>
 <div th:fragment="success">
-  <h2>Payment Successful!</h2>
-  <p>Thank you for becoming a premium member of Themelyfe!</p>
-  <button class="btn" onclick="goToDashboard()">Go to Dashboard</button>
+    <h2>Payment Successful!</h2>
+    <p>Thank you for becoming a premium member of Themelyfe!</p>
+    <button class="btn" onclick="goToDashboard()">Go to Dashboard</button>
 </div>
-<script>
-        function goToDashboard() {
-            // Redirect to the dashboard
-            window.location.href = '/dashboard';
-        }
-    </script>
 </body>
 </html>

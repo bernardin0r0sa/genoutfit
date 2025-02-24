@@ -26,7 +26,7 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login(Model model, HttpServletRequest request) {
-        model.addAttribute("content", "login :: login");
+        model.addAttribute("content", "fragments/login");
         model.addAllAttributes(createOpenGraphData(
                 "Log In - OutfitGenerator",
                 request.getRequestURL().toString(),
@@ -38,7 +38,7 @@ public class AuthController {
 
     @GetMapping("/register")
     public String register(Model model, HttpServletRequest request) {
-        model.addAttribute("content", "register :: register");
+        model.addAttribute("content", "fragments/register");
         model.addAllAttributes(createOpenGraphData(
                 "Sign Up - OutfitGenerator",
                 request.getRequestURL().toString(),

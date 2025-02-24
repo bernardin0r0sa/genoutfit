@@ -1,16 +1,42 @@
+<!-- This is the login fragment file (login.html) -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
 <div th:fragment="login">
     <h2>Log In</h2>
     <p>Welcome back! Please enter your details</p>
+
     <form th:action="@{/api/auth/login}" method="post">
         <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
+
+        <div class="password-field">
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <span class="password-toggle" onclick="togglePassword()">
+                <i class="far fa-eye"></i>
+            </span>
+        </div>
+
+        <div class="forgot-password">
+            <a href="/forgot-password">Forgot password?</a>
+        </div>
+
         <button type="submit" class="btn">Log in</button>
     </form>
-    <p>Or Continue With</p>
+
+    <div class="divider">Or Continue With</div>
+
     <div class="social-login">
         <a href="/oauth2/authorize/google" class="google-btn">
             <i class="fab fa-google"></i> Google
         </a>
     </div>
-    <p>Don't have an account? <a th:href="@{/register}">Sign up</a></p>
+
+    <div style="text-align: center; margin-top: 24px;">
+        <p>Don't have an account? <a th:href="@{/register}">Sign up</a></p>
+    </div>
 </div>
+</body>
+</html>
