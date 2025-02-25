@@ -15,7 +15,7 @@ import java.util.Map;
 public class OutfitController {
 
     @GetMapping("/")
-    public String home(Model model, HttpServletRequest request) {
+    public String landingPage(Model model, HttpServletRequest request) {
         model.addAllAttributes(createOpenGraphData(
                 "OutfitGenerator - AI-Powered Fashion Recommendations",
                 request.getRequestURL().toString(),
@@ -23,6 +23,17 @@ public class OutfitController {
                 "Get personalized outfit recommendations tailored to your style, body type, and occasion"
         ));
         return "index";
+    }
+
+    @GetMapping("/home")
+    public String home(Model model, HttpServletRequest request) {
+        model.addAllAttributes(createOpenGraphData(
+                "OutfitGenerator - AI-Powered Fashion Recommendations",
+                request.getRequestURL().toString(),
+                "/assets/images/homepage-banner.jpg",
+                "Get personalized outfit recommendations tailored to your style, body type, and occasion"
+        ));
+        return "home";
     }
 
     private Map<String, String> createOpenGraphData(String title, String url, String imageUrl, String description) {

@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/login","/register","/auth/**", "/oauth2/**", "/api/auth/**").permitAll()
+                        .requestMatchers("/","/home","/login","/register","/auth/**", "/oauth2/**", "/api/auth/**").permitAll()
                         .requestMatchers("/api/onboarding/**").authenticated()
                         .requestMatchers("/api/outfits/webhook/**").permitAll()
                         .requestMatchers("/api/**").hasRole("PAID_USER")
