@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Sidebar Fragment -->
+<div th:fragment="sidebar" class="hidden md:flex flex-col w-56 bg-white shadow-sm border-r border-gray-100 p-4">
+  <div class="mb-8 px-2">
+    <a href="/home" class="text-xl font-bold text-teal-dark">Gen Outfit</a>
+  </div>
+
+  <nav th:replace="~{fragments/sidebar :: sidebar-content}"></nav>
+</div>
+
+<!-- Sidebar Content Fragment - used in both main sidebar and mobile sidebar -->
+<nav th:fragment="sidebar-content" class="flex flex-col space-y-1">
+  <a href="/dashboard" class="sidebar-icon" th:classappend="${#httpServletRequest.requestURI == '/dashboard' ? 'active' : ''}">
+    <i class="fas fa-home w-5"></i>
+    <span>Home</span>
+  </a>
+  <a href="/favorites" class="sidebar-icon" th:classappend="${#httpServletRequest.requestURI == '/favorites' ? 'active' : ''}">
+    <i class="fas fa-heart w-5"></i>
+    <span>Favorites</span>
+  </a>
+  <a href="/outfits" class="sidebar-icon" th:classappend="${#httpServletRequest.requestURI == '/outfits' ? 'active' : ''}">
+    <i class="fas fa-tshirt w-5"></i>
+    <span>Outfits</span>
+  </a>
+  <a href="/account" class="sidebar-icon" th:classappend="${#httpServletRequest.requestURI == '/account' ? 'active' : ''}">
+    <i class="fas fa-user w-5"></i>
+    <span>Account</span>
+  </a>
+
+  <div class="mt-auto">
+    <div class="border-t border-gray-100 pt-4 mt-4">
+      <a href="/premium" class="px-4 py-3 bg-teal bg-opacity-5 rounded-lg border border-teal border-opacity-20 flex items-center justify-between text-sm hover:bg-opacity-10 transition-colors">
+                    <span class="flex items-center gap-2">
+                        <i class="fas fa-gem text-coral"></i>
+                        <span class="text-charcoal">Premium Features</span>
+                    </span>
+        <i class="fas fa-chevron-right text-xs text-teal-light"></i>
+      </a>
+    </div>
+  </div>
+</nav>
+</body>
+</html>

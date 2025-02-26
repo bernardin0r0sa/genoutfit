@@ -16,4 +16,5 @@ public class OutfitResponseDto {
     private String occasion;
     private String style;
     private LocalDateTime createdAt;
+    private boolean favorite;
 }

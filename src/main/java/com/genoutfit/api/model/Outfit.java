@@ -25,6 +25,11 @@ public class Outfit {
     @Enumerated(EnumType.STRING)
     private Occasion occasion;
 
+    private String style;
+
+    @Column(name = "is_favorite")
+    private boolean favorite = false;
+
     @ElementCollection
     @CollectionTable(name = "outfit_images")
     private List<String> imageUrls = new ArrayList<>();
@@ -39,5 +44,18 @@ public class Outfit {
 
     @Column(columnDefinition = "TEXT")
     private String promptsUsed;
-}
 
+    // Updated toString to avoid circular reference issues
+    @Override
+    public String toString() {
+        return "Outfit{" +
+                "id='" + id + '\'' +
+                ", userId='" + (user != null ? user.getId() : "null") + '\'' +
+                ", occasion=" + occasion +
+                ", style='" + style + '\'' +
+                ", favorite=" + favorite +
+                ", imageUrls=" + imageUrls +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+}

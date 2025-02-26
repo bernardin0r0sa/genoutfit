@@ -3,9 +3,12 @@ package com.genoutfit.api.controller;
 import com.genoutfit.api.JwtTokenProvider;
 import com.genoutfit.api.model.*;
 import com.genoutfit.api.service.UserService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,12 +20,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import com.genoutfit.api.JwtTokenProvider;
+import com.genoutfit.api.model.*;
+import com.genoutfit.api.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
+
 @Controller
 public class AuthController {
+
+    @Autowired
+    private  UserService userService;
+    @Autowired
+    private  AuthenticationManager authenticationManager;
+    @Autowired
+    private  JwtTokenProvider tokenProvider;
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
+
 
     @GetMapping("/login")
     public String login(Model model, HttpServletRequest request) {
@@ -47,6 +68,53 @@ public class AuthController {
         ));
         return "index";
     }
+    @PostMapping("/process-login")
+    public String processLogin(@RequestParam String email,
+                               @RequestParam String password,
+                               HttpServletResponse response,
+                               RedirectAttributes redirectAttributes) throws Exception {
+        try {
+            // Authenticate user
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+
+            // Set security context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Create JWT token
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            String token = tokenProvider.createToken(userPrincipal);
+
+            // Set JWT as an HTTP-only cookie
+            Cookie cookie = new Cookie("authToken", token);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+            response.addCookie(cookie);
+
+            // Check onboarding status and redirect accordingly
+            User user = userService.getCurrentUser(userPrincipal);
+            String nextStep = getNextStep(user);
+
+            // Redirect to the appropriate next step
+            return "redirect:" + nextStep;
+
+        } catch (AuthenticationException e) {
+            // Add error parameter for error message display
+            return "redirect:/login?error=true";
+        }
+    }
+
+    // Helper method to determine next step based on onboarding status
+    private String getNextStep(User user) {
+        return switch (user.getOnboardingStatus()) {
+            case NEW -> "/onboarding/profile";
+            case PROFILE_COMPLETED -> "/onboarding/preview";
+            case PAYMENT_PENDING -> "/onboarding/payment";
+            case COMPLETED -> "/dashboard";
+        };
+    }
 
     private Map<String, String> createOpenGraphData(String title, String url, String imageUrl, String description) {
         Map<String, String> attributes = new HashMap<>();
@@ -56,4 +124,6 @@ public class AuthController {
         attributes.put("ogPageDescription", description);
         return attributes;
     }
+
+
 }

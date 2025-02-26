@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,12 +49,26 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/home","/login","/register","/auth/**", "/oauth2/**", "/api/auth/**").permitAll()
+                        // Public endpoints
+                        .requestMatchers("/process-login").permitAll()
+                        .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**").permitAll()
+
+                        // API endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/onboarding/**").authenticated()
                         .requestMatchers("/api/outfits/webhook/**").permitAll()
+
+                        // Onboarding pages - allow for authenticated users
+                        .requestMatchers("/onboarding/**").authenticated()
+
+                        // Protected API endpoints
                         .requestMatchers("/api/**").hasRole("PAID_USER")
+
+                        // All other requests need authentication
+                        .anyRequest().authenticated()
                 )
-                // Disable form login since we're using a REST API
+                        // Disable form login since we're using a REST API
                 .formLogin(formLogin -> formLogin.disable())
                 .oauth2Login(oauth2Login -> oauth2Login
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint

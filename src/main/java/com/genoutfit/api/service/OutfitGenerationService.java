@@ -438,4 +438,20 @@ public class OutfitGenerationService {
                 outfitId, user1HasSeen, user2HasSeen);
     }
 
+    /**
+     * Generate a random outfit by selecting a random occasion
+     */
+    public OutfitResponseDto initiateRandomOutfitGeneration(String userId, OutfitRequestDto request) throws Exception {
+        // Choose a random occasion
+        Occasion[] occasions = Occasion.values();
+        Random random = new Random();
+        Occasion randomOccasion = occasions[random.nextInt(occasions.length)];
+
+        // Set the random occasion in the request
+        request.setOccasion(randomOccasion);
+
+        // Delegate to the standard outfit generation method
+        return initiateOutfitGeneration(userId, request);
+    }
+
 }

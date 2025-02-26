@@ -1,11 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Outfit Generator Dashboard</title>
+  <title th:text="${ogPageTitle} ?: 'OutfitGenerator - AI-Powered Fashion Recommendations'">OutfitGenerator</title>
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" th:content="${ogPageTitle} ?: 'OutfitGenerator'">
+  <meta property="og:description" th:content="${ogPageDescription} ?: 'Get personalized outfit recommendations'">
+  <meta property="og:image" th:content="${ogImageUrl} ?: '/assets/images/homepage-banner.jpg'">
+  <meta property="og:url" th:content="${ogCurrentUrl} ?: ''">
+
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- HTMX for server-side interactions -->
+  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -27,6 +38,8 @@
             }
         }
     </script>
+
+  <!-- Custom Styles -->
   <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "San Francisco", Helvetica, Arial, sans-serif;
@@ -36,44 +49,65 @@
             @apply flex items-center gap-3 py-3 px-4 rounded-lg transition-colors duration-200;
         }
         .sidebar-icon:hover {
-            @apply bg-teal-light bg-opacity-10 text-teal;
+            @apply bg-teal-light bg-opacity-15 text-teal;
         }
         .sidebar-icon.active {
-            @apply bg-teal text-white;
+            @apply bg-teal bg-opacity-10 text-teal font-medium;
         }
+        .card-hover {
+            transition: all 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        .gradient-subtle {
+            background: linear-gradient(135deg, rgba(42,157,143,0.03) 0%, rgba(255,138,113,0.05) 100%);
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #2A9D8F;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading .spinner {
+    display: block;
+}
+
+.loading img {
+    visibility: hidden;
+}
+
+.loading.outfit-card {
+    opacity: 0.7;
+}
+
+    /* HTMX specific styles */
+    .htmx-indicator {
+        display: none;
+    }
+    .htmx-request .htmx-indicator {
+        display: inline-block;
+    }
+    .htmx-request.htmx-indicator {
+        display: inline-block;
+    }
     </style>
 </head>
 <body class="bg-offwhite text-charcoal">
 <div class="flex h-screen overflow-hidden">
   <!-- Sidebar -->
-  <div class="hidden md:flex flex-col w-60 bg-white shadow-sm border-r border-gray-100 p-4">
-    <div class="mb-8 px-2">
-      <h1 class="text-xl font-bold text-teal-dark">AI.FASHION</h1>
-    </div>
-
-    <nav class="flex flex-col space-y-1">
-      <a href="#" class="sidebar-icon active">
-        <i class="fas fa-home w-5"></i>
-        <span>Home</span>
-      </a>
-      <a href="#" class="sidebar-icon">
-        <i class="fas fa-heart w-5"></i>
-        <span>Favorites</span>
-      </a>
-      <a href="#" class="sidebar-icon">
-        <i class="fas fa-tshirt w-5"></i>
-        <span>Outfits</span>
-      </a>
-      <a href="#" class="sidebar-icon">
-        <i class="fas fa-user w-5"></i>
-        <span>Account</span>
-      </a>
-    </nav>
-  </div>
+  <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
   <!-- Mobile Sidebar Toggle -->
   <div class="md:hidden fixed bottom-4 right-4 z-50">
-    <button class="bg-teal text-white p-3 rounded-full shadow-lg">
+    <button class="bg-coral text-white p-3 rounded-full shadow-lg hover:bg-teal transition-colors" id="mobileSidebarToggle">
       <i class="fas fa-bars"></i>
     </button>
   </div>
@@ -81,224 +115,58 @@
   <!-- Main Content -->
   <div class="flex-1 overflow-y-auto">
     <!-- Header -->
-    <header class="bg-white shadow-sm py-4 px-6 sticky top-0 z-10">
-      <div class="flex justify-between items-center">
-        <div>
-          <p class="text-gray-500 text-sm">Personalize / Trending</p>
-          <h1 class="text-2xl font-bold text-teal-dark">Generate your next outfit</h1>
-        </div>
-        <div class="flex items-center gap-4">
-          <button class="text-gray-500 hover:text-teal">
-            <i class="far fa-bell text-xl"></i>
-          </button>
-          <button class="text-gray-500 hover:text-teal">
-            <i class="far fa-circle-question text-xl"></i>
-          </button>
-          <img src="/api/placeholder/40/40" alt="Profile" class="w-10 h-10 rounded-full object-cover">
-        </div>
-      </div>
-    </header>
+    <header th:replace="~{fragments/header :: header}"></header>
 
-    <!-- Main Content -->
-    <main class="p-6">
-      <!-- Occasions Section -->
-      <section class="mb-10">
-        <h2 class="text-xl font-semibold mb-6">Choose your occasion</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-          <!-- Occasion Cards -->
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Date Night" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Date Night</h3>
-              <p class="text-sm text-gray-500">Romantic dinner or evening out</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Office Party" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Office Party</h3>
-              <p class="text-sm text-gray-500">Professional yet festive</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Wedding Guest" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Wedding Guest</h3>
-              <p class="text-sm text-gray-500">Elegant celebration attire</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Casual Outing" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Casual Outing</h3>
-              <p class="text-sm text-gray-500">Relaxed day-to-day style</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Formal Event" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Formal Event</h3>
-              <p class="text-sm text-gray-500">Black tie or upscale gathering</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Beach Vacation" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Beach Vacation</h3>
-              <p class="text-sm text-gray-500">Tropical and relaxed style</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Second Row of Occasions -->
-      <section class="mb-10">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Business Casual" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Business Casual</h3>
-              <p class="text-sm text-gray-500">Professional everyday wear</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Party" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Party</h3>
-              <p class="text-sm text-gray-500">Night out or celebration</p>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="relative">
-              <img src="/api/placeholder/400/500" alt="Gala" class="w-full h-60 object-cover">
-              <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1 hover:bg-opacity-50">
-                <i class="far fa-heart"></i>
-              </button>
-            </div>
-            <div class="p-4">
-              <h3 class="font-medium">Gala</h3>
-              <p class="text-sm text-gray-500">High-end formal attire</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Generated Outfits Section -->
-      <section>
-        <div class="flex flex-wrap justify-between items-center mb-6">
-          <h2 class="text-xl font-semibold">Generated outfits</h2>
-          <div class="flex flex-wrap gap-2 mt-3 md:mt-0">
-            <button class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm flex items-center gap-2 hover:border-teal">
-              <span>Body Type</span>
-              <i class="fas fa-chevron-down text-xs"></i>
-            </button>
-            <button class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm flex items-center gap-2 hover:border-teal">
-              <span>Style</span>
-              <i class="fas fa-chevron-down text-xs"></i>
-            </button>
-            <button class="px-4 py-2 rounded-lg bg-coral text-white text-sm hover:bg-teal-light transition-colors">
-              More Filters
-            </button>
-          </div>
-        </div>
-
-        <!-- Outfits Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          <!-- Outfit Cards - First Row -->
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 1" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 2" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 3" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 4" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 5" class="w-full h-60 object-cover">
-          </div>
-
-          <!-- Outfit Cards - Second Row -->
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 6" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 7" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 8" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 9" class="w-full h-60 object-cover">
-          </div>
-          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <img src="/api/placeholder/400/500" alt="Outfit 10" class="w-full h-60 object-cover">
-          </div>
-        </div>
-      </section>
+    <!-- Dynamic Content -->
+    <main>
+      <div th:replace="${content} ?: ~{fragments/dashboard :: dashboard}"></div>
     </main>
   </div>
 </div>
 
-<script>
-        // Mobile menu toggle functionality would go here
+<!-- Mobile Menu Modal -->
+<div id="mobileMenu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+  <div class="bg-white h-full w-64 p-4 transform transition-transform">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-xl font-bold text-teal-dark">AI.FASHION</h1>
+      <button id="closeMobileMenu" class="text-charcoal">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuBtn = document.querySelector('.md\\:hidden button');
-            if (mobileMenuBtn) {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileSidebarToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
+
+            if (mobileMenuBtn && mobileMenu && closeMobileMenuBtn) {
                 mobileMenuBtn.addEventListener('click', function() {
-                    // Mobile menu toggle logic
+                    mobileMenu.classList.remove('hidden');
+                });
+
+                closeMobileMenuBtn.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
                 });
             }
+
+            // Set active sidebar link based on current path
+            const currentPath = window.location.pathname;
+            const sidebarLinks = document.querySelectorAll('.sidebar-icon');
+
+            sidebarLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPath) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
         });
     </script>
 </body>

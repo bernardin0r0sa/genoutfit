@@ -1,0 +1,26 @@
+<!-- fragments/error.html -->
+<div th:fragment="generation-error" class="text-center p-4 bg-red-100 rounded-lg">
+  <i class="fas fa-exclamation-circle text-red-500 text-xl mb-2"></i>
+  <p class="text-red-700" th:text="${errorMessage}">An error occurred.</p>
+</div>
+
+<div th:fragment="favorite-error" class="fixed bottom-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md"
+     id="errorToast"
+     hx-swap-oob="true">
+  <div class="flex items-center">
+    <i class="fas fa-exclamation-circle mr-2"></i>
+    <p th:text="${errorMessage}">An error occurred.</p>
+  </div>
+  <script>
+        setTimeout(() => {
+            document.getElementById('errorToast').classList.add('hidden');
+        }, 3000);
+    </script>
+</div>
+
+<div th:fragment="filter-error" class="text-center py-4">
+  <div class="bg-red-100 p-4 rounded-lg inline-block">
+    <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>
+    <span class="text-red-700" th:text="${errorMessage}">Failed to filter outfits.</span>
+  </div>
+</div>

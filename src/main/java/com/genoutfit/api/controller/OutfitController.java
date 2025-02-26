@@ -25,7 +25,7 @@ public class OutfitController {
         return "index";
     }
 
-    @GetMapping("/home")
+    @GetMapping("/dashboard")
     public String home(Model model, HttpServletRequest request) {
         model.addAllAttributes(createOpenGraphData(
                 "OutfitGenerator - AI-Powered Fashion Recommendations",

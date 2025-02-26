@@ -9,7 +9,13 @@
     <h2>Log In</h2>
     <p>Welcome back! Please enter your details</p>
 
-    <form th:action="@{/api/auth/login}" method="post">
+    <!-- Show error message if present -->
+    <div th:if="${param.error}" class="error-message">
+        <p>Invalid username or password</p>
+    </div>
+
+    <!-- Server-side form submission to a controller endpoint that handles the login form -->
+    <form th:action="@{/process-login}" method="post">
         <input type="email" name="email" placeholder="Email" required>
 
         <div class="password-field">
@@ -37,6 +43,23 @@
     <div style="text-align: center; margin-top: 24px;">
         <p>Don't have an account? <a th:href="@{/register}">Sign up</a></p>
     </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const icon = document.querySelector('.password-toggle i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 </div>
 </body>
 </html>
