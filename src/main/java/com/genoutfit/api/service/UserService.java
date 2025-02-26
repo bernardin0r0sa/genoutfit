@@ -62,4 +62,8 @@ public class UserService {
                 .orElseThrow(() -> new Exception("User"+userId));
         return user;
     }
+
+    public Object getSubscriptionDetails(String id) {
+        return null;
+    }
 }

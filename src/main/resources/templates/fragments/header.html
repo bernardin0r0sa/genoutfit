@@ -8,10 +8,11 @@
       <h1 class="text-2xl font-semibold text-charcoal" th:text="${headerTitle ?: 'Generate your next outfit'}">Generate your next outfit</h1>
     </div>
     <div class="flex items-center">
-      <div class="w-9 h-9 rounded-full p-0.5 bg-gradient-to-r from-teal to-coral">
-        <img th:src="${user != null and user.profileImageUrl != null ? user.profileImageUrl : '/api/placeholder/36/36'}" alt="Profile"
-             class="w-full h-full rounded-full object-cover border-2 border-white">
-      </div>
+      <a href="/account" class="w-9 h-9 rounded-full p-0.5 bg-gradient-to-r from-teal to-coral flex items-center justify-center">
+        <div class="w-full h-full rounded-full bg-white flex items-center justify-center border-2 border-white text-teal">
+          <i class="fas fa-user text-sm"></i>
+        </div>
+      </a>
     </div>
   </div>
 </header>

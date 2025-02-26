@@ -3,6 +3,7 @@ package com.genoutfit.api;
 import com.genoutfit.api.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,10 +55,56 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
+        logger.debug("Extracting JWT from request...");
+
+        // First try to get from Authorization header
         String bearerToken = request.getHeader("Authorization");
+        logger.debug("Authorization header: " + (bearerToken != null ? "Present" : "Not present"));
+
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            logger.debug("Returning JWT from Authorization header");
             return bearerToken.substring(7);
         }
+
+        // If not in header, check cookies
+        Cookie[] cookies = request.getCookies();
+        logger.debug("Cookies: " + (cookies != null ? cookies.length + " cookies found" : "No cookies found"));
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                logger.debug("Cookie found: " + cookie.getName() + " = " +
+                        (cookie.getValue() != null ? cookie.getValue().substring(0, Math.min(10, cookie.getValue().length())) + "..." : "null"));
+
+                if ("authToken".equals(cookie.getName())) {
+                    logger.debug("authToken cookie found");
+                    return cookie.getValue();
+                }
+            }
+        } else {
+            // Try to manually parse cookie header as a fallback
+            logger.debug("getCookies() returned null, trying to parse Cookie header manually");
+            String cookieHeader = request.getHeader("Cookie");
+            if (cookieHeader != null) {
+                logger.debug("Cookie header found: " + cookieHeader);
+
+                String[] cookiesManually = cookieHeader.split(";");
+                for (String cookie : cookiesManually) {
+                    cookie = cookie.trim();
+                    logger.debug("Parsing cookie string: " + cookie);
+
+                    if (cookie.startsWith("authToken=")) {
+                        String token = cookie.substring("authToken=".length());
+                        logger.debug("authToken found in header with value: " +
+                                (token.length() > 10 ? token.substring(0, 10) + "..." : token));
+                        return token;
+                    }
+                }
+            } else {
+                logger.debug("No Cookie header found");
+            }
+        }
+
+        logger.debug("No JWT found in request");
         return null;
     }
 }

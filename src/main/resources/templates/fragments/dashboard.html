@@ -6,7 +6,7 @@
       <div class="px-6 py-5 bg-white bg-opacity-90">
         <div class="flex flex-col md:flex-row md:items-center justify-between">
           <div>
-            <h2 class="text-lg font-medium text-charcoal mb-1">Welcome back, <span th:text="${#authentication.principal.name ?: 'User'}">User</span></h2>
+            <h2 class="text-lg font-medium text-charcoal mb-1">Welcome back</span></h2>
             <p class="text-gray-600 text-sm">Your style assistant is ready to help</p>
           </div>
           <button class="mt-4 md:mt-0 px-5 py-2 bg-teal text-white rounded-lg hover:bg-teal-light transition-colors text-sm font-medium inline-flex items-center gap-2"
@@ -28,9 +28,6 @@
   <section class="mb-10 px-6">
     <div class="flex justify-between items-center mb-5">
       <h2 class="text-lg font-semibold">Choose your occasion</h2>
-      <a href="#" class="text-teal hover:text-coral transition-colors text-sm flex items-center gap-1">
-        View All <i class="fas fa-arrow-right text-xs"></i>
-      </a>
     </div>
 
     <!-- First row of occasions -->
@@ -55,16 +52,173 @@
         </div>
       </div>
 
-      <!-- Other occasion cards with similar HTMX attributes -->
-      <!-- ... -->
+      <!-- Office Party -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "OFFICE_PARTY"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/office_party.jpg" alt="Office Party" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Office Party</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Professional setting</p>
+        </div>
+      </div>
+
+      <!-- Wedding Guest -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "WEDDING_GUEST"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/wedding_guest.jpg" alt="Wedding Guest" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Wedding Guest</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Formal celebration</p>
+        </div>
+      </div>
+
+      <!-- Casual Outing -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "CASUAL_OUTING"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/casual_outing.jpg" alt="Casual Outing" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Casual Outing</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Relaxed day wear</p>
+        </div>
+      </div>
+
+      <!-- Formal Event -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "FORMAL_EVENT"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/formal_event.jpg" alt="Formal Event" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Formal Event</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Black tie gathering</p>
+        </div>
+      </div>
     </div>
 
     <!-- Second row of occasions -->
-    <!-- ... -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <!-- Beach Vacation -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "BEACH_VACATION"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/beach_vacation.jpg" alt="Beach Vacation" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Beach Vacation</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Tropical getaway</p>
+        </div>
+      </div>
+
+      <!-- Business Casual -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "BUSINESS_CASUAL"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/business_casual.jpg" alt="Business Casual" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Business Casual</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Work environment</p>
+        </div>
+      </div>
+
+      <!-- Party -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "PARTY"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/party.jpg" alt="Party" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Party</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Night out</p>
+        </div>
+      </div>
+
+      <!-- Gala -->
+      <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover"
+           hx-post="/api/outfits/generate-ui"
+           hx-vals='{"occasion": "GALA"}'
+           hx-target="#latestOutfitsGrid"
+           hx-swap="innerHTML"
+           hx-on::after-request="scrollToGeneratedSection()"
+           hx-indicator="#outfitsLoadingIndicator">
+        <div class="relative">
+          <img src="/assets/images/occasions/gala.jpg" alt="Gala" class="w-full h-40 object-cover">
+          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
+            <i class="far fa-heart text-sm"></i>
+          </button>
+        </div>
+        <div class="p-3 border-t border-gray-50">
+          <h3 class="font-medium text-charcoal">Gala</h3>
+          <p class="text-xs text-gray-500 mt-0.5">Elegant affair</p>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <!-- Generated Outfits Section with HTMX Integration -->
-  <section class="px-6 pb-8" id="generatedOutfitsSection">
+  <!-- Generated Outfits Section -->
+  <section class="px-6 pb-8">
     <div class="flex flex-wrap justify-between items-center mb-6">
       <h2 class="text-lg font-semibold">Generated outfits</h2>
       <div class="flex flex-wrap gap-2 mt-3 md:mt-0">
@@ -78,7 +232,13 @@
               <li><a href="#" hx-get="/api/outfits/filter" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">All Occasions</a></li>
               <li><a href="#" hx-get="/api/outfits/filter?occasion=DATE_NIGHT" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Date Night</a></li>
               <li><a href="#" hx-get="/api/outfits/filter?occasion=OFFICE_PARTY" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Office Party</a></li>
-              <!-- Other occasion filters -->
+              <li><a href="#" hx-get="/api/outfits/filter?occasion=WEDDING_GUEST" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Wedding Guest</a></li>
+              <li><a href="#" hx-get="/api/outfits/filter?occasion=CASUAL_OUTING" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Casual Outing</a></li>
+              <li><a href="#" hx-get="/api/outfits/filter?occasion=FORMAL_EVENT" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Formal Event</a></li>
+              <li><a href="#" hx-get="/api/outfits/filter?occasion=BEACH_VACATION" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Beach Vacation</a></li>
+              <li><a href="#" hx-get="/api/outfits/filter?occasion=BUSINESS_CASUAL" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Business Casual</a></li>
+              <li><a href="#" hx-get="/api/outfits/filter?occasion=PARTY" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Party</a></li>
+              <li><a href="#" hx-get="/api/outfits/filter?occasion=GALA" hx-target="#outfitsGrid" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Gala</a></li>
             </ul>
           </div>
         </div>
@@ -86,65 +246,45 @@
     </div>
 
     <!-- Loading Indicator -->
-    <div id="outfitsLoadingIndicator" class="flex justify-center items-center py-10 htmx-indicator">
+    <div id="outfitsLoadingIndicator" class="flex justify-center items-center py-10 hidden">
       <div class="spinner mr-3"></div>
       <p>Loading outfits...</p>
     </div>
 
     <!-- Latest Generated Outfits (New Ones) -->
-    <div id="latestOutfitsContainer" class="mb-8">
+    <div id="latestOutfitsContainer" class="mb-8 hidden">
       <h3 class="text-md font-medium mb-4 text-teal">Just Generated</h3>
-      <div id="latestOutfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 mb-8">
-        <!-- This is where newly generated outfits will appear via HTMX -->
+      <div id="latestOutfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+        <!-- Will be populated by HTMX -->
       </div>
     </div>
 
     <!-- All Generated Outfits -->
     <div id="allOutfitsContainer">
       <div id="outfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        <!-- Will be populated via HTMX -->
-        <div th:each="outfit : ${outfits}"
-             th:class="'outfit-card ' + ${outfit.occasion.toString()}"
-             class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover">
-          <div class="relative">
-            <img th:src="${outfit.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-charcoal to-transparent opacity-0 hover:opacity-70 transition-opacity flex items-end justify-center pb-4">
-              <button class="bg-coral text-white p-2 rounded-full mr-2"
-                      hx-post="@{/api/outfits/{id}/favorite(id=${outfit.id})}"
-                      hx-swap="none"
-                      hx-trigger="click">
-                <i th:class="${outfit.favorite} ? 'fas fa-heart text-xs' : 'far fa-heart text-xs'"></i>
-              </button>
-              <a class="bg-teal text-white p-2 rounded-full flex items-center justify-center"
-                 th:href="@{/outfits/{id}(id=${outfit.id})}">
-                <i class="fas fa-eye text-xs"></i>
-              </a>
-            </div>
-          </div>
-          <div class="p-3">
-            <p class="text-xs text-gray-500" th:text="${outfit.occasion.displayName}">Occasion</p>
-            <p class="text-xs text-gray-400" th:text="${#temporals.format(outfit.createdAt, 'MMM dd, yyyy')}">Date</p>
-          </div>
+        <!-- Use th:each to iterate through outfits and include outfit-card fragment -->
+        <div th:each="outfit : ${outfits}" class="outfit-item" th:with="outfit=${outfit}">
+          <div th:replace="~{fragments/outfit-card :: outfit-card}"></div>
+        </div>
+
+        <!-- If no outfits, show empty message -->
+        <div th:if="${outfits == null || outfits.isEmpty()}" class="col-span-full text-center py-10">
+          <p class="text-gray-500">No outfits found. Try generating some!</p>
         </div>
       </div>
     </div>
 
-    <!-- No Outfits Found Message -->
-    <div id="noOutfitsMessage" class="text-center py-10 hidden">
-      <p class="text-gray-500">No outfits found. Try generating some!</p>
-    </div>
-
     <!-- Generate More Button -->
     <div class="mt-8 text-center">
-      <button id="generateMoreBtn" class="px-6 py-2.5 bg-gradient-to-r from-teal to-coral text-white rounded-lg hover:opacity-90 transition-opacity inline-flex items-center gap-2 shadow-sm"
-              hx-post="/api/outfits/generate-ui/random"
+      <button id="generateMoreBtn"
+              hx-post="/api/outfits/generate-random-ui"
               hx-target="#latestOutfitsGrid"
               hx-swap="innerHTML"
-              hx-on::after-request="scrollToGeneratedSection()"
-              hx-indicator="#generateMoreSpinner">
+              hx-indicator="#outfitsLoadingIndicator"
+              hx-on::after-request="showLatestOutfits(); scrollToGeneratedSection()"
+              class="px-6 py-2.5 bg-gradient-to-r from-teal to-coral text-white rounded-lg hover:opacity-90 transition-opacity inline-flex items-center gap-2 shadow-sm">
         <span>Generate More</span>
         <i class="fas fa-magic text-xs"></i>
-        <span id="generateMoreSpinner" class="spinner ml-1 htmx-indicator"></span>
       </button>
     </div>
   </section>
@@ -157,134 +297,120 @@
     </div>
   </div>
 
-  <!-- Minimal JavaScript for necessary functionality -->
   <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Toggle occasion filter dropdown
-            const occasionFilterButton = document.getElementById('occasionFilterButton');
-            const occasionFilterDropdown = document.getElementById('occasionFilterDropdown');
-            const occasionFilterContainer = document.getElementById('occasionFilterContainer');
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle occasion filter dropdown
+    const occasionFilterButton = document.getElementById('occasionFilterButton');
+    const occasionFilterDropdown = document.getElementById('occasionFilterDropdown');
+    const occasionFilterContainer = document.getElementById('occasionFilterContainer');
 
-            if (occasionFilterButton && occasionFilterDropdown && occasionFilterContainer) {
-                occasionFilterButton.addEventListener('click', function() {
-                    occasionFilterDropdown.classList.toggle('hidden');
-                });
+    if (occasionFilterButton && occasionFilterDropdown && occasionFilterContainer) {
+      occasionFilterButton.addEventListener('click', function() {
+        occasionFilterDropdown.classList.toggle('hidden');
+      });
 
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(event) {
-                    if (!occasionFilterContainer.contains(event.target)) {
-                        occasionFilterDropdown.classList.add('hidden');
-                    }
-                });
-            }
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(event) {
+        if (!occasionFilterContainer.contains(event.target)) {
+          occasionFilterDropdown.classList.add('hidden');
+        }
+      });
+    }
 
-            // Initialize outfits if present on the dashboard
-            const outfitsGrid = document.getElementById('outfitsGrid');
-            const noOutfitsMessage = document.getElementById('noOutfitsMessage');
+    // Initialize outfits if present on the dashboard
+    const outfitsGrid = document.getElementById('outfitsGrid');
+    const noOutfitsMessage = document.getElementById('noOutfitsMessage');
 
-            if (outfitsGrid && outfitsGrid.children.length === 0) {
-                if (noOutfitsMessage) {
-                    noOutfitsMessage.classList.remove('hidden');
-                }
-            }
+    if (outfitsGrid && outfitsGrid.children.length === 0) {
+      if (noOutfitsMessage) {
+        noOutfitsMessage.classList.remove('hidden');
+      }
+    }
 
-            // HTMX event listener for successful outfit generation
-            document.body.addEventListener('htmx:afterSwap', function(event) {
-                // Only react to swaps in the outfits grid
-                if (event.detail.target.id === 'latestOutfitsGrid' && event.detail.xhr.status === 200) {
-                    // Show success toast
-                    const successToast = document.getElementById('generationSuccessToast');
-                    if (successToast) {
-                        successToast.classList.remove('hidden');
+    // HTMX event listener for successful outfit generation
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+      if (event.detail.target.id === 'latestOutfitsGrid' && event.detail.xhr.status === 200) {
+        const successToast = document.getElementById('generationSuccessToast');
+        if (successToast) {
+          successToast.classList.remove('hidden');
+          setTimeout(() => {
+            successToast.classList.add('hidden');
+          }, 3000);
+        }
 
-                        // Auto-hide after 3 seconds
-                        setTimeout(() => {
-                            successToast.classList.add('hidden');
-                        }, 3000);
-                    }
+        const latestContainer = document.getElementById('latestOutfitsContainer');
+        if (latestContainer) {
+          latestContainer.classList.remove('hidden');
+        }
 
-                    // Unhide latest outfits container if it was hidden
-                    const latestContainer = document.getElementById('latestOutfitsContainer');
-                    if (latestContainer) {
-                        latestContainer.classList.remove('hidden');
-                    }
-
-                    // Start polling for status updates for all outfits in the grid
-                    const outfitCards = document.querySelectorAll('#latestOutfitsGrid [data-outfit-id]');
-                    outfitCards.forEach(card => {
-                        const outfitId = card.getAttribute('data-outfit-id');
-                        if (outfitId) {
-                            pollOutfitStatus(outfitId, card);
-                        }
-                    });
-                }
-            });
-
-            // Modify dropdown filtering to update the button text
-            document.querySelectorAll('#occasionFilterDropdown a').forEach(link => {
-                link.addEventListener('click', function() {
-                    // Extract occasion name from URL
-                    const url = this.getAttribute('hx-get');
-                    let occasionName = "Occasion";
-
-                    if (url.includes('?occasion=')) {
-                        const params = new URLSearchParams(url.split('?')[1]);
-                        const occasionParam = params.get('occasion');
-                        occasionName = occasionParam.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                    } else {
-                        occasionName = "All Occasions";
-                    }
-
-                    // Update button text
-                    document.querySelector('#occasionFilterButton span').textContent = occasionName;
-
-                    // Hide dropdown
-                    occasionFilterDropdown.classList.add('hidden');
-                });
-            });
+        const outfitCards = document.querySelectorAll('#latestOutfitsGrid [data-outfit-id]');
+        outfitCards.forEach(card => {
+          const outfitId = card.getAttribute('data-outfit-id');
+          if (outfitId) {
+            pollOutfitStatus(outfitId, card);
+          }
         });
+      }
+    });
 
-        // Function to scroll to generated outfits section
-        function scrollToGeneratedSection() {
-            const generatedSection = document.getElementById('generatedOutfitsSection');
-            if (generatedSection) {
-                generatedSection.scrollIntoView({ behavior: 'smooth' });
+    // Modify dropdown filtering to update the button text
+    document.querySelectorAll('#occasionFilterDropdown a').forEach(link => {
+      link.addEventListener('click', function() {
+        const url = this.getAttribute('hx-get');
+        let occasionName = "Occasion";
+
+        if (url.includes('?occasion=')) {
+          const params = new URLSearchParams(url.split('?')[1]);
+          const occasionParam = params.get('occasion');
+          occasionName = occasionParam.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        } else {
+          occasionName = "All Occasions";
+        }
+
+        document.querySelector('#occasionFilterButton span').textContent = occasionName;
+        occasionFilterDropdown.classList.add('hidden');
+      });
+    });
+  });
+
+  function showLatestOutfits() {
+    document.getElementById('latestOutfitsContainer').classList.remove('hidden');
+  }
+
+  function scrollToGeneratedSection() {
+    const latestContainer = document.getElementById('latestOutfitsContainer');
+    if (latestContainer) {
+      latestContainer.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  function pollOutfitStatus(outfitId, cardElement) {
+    const statusCheckInterval = setInterval(() => {
+      fetch(`/api/outfits/${outfitId}/status`)
+        .then(response => response.json())
+        .then(status => {
+          if (status.isComplete) {
+            const imgElement = cardElement.querySelector('img');
+            if (imgElement && status.imageUrls && status.imageUrls.length > 0) {
+              imgElement.src = status.imageUrls[0];
+              cardElement.classList.remove('loading');
+              clearInterval(statusCheckInterval);
             }
+          } else if (status.errors && status.errors.length > 0) {
+            clearInterval(statusCheckInterval);
+            cardElement.innerHTML = `
+              <div class="p-4 bg-red-100 rounded-lg text-center h-full flex items-center justify-center">
+                <p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Generation failed</p>
+              </div>
+            `;
+          }
+        })
+        .catch(error => {
+          console.error('Error checking status:', error);
+          clearInterval(statusCheckInterval);
+        });
+    }, 2000);
+  }
+</script>
 
-            // Make sure latest outfits container is visible
-            document.getElementById('latestOutfitsContainer').classList.remove('hidden');
-        }
-
-        // Function to poll for outfit status updates
-        function pollOutfitStatus(outfitId, cardElement) {
-            const statusCheckInterval = setInterval(() => {
-                fetch(`/api/outfits/${outfitId}/status`)
-                    .then(response => response.json())
-                    .then(status => {
-                        if (status.isComplete) {
-                            // If image is complete, update the image
-                            const imgElement = cardElement.querySelector('img');
-                            if (imgElement && status.imageUrls && status.imageUrls.length > 0) {
-                                imgElement.src = status.imageUrls[0];
-                                // Remove loading state
-                                cardElement.classList.remove('loading');
-                                clearInterval(statusCheckInterval);
-                            }
-                        } else if (status.errors && status.errors.length > 0) {
-                            // Handle generation errors
-                            clearInterval(statusCheckInterval);
-                            cardElement.innerHTML = `
-                                <div class="p-4 bg-red-100 rounded-lg text-center h-full flex items-center justify-center">
-                                    <p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Generation failed</p>
-                                </div>
-                            `;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking status:', error);
-                        clearInterval(statusCheckInterval);
-                    });
-            }, 2000); // Check every 2 seconds
-        }
-    </script>
 </div>
