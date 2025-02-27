@@ -1,7 +1,7 @@
 <!-- fragments/outfit-card.html -->
 <div th:fragment="outfit-card" class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
   <div class="relative">
-    <img th:src="${outfit.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover">
+    <img th:src="${outfit.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover" th:data-outfit-id="${outfit.id}" onclick="viewOutfitDetails(this.getAttribute('data-outfit-id'))">
     <div class="absolute inset-0 bg-gradient-to-t from-charcoal to-transparent opacity-0 hover:opacity-70 transition-opacity flex items-end justify-center pb-4">
       <button class="bg-coral text-white p-2 rounded-full mr-2"
               th:hx-post="@{/api/outfits/{id}/favorite(id=${outfit.id})}"

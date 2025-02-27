@@ -13,7 +13,7 @@
                   hx-post="/api/outfits/generate-ui/random"
                   hx-target="#latestOutfitsGrid"
                   hx-swap="innerHTML"
-                  hx-on::after-request="scrollToGeneratedSection()"
+                  hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
                   id="randomGenerateBtn">
             <i class="fas fa-random text-xs"></i>
             <span>Random Generate</span>
@@ -38,7 +38,7 @@
            hx-vals='{"occasion": "DATE_NIGHT"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/date_night.jpg" alt="Date Night" class="w-full h-40 object-cover">
@@ -55,7 +55,7 @@
            hx-vals='{"occasion": "OFFICE_PARTY"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/office_party.jpg" alt="Office Party" class="w-full h-40 object-cover">
@@ -72,7 +72,7 @@
            hx-vals='{"occasion": "WEDDING_GUEST"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/wedding_guest.jpg" alt="Wedding Guest" class="w-full h-40 object-cover">
@@ -89,7 +89,7 @@
            hx-vals='{"occasion": "CASUAL_OUTING"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/casual_outing.jpg" alt="Casual Outing" class="w-full h-40 object-cover">
@@ -106,7 +106,7 @@
            hx-vals='{"occasion": "FORMAL_EVENT"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/formal_event.jpg" alt="Formal Event" class="w-full h-40 object-cover">
@@ -126,7 +126,7 @@
            hx-vals='{"occasion": "BEACH_VACATION"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/beach_vacation.jpg" alt="Beach Vacation" class="w-full h-40 object-cover">
@@ -143,7 +143,7 @@
            hx-vals='{"occasion": "BUSINESS_CASUAL"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/business_casual.jpg" alt="Business Casual" class="w-full h-40 object-cover">
@@ -160,7 +160,7 @@
            hx-vals='{"occasion": "PARTY"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/party.jpg" alt="Party" class="w-full h-40 object-cover">
@@ -177,7 +177,7 @@
            hx-vals='{"occasion": "GALA"}'
            hx-target="#latestOutfitsGrid"
            hx-swap="innerHTML"
-           hx-on::after-request="scrollToGeneratedSection()"
+           hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/gala.jpg" alt="Gala" class="w-full h-40 object-cover">
@@ -233,7 +233,7 @@
     </div>
 
     <!-- All Generated Outfits -->
-    <div id="allOutfitsContainer">
+    <div id="allOutfitsContainer" hx-get="/api/outfits/filter" hx-trigger="refreshAllOutfits from:body">
       <div id="outfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         <!-- Use th:each to iterate through outfits and include outfit-card fragment -->
         <div th:each="outfit : ${outfits}" class="outfit-item" th:with="outfit=${outfit}">
@@ -254,7 +254,7 @@
               hx-target="#latestOutfitsGrid"
               hx-swap="innerHTML"
               hx-indicator="#outfitsLoadingIndicator"
-              hx-on::after-request="showLatestOutfits(); scrollToGeneratedSection()"
+              hx-on::after-request="showLatestOutfits(); scrollToGeneratedSection(); refreshAllOutfits();"
               class="px-6 py-2.5 bg-gradient-to-r from-teal to-coral text-white rounded-lg hover:opacity-90 transition-opacity inline-flex items-center gap-2 shadow-sm">
         <span>Generate More</span>
         <i class="fas fa-magic text-xs"></i>
@@ -357,88 +357,74 @@
     }
   }
 
-function pollOutfitStatus(outfitId, cardElement) {
-  const statusCheckInterval = setInterval(() => {
-    fetch(`/api/outfits/${outfitId}/status`)
-      .then(response => response.json())
-      .then(status => {
-        console.log('Polling status:', status); // Log the status for debugging
-        if (status.complete) {
-          const imgElement = cardElement.querySelector('img');
-          if (imgElement && status.imageUrls && status.imageUrls.length > 0) {
-            imgElement.src = status.imageUrls[0];
-            imgElement.classList.remove('hidden');
-            imgElement.alt = "Outfit"; // Update the alt text
+  // Function to refresh the all outfits container
+  function refreshAllOutfits() {
+    htmx.trigger('#allOutfitsContainer', 'refreshAllOutfits');
+  }
 
-            // Update the text content of the paragraphs
-            const occasionElement = cardElement.querySelector('p.text-gray-500');
-            const dateElement = cardElement.querySelector('p.text-gray-400');
-            if (occasionElement) {
-             // occasionElement.textContent = status.occasion || "Unknown Occasion";
-            }
-            if (dateElement) {
-              const date = status.date || new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              }).replace(/(\d+)(st|nd|rd|th)/, '$1');
-              dateElement.textContent = date;
-            }
+  function pollOutfitStatus(outfitId, cardElement) {
+    const statusCheckInterval = setInterval(() => {
+      fetch(`/api/outfits/${outfitId}/status`)
+        .then(response => response.json())
+        .then(status => {
+          console.log('Polling status:', status); // Log the status for debugging
+          if (status.complete) {
+            // Replace the entire card with a complete outfit card
+            const date = new Date().toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }).replace(/(\d+)(st|nd|rd|th)/, '$1');
 
-            // Remove the loading spinner
-            const spinnerElement = cardElement.querySelector('.spinner');
-            if (spinnerElement) {
-              spinnerElement.remove();
-            }
+            // Create the completed outfit card
+            let outfitCard = `
+              <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+                <div class="relative">
+                  <img src="${status.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover">
+                  <div class="absolute inset-0 bg-gradient-to-t from-charcoal to-transparent opacity-0 hover:opacity-70 transition-opacity flex items-end justify-center pb-4">
+                    <button class="bg-coral text-white p-2 rounded-full mr-2"
+                            hx-post="/api/outfits/${outfitId}/favorite"
+                            hx-swap="none">
+                      <i class="far fa-heart text-xs"></i>
+                    </button>
+                    <button class="bg-teal text-white p-2 rounded-full" onclick="viewOutfitDetails('${outfitId}')">
+                      <i class="fas fa-eye text-xs"></i>
+                    </button>
+                  </div>
+                </div>
+                <div class="p-3">
+                  <p class="text-xs text-gray-500">${status.occasion || "New Outfit"}</p>
+                  <p class="text-xs text-gray-400">${date}</p>
+                </div>
+              </div>
+            `;
 
-            // Add HTMX attributes for interactivity
-            const favoriteButton = document.createElement('button');
-            favoriteButton.classList.add('bg-coral', 'text-white', 'p-2', 'rounded-full', 'mr-2');
-            favoriteButton.setAttribute('hx-post', `/api/outfits/${outfitId}/favorite`);
-            favoriteButton.setAttribute('hx-swap', 'none');
-            favoriteButton.setAttribute('hx-trigger', 'click');
-            favoriteButton.innerHTML = '<i class="far fa-heart text-xs"></i>';
+            // Replace the entire card HTML
+            cardElement.innerHTML = outfitCard;
 
-            const viewButton = document.createElement('button');
-            viewButton.classList.add('bg-teal', 'text-white', 'p-2', 'rounded-full', 'flex', 'items-center', 'justify-center');
-            viewButton.setAttribute('data-outfit-id', outfitId);
-            viewButton.setAttribute('onclick', `viewOutfitDetails(this.getAttribute('data-outfit-id'))`);
-            viewButton.innerHTML = '<i class="fas fa-eye text-xs"></i>';
-
-            const hoverDiv = document.createElement('div');
-            hoverDiv.classList.add('absolute', 'inset-0', 'bg-gradient-to-t', 'from-charcoal', 'to-transparent', 'opacity-0', 'hover:opacity-70', 'transition-opacity', 'flex', 'items-end', 'justify-center', 'pb-4');
-            hoverDiv.appendChild(favoriteButton);
-            hoverDiv.appendChild(viewButton);
-
-            const relativeDiv = cardElement.querySelector('.relative');
-            if (relativeDiv) {
-              relativeDiv.appendChild(hoverDiv);
-            }
-
-            cardElement.classList.remove('loading');
             clearInterval(statusCheckInterval);
             console.log('Image updated:', status.imageUrls[0]); // Log the updated image URL
-          } else {
-            console.error('Image URLs are missing or empty:', status.imageUrls);
+          } else if (status.errors && status.errors.length > 0) {
+            clearInterval(statusCheckInterval);
+            cardElement.innerHTML = `
+              <div class="p-4 bg-red-100 rounded-lg text-center h-full flex items-center justify-center">
+                <p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Generation failed</p>
+              </div>
+            `;
+            console.error('Generation errors:', status.errors); // Log the errors
           }
-        } else if (status.errors && status.errors.length > 0) {
+        })
+        .catch(error => {
+          console.error('Error checking status:', error);
           clearInterval(statusCheckInterval);
-          cardElement.innerHTML = `
-            <div class="p-4 bg-red-100 rounded-lg text-center h-full flex items-center justify-center">
-              <p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Generation failed</p>
-            </div>
-          `;
-          console.error('Generation errors:', status.errors); // Log the errors
-        }
-      })
-      .catch(error => {
-        console.error('Error checking status:', error);
-        clearInterval(statusCheckInterval);
-      });
-  }, 2000);
-}
+        });
+    }, 2000);
+  }
 
-
-</script>
+  function viewOutfitDetails(outfitId) {
+    console.log('Viewing outfit:', outfitId);
+    window.location.href = `/outfits/${outfitId}`;
+  }
+  </script>
 
 </div>

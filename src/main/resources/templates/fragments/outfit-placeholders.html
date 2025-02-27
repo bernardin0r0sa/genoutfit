@@ -1,18 +1,15 @@
 <!-- fragments/outfit-placeholders.html -->
 <div th:fragment="outfit-placeholders">
-  <!-- Generate three placeholder cards with loading spinners -->
-  <div th:each="placeholder : ${placeholders}"
-       th:attr="data-outfit-id=${placeholder.outfitId}, data-image-index=${placeholder.imageIndex}"
-       class="bg-white rounded-lg overflow-hidden shadow-sm transition-all loading">
+  <!-- Generate a placeholder card for each placeholder item -->
+  <div th:each="placeholder : ${placeholders}" th:data-outfit-id="${placeholder.outfitId}" class="bg-white rounded-lg overflow-hidden shadow-sm loading">
     <div class="relative">
       <div class="w-full h-56 flex items-center justify-center bg-gray-100">
         <div class="spinner"></div>
       </div>
-      <img th:src="${placeholder.placeholderImageUrl}" class="hidden w-full h-56 object-cover" alt="Generating outfit...">
     </div>
     <div class="p-3">
-      <p class="text-xs text-gray-500" th:text="${placeholder.occasionName}">Occasion</p>
-      <p class="text-xs text-gray-400">Generating...</p>
+      <p class="text-xs text-gray-500" th:text="${placeholder.occasion}">Generating...</p>
+      <p class="text-xs text-gray-400">Please wait...</p>
     </div>
   </div>
 </div>

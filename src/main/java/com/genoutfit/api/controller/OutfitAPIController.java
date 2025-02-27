@@ -54,13 +54,15 @@ public class OutfitAPIController {
     /**
      * Get the current status of outfit generation
      */
-    @GetMapping("/{outfitId}/status")
+   /* @GetMapping("/{outfitId}/status")
     public ResponseEntity<OutfitGenerationStatus> getGenerationStatus(
             @PathVariable String outfitId) {
 
         OutfitGenerationStatus status = outfitGenerationService.getOutfitGenerationStatus(outfitId);
         return ResponseEntity.ok(status);
     }
+
+    */
 
     /**
      * Webhook endpoint for Fal.ai to call when image generation is complete
