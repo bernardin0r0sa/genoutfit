@@ -173,6 +173,29 @@ public class OutfitHtmlController {
         }
     }
 
+    @GetMapping("/favorites/filter")
+    public String filterFavoriteOutfits(
+            @RequestParam(required = false) Occasion occasion,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            Model model) {
+
+        try {
+            // Get favorite outfits filtered by occasion
+            List<OutfitResponseDto> favoriteOutfits = outfitService.getFavoriteOutfitsDto(userPrincipal.getId(), occasion);
+
+            model.addAttribute("outfits", favoriteOutfits);
+
+            if (favoriteOutfits.isEmpty()) {
+                return "fragments/filtered-outfits :: no-outfits";
+            } else {
+                return "fragments/filtered-outfits :: filtered-outfits";
+            }
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Failed to filter favorite outfits: " + e.getMessage());
+            return "fragments/error :: filter-error";
+        }
+    }
+
     /**
      * Get outfit generation status
      */

@@ -145,8 +145,19 @@ public class OutfitController {
             User user = userService.getCurrentUser(userPrincipal);
             model.addAttribute("user", user);
 
+            // Add subscription details directly from the user
+            if (user.isPremiumUser()) {
+                model.addAttribute("subscription", Map.of(
+                        "planName", "Premium Plan",
+                        "status", "Active",
+                        "renewalDate", user.getPremiumExpiryDate()
+                ));
+            } else {
+                model.addAttribute("subscription", null);
+            }
+
             // Get subscription information if any
-            model.addAttribute("subscription", userService.getSubscriptionDetails(user.getId()));
+           // model.addAttribute("subscription", userService.getSubscriptionDetails(user.getId()));
 
             // Set header titles
             model.addAttribute("headerTitle", "Account Settings");

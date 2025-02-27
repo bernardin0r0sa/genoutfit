@@ -11,12 +11,12 @@
 </div>
 
 <!-- Sidebar Content Fragment - used in both main sidebar and mobile sidebar -->
-<nav th:fragment="sidebar-content" class="flex flex-col space-y-1">
-  <a href="/dashboard" class="sidebar-icon" th:classappend="${activePage == '/dashboard' ? 'active' : ''}">
+<nav th:fragment="sidebar-content" class="flex flex-col space-y-3">
+  <a href="/dashboard" class="sidebar-icon" th:classappend="${activePage == 'dashboard' ? 'active' : ''}">
     <i class="fas fa-home w-5"></i>
     <span>Home</span>
   </a>
-  <a href="/favorites" class="sidebar-icon" th:classappend="${activePage == '/favorites' ? 'active' : ''}">
+  <a href="/favorites" class="sidebar-icon" th:classappend="${activePage == 'favorites' ? 'active' : ''}">
     <i class="fas fa-heart w-5"></i>
     <span>Favorites</span>
   </a>
@@ -25,7 +25,7 @@
     <i class="fas fa-tshirt w-5"></i>
     <span>Outfits</span>
   </a>
-  <a href="/account" class="sidebar-icon" th:classappend="${activePage == '/account' ? 'active' : ''}">
+  <a href="/account" class="sidebar-icon" th:classappend="${activePage == 'account' ? 'active' : ''}">
     <i class="fas fa-user w-5"></i>
     <span>Account</span>
   </a>

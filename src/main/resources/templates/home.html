@@ -51,9 +51,18 @@
         .sidebar-icon:hover {
             @apply bg-teal-light bg-opacity-15 text-teal;
         }
-        .sidebar-icon.active {
-            @apply bg-teal bg-opacity-10 text-teal font-medium;
-        }
+.sidebar-icon.active {
+    @apply bg-teal bg-opacity-10 text-teal font-medium border-l-4 border-teal;
+    box-shadow: 0 0 8px rgba(42, 157, 143, 0.1);
+}
+.sidebar-icon.active i {
+  color: #FF8A71;
+}
+
+.sidebar-icon.active span {
+  color: #2A9D8F;
+  font-weight: 500;
+}
         .card-hover {
             transition: all 0.2s ease;
         }
