@@ -1,0 +1,331 @@
+<!-- fragments/outfit-page.html -->
+<div th:fragment="outfit-page">
+    <!-- Header Banner -->
+    <section class="mb-8 p-6">
+        <div class="bg-gradient-to-r from-teal to-coral bg-opacity-90 rounded-xl overflow-hidden">
+            <div class="px-6 py-5 bg-white bg-opacity-90">
+                <div class="flex flex-col md:flex-row md:items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-medium text-charcoal mb-1">Your Generated Outfits</h2>
+                        <p class="text-gray-600 text-sm">Browse all your personalized outfit recommendations</p>
+                    </div>
+                    <button class="mt-4 md:mt-0 px-5 py-2 bg-teal text-white rounded-lg hover:bg-teal-light transition-colors text-sm font-medium inline-flex items-center gap-2"
+                            hx-post="/api/outfits/generate-ui/random"
+                            hx-target="#latestOutfitsGrid"
+                            hx-swap="innerHTML"
+                            hx-on::after-request="showLatestOutfits(); scrollToGeneratedSection(); refreshAllOutfits();"
+                            id="randomGenerateBtn">
+                        <i class="fas fa-random text-xs"></i>
+                        <span>New Outfit</span>
+                        <span id="randomGenerateSpinner" class="spinner ml-1 htmx-indicator"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Outfits Section -->
+    <section class="px-6 pb-8">
+        <div class="flex flex-wrap justify-between items-center mb-6">
+            <h2 class="text-lg font-semibold">All Outfits</h2>
+            <div class="flex flex-wrap gap-2 mt-3 md:mt-0">
+                <!-- Occasion Filter -->
+                <div class="relative" id="occasionFilterContainer">
+                    <button id="occasionFilterButton" class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm flex items-center gap-2 hover:border-teal transition-colors">
+                        <span>Occasion</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <div id="occasionFilterDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-10">
+                        <ul class="py-1">
+                            <li><a href="#" hx-get="/api/outfits/filter" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">All Occasions</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=DATE_NIGHT" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Date Night</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=OFFICE_PARTY" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Office Party</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=WEDDING_GUEST" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Wedding Guest</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=CASUAL_OUTING" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Casual Outing</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=FORMAL_EVENT" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Formal Event</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=BEACH_VACATION" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Beach Vacation</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=BUSINESS_CASUAL" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Business Casual</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=PARTY" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Party</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?occasion=GALA" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Gala</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sort filter -->
+                <div class="relative" id="sortFilterContainer">
+                    <button id="sortFilterButton" class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm flex items-center gap-2 hover:border-teal transition-colors">
+                        <span>Sort by</span>
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    <div id="sortFilterDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-10">
+                        <ul class="py-1">
+                            <li><a href="#" hx-get="/api/outfits/filter?sort=newest" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Newest First</a></li>
+                            <li><a href="#" hx-get="/api/outfits/filter?sort=oldest" hx-target="#allOutfitsContainer" hx-swap="innerHTML" hx-indicator="#outfitsLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Oldest First</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="outfitsLoadingIndicator" class="flex justify-center items-center py-10 hidden">
+            <div class="spinner mr-3"></div>
+            <p>Loading outfits...</p>
+        </div>
+
+        <!-- Latest Generated Outfits (New Ones) -->
+        <div id="latestOutfitsContainer" class="mb-8 hidden">
+            <h3 class="text-md font-medium mb-4 text-teal">Just Generated</h3>
+            <div id="latestOutfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+                <!-- Placeholder for latest generated outfits - will be filled by HTMX -->
+            </div>
+        </div>
+
+        <!-- All Outfits -->
+        <div id="allOutfitsContainer" hx-get="/api/outfits/filter" hx-trigger="refreshAllOutfits from:body">
+            <div id="outfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- Will be populated by Thymeleaf -->
+                <div th:each="outfit : ${allOutfits}" class="outfit-item" th:with="outfit=${outfit}">
+                    <div th:replace="~{fragments/outfit-card :: outfit-card}"></div>
+                </div>
+
+                <!-- If no outfits, show empty message -->
+                <div th:if="${allOutfits == null || allOutfits.isEmpty()}" class="col-span-full text-center py-10">
+                    <p class="text-gray-500">No outfits found. Try generating some!</p>
+                    <button hx-post="/api/outfits/generate-ui/random"
+                            hx-target="#latestOutfitsGrid"
+                            hx-swap="innerHTML"
+                            hx-on::after-request="showLatestOutfits(); scrollToGeneratedSection(); refreshAllOutfits();"
+                            class="mt-4 px-4 py-2 bg-teal text-white rounded-lg hover:bg-teal-light transition-colors">
+                        Generate an Outfit
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div id="paginationContainer" class="mt-8 flex justify-center" th:if="${totalPages != null && totalPages > 1}">
+            <div class="flex space-x-2">
+                <a th:href="@{/outfits(page=${currentPage - 1})}"
+                   th:class="${currentPage == 0} ? 'cursor-not-allowed opacity-50 px-3 py-1 bg-gray-200 text-gray-600 rounded' : 'px-3 py-1 bg-gray-200 hover:bg-teal hover:text-white text-gray-600 rounded'"
+                   th:attr="aria-disabled=${currentPage == 0}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+
+                <th:block th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:href="@{/outfits(page=${i})}"
+                       th:text="${i + 1}"
+                       th:class="${currentPage == i} ? 'px-3 py-1 bg-teal text-white rounded' : 'px-3 py-1 bg-gray-200 hover:bg-teal hover:text-white text-gray-600 rounded'">
+                    </a>
+                </th:block>
+
+                <a th:href="@{/outfits(page=${currentPage + 1})}"
+                   th:class="${currentPage == totalPages - 1} ? 'cursor-not-allowed opacity-50 px-3 py-1 bg-gray-200 text-gray-600 rounded' : 'px-3 py-1 bg-gray-200 hover:bg-teal hover:text-white text-gray-600 rounded'"
+                   th:attr="aria-disabled=${currentPage == totalPages - 1}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Outfit Generation Success Toast -->
+    <div id="generationSuccessToast" class="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md hidden">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <p>Your outfit has been generated successfully!</p>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle occasion filter dropdown
+      const occasionFilterButton = document.getElementById('occasionFilterButton');
+      const occasionFilterDropdown = document.getElementById('occasionFilterDropdown');
+      const occasionFilterContainer = document.getElementById('occasionFilterContainer');
+
+      if (occasionFilterButton && occasionFilterDropdown && occasionFilterContainer) {
+        occasionFilterButton.addEventListener('click', function() {
+          occasionFilterDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!occasionFilterContainer.contains(event.target)) {
+            occasionFilterDropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      // Toggle sort filter dropdown
+      const sortFilterButton = document.getElementById('sortFilterButton');
+      const sortFilterDropdown = document.getElementById('sortFilterDropdown');
+      const sortFilterContainer = document.getElementById('sortFilterContainer');
+
+      if (sortFilterButton && sortFilterDropdown && sortFilterContainer) {
+        sortFilterButton.addEventListener('click', function() {
+          sortFilterDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!sortFilterContainer.contains(event.target)) {
+            sortFilterDropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      // Initialize filter dropdown button text
+      document.querySelectorAll('#occasionFilterDropdown a').forEach(link => {
+        link.addEventListener('click', function() {
+          const url = this.getAttribute('hx-get');
+          let occasionName = "Occasion";
+
+          if (url.includes('?occasion=')) {
+            const params = new URLSearchParams(url.split('?')[1]);
+            const occasionParam = params.get('occasion');
+            occasionName = occasionParam.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          } else {
+            occasionName = "All Occasions";
+          }
+
+          document.querySelector('#occasionFilterButton span').textContent = occasionName;
+          occasionFilterDropdown.classList.add('hidden');
+        });
+      });
+
+      // Initialize sort dropdown button text
+      document.querySelectorAll('#sortFilterDropdown a').forEach(link => {
+        link.addEventListener('click', function() {
+          const url = this.getAttribute('hx-get');
+          let sortName = "Sort by";
+
+          if (url.includes('?sort=')) {
+            const params = new URLSearchParams(url.split('?')[1]);
+            const sortParam = params.get('sort');
+            if (sortParam === 'newest') {
+              sortName = "Newest First";
+            } else if (sortParam === 'oldest') {
+              sortName = "Oldest First";
+            }
+          }
+
+          document.querySelector('#sortFilterButton span').textContent = sortName;
+          sortFilterDropdown.classList.add('hidden');
+        });
+      });
+
+      // HTMX event listener for successful outfit generation
+      document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.detail.target.id === 'latestOutfitsGrid' && event.detail.xhr.status === 200) {
+          const successToast = document.getElementById('generationSuccessToast');
+          if (successToast) {
+            successToast.classList.remove('hidden');
+            setTimeout(() => {
+              successToast.classList.add('hidden');
+            }, 3000);
+          }
+
+          const latestContainer = document.getElementById('latestOutfitsContainer');
+          if (latestContainer) {
+            latestContainer.classList.remove('hidden');
+          }
+
+          const outfitCards = document.querySelectorAll('#latestOutfitsGrid [data-outfit-id]');
+          outfitCards.forEach(card => {
+            const outfitId = card.getAttribute('data-outfit-id');
+            if (outfitId) {
+              pollOutfitStatus(outfitId, card);
+            }
+          });
+        }
+      });
+    });
+
+    function showLatestOutfits() {
+      document.getElementById('latestOutfitsContainer').classList.remove('hidden');
+    }
+
+    function scrollToGeneratedSection() {
+      const latestContainer = document.getElementById('latestOutfitsContainer');
+      if (latestContainer) {
+        latestContainer.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function refreshAllOutfits() {
+      htmx.trigger('#allOutfitsContainer', 'refreshAllOutfits');
+    }
+
+    function pollOutfitStatus(outfitId, cardElement) {
+      const statusCheckInterval = setInterval(() => {
+        fetch(`/api/outfits/${outfitId}/status`)
+          .then(response => response.json())
+          .then(status => {
+            console.log('Polling status:', status);
+            if (status.complete) {
+              // Remove the loading class from the card
+              cardElement.classList.remove('loading');
+
+              const date = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              }).replace(/(\d+)(st|nd|rd|th)/, '$1');
+
+              // Create the completed outfit card
+              let outfitCard = `
+                <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all card-hover">
+                  <div class="relative">
+                    <img src="${status.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover" data-outfit-id="${outfitId}" onclick="viewOutfitDetails(this.getAttribute('data-outfit-id'))">
+                    <div class="absolute inset-0 bg-gradient-to-t from-charcoal to-transparent opacity-0 hover:opacity-70 transition-opacity flex items-end justify-center pb-4">
+                      <button class="bg-coral text-white p-2 rounded-full mr-2"
+                              hx-post="/api/outfits/${outfitId}/favorite"
+                              hx-swap="none">
+                        <i class="${status.favorite ? 'fas' : 'far'} fa-heart text-xs"></i>
+                      </button>
+                      <button class="bg-teal text-white p-2 rounded-full" data-outfit-id="${outfitId}" onclick="viewOutfitDetails(this.getAttribute('data-outfit-id'))">
+                        <i class="fas fa-eye text-xs"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="p-3">
+                    <p class="text-xs text-gray-500">${status.occasion || "New Outfit"}</p>
+                    <p class="text-xs text-gray-400">${date}</p>
+                  </div>
+                </div>
+              `;
+
+              // Replace the entire card HTML
+              cardElement.innerHTML = outfitCard;
+
+              clearInterval(statusCheckInterval);
+              console.log('Image updated:', status.imageUrls[0]);
+
+              // After a new outfit is generated, refresh the list of all outfits
+              setTimeout(() => {
+                refreshAllOutfits();
+              }, 2000);
+
+            } else if (status.errors && status.errors.length > 0) {
+              clearInterval(statusCheckInterval);
+              cardElement.innerHTML = `
+                <div class="p-4 bg-red-100 rounded-lg text-center h-full flex items-center justify-center">
+                  <p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Generation failed</p>
+                </div>
+              `;
+              console.error('Generation errors:', status.errors);
+            }
+          })
+          .catch(error => {
+            console.error('Error checking status:', error);
+            clearInterval(statusCheckInterval);
+          });
+      }, 2000);
+    }
+
+    function viewOutfitDetails(outfitId) {
+      console.log('Viewing outfit details:', outfitId);
+      window.location.href = `/outfits/${outfitId}`;
+    }
+  </script>
+</div>

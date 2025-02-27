@@ -64,6 +64,9 @@ public class OutfitController {
                     "Get personalized outfit recommendations tailored to your style, body type, and occasion"
             ));
 
+            model.addAttribute("content", "fragments/dashboard");
+
+
             return "home";
         } catch (Exception e) {
             // Handle errors - you might want to log the exception
@@ -91,7 +94,7 @@ public class OutfitController {
             // Set content fragment
             model.addAttribute("content", "fragments/favorites");
 
-            return "index";
+            return "home";
         } catch (Exception e) {
             // Handle errors
             return "redirect:/error";
@@ -126,9 +129,9 @@ public class OutfitController {
             model.addAttribute("activePage", "outfits");
 
             // Set content fragment
-            model.addAttribute("content", "fragments/outfits");
+            model.addAttribute("content", "fragments/outfit-page");
 
-            return "index";
+            return "home";
         } catch (Exception e) {
             // Handle errors
             return "redirect:/error";
@@ -155,7 +158,7 @@ public class OutfitController {
             // Set content fragment
             model.addAttribute("content", "fragments/account");
 
-            return "index";
+            return "home";
         } catch (Exception e) {
             // Handle errors
             return "redirect:/error";

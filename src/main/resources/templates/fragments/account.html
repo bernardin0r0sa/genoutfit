@@ -1,0 +1,160 @@
+<!-- fragments/account.html -->
+<div th:fragment="account">
+  <!-- Header Banner -->
+  <section class="mb-8 p-6">
+    <div class="bg-gradient-to-r from-teal to-coral bg-opacity-90 rounded-xl overflow-hidden">
+      <div class="px-6 py-5 bg-white bg-opacity-90">
+        <div class="flex flex-col md:flex-row md:items-center justify-between">
+          <div>
+            <h2 class="text-lg font-medium text-charcoal mb-1">Account Settings</h2>
+            <p class="text-gray-600 text-sm">Manage your profile and subscription</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Account Sections -->
+  <section class="px-6 pb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Password Section -->
+      <div class="bg-white shadow-sm rounded-lg p-6">
+        <h2 class="text-lg font-semibold mb-4">Change Password</h2>
+
+        <!-- Success Alert -->
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded hidden" id="passwordSuccessAlert">
+          <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <p>Password updated successfully!</p>
+          </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded hidden" id="passwordErrorAlert">
+          <div class="flex items-center">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <p id="passwordErrorMessage">There was an error updating your password.</p>
+          </div>
+        </div>
+
+        <!-- Password Form -->
+        <form id="passwordForm" class="space-y-4" hx-post="/api/user/password" hx-swap="none">
+          <div>
+            <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <input type="password" id="currentPassword" name="currentPassword"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal focus:border-teal">
+          </div>
+
+          <div>
+            <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <input type="password" id="newPassword" name="newPassword"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal focus:border-teal">
+          </div>
+
+          <div>
+            <button type="submit" class="px-4 py-2 bg-teal text-white rounded-md hover:bg-teal-light transition-colors">
+              Update Password
+              <span class="spinner ml-1 htmx-indicator"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Subscription Section -->
+      <div class="bg-white shadow-sm rounded-lg p-6">
+        <h2 class="text-lg font-semibold mb-4">Subscription Management</h2>
+
+        <!-- Subscription Status -->
+        <div class="mb-6">
+          <h3 class="text-md font-medium mb-2">Current Plan</h3>
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-medium text-teal" th:text="${subscription != null} ? ${subscription.planName} : 'Free Plan'">Premium Plan</p>
+                <p class="text-sm text-gray-500" th:if="${subscription != null && subscription.renewalDate != null}">
+                  <span th:text="${subscription.status}">Active</span> -
+                  <span th:text="'Renews on ' + ${#temporals.format(subscription.renewalDate, 'MMM dd, yyyy')}">Renews on Feb 26, 2026</span>
+                </p>
+                <p class="text-sm text-gray-500" th:if="${subscription == null}">
+                  Limited features available
+                </p>
+              </div>
+              <div th:if="${subscription != null && subscription.status == 'ACTIVE'}" class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                Active
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stripe Portal Link -->
+        <div class="flex flex-col space-y-2">
+          <a th:href="${stripePortalUrl}" href="#" target="_blank" class="px-4 py-2 bg-teal text-white rounded-md hover:bg-teal-light transition-colors text-center">
+            <i class="fas fa-external-link-alt mr-1 text-xs"></i>
+            Manage Subscription in Stripe
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Toast -->
+  <div id="accountActionToast" class="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md hidden">
+    <div class="flex items-center">
+      <i class="fas fa-check-circle mr-2"></i>
+      <p>Your changes have been saved!</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Handle htmx events for password form
+      htmx.on('#passwordForm', 'htmx:beforeRequest', function(event) {
+        // Hide any existing alerts
+        document.getElementById('passwordSuccessAlert').classList.add('hidden');
+        document.getElementById('passwordErrorAlert').classList.add('hidden');
+
+        // Get form values
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+
+        // Basic validation
+        if (!currentPassword || !newPassword) {
+          document.getElementById('passwordErrorMessage').textContent = 'All fields are required';
+          document.getElementById('passwordErrorAlert').classList.remove('hidden');
+          event.preventDefault();
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          document.getElementById('passwordErrorMessage').textContent = 'New password must be at least 6 characters long';
+          document.getElementById('passwordErrorAlert').classList.remove('hidden');
+          event.preventDefault();
+          return;
+        }
+      });
+
+      // Handle success response
+      htmx.on('#passwordForm', 'htmx:afterRequest', function(event) {
+        if (event.detail.successful) {
+          document.getElementById('passwordSuccessAlert').classList.remove('hidden');
+          document.getElementById('passwordForm').reset();
+
+          // Show success toast
+          const toast = document.getElementById('accountActionToast');
+          toast.classList.remove('hidden');
+          setTimeout(() => {
+            toast.classList.add('hidden');
+          }, 3000);
+        } else {
+          try {
+            const response = JSON.parse(event.detail.xhr.responseText);
+            document.getElementById('passwordErrorMessage').textContent = response.message || 'Failed to update password';
+          } catch (e) {
+            document.getElementById('passwordErrorMessage').textContent = 'Failed to update password';
+          }
+          document.getElementById('passwordErrorAlert').classList.remove('hidden');
+        }
+      });
+    });
+  </script>
+</div>

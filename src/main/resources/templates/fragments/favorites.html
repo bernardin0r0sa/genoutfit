@@ -1,0 +1,116 @@
+<!-- fragments/favorites.html -->
+<div th:fragment="favorites">
+  <!-- Header Banner -->
+  <section class="mb-8 p-6">
+    <div class="bg-gradient-to-r from-teal to-coral bg-opacity-90 rounded-xl overflow-hidden">
+      <div class="px-6 py-5 bg-white bg-opacity-90">
+        <div class="flex flex-col md:flex-row md:items-center justify-between">
+          <div>
+            <h2 class="text-lg font-medium text-charcoal mb-1">Your Favorite Outfits</h2>
+            <p class="text-gray-600 text-sm">Outfits you've saved for inspiration</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Favorites Section -->
+  <section class="px-6 pb-8">
+    <div class="flex flex-wrap justify-between items-center mb-6">
+      <h2 class="text-lg font-semibold">Saved Outfits</h2>
+      <div class="flex flex-wrap gap-2 mt-3 md:mt-0">
+        <div class="relative" id="occasionFilterContainer">
+          <button id="occasionFilterButton" class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-sm flex items-center gap-2 hover:border-teal transition-colors">
+            <span>Occasion</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </button>
+          <div id="occasionFilterDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg hidden z-10">
+            <ul class="py-1">
+              <li><a href="#" hx-get="/api/outfits/favorites/filter" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">All Occasions</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=DATE_NIGHT" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Date Night</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=OFFICE_PARTY" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Office Party</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=WEDDING_GUEST" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Wedding Guest</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=CASUAL_OUTING" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Casual Outing</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=FORMAL_EVENT" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Formal Event</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=BEACH_VACATION" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Beach Vacation</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=BUSINESS_CASUAL" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Business Casual</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=PARTY" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Party</a></li>
+              <li><a href="#" hx-get="/api/outfits/favorites/filter?occasion=GALA" hx-target="#favoritesContainer" hx-swap="innerHTML" hx-indicator="#favoritesLoadingIndicator" class="block px-4 py-2 text-sm hover:bg-teal-light hover:bg-opacity-10 hover:text-teal">Gala</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="favoritesLoadingIndicator" class="flex justify-center items-center py-10 hidden">
+      <div class="spinner mr-3"></div>
+      <p>Loading favorite outfits...</p>
+    </div>
+
+    <!-- All Favorites -->
+    <div id="favoritesContainer">
+      <div id="favoritesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <!-- Will be populated by Thymeleaf -->
+        <div th:each="outfit : ${favoriteOutfits}" class="outfit-item" th:with="outfit=${outfit}">
+          <div th:replace="~{fragments/outfit-card :: outfit-card}"></div>
+        </div>
+
+        <!-- If no outfits, show empty message -->
+        <div th:if="${favoriteOutfits == null || favoriteOutfits.isEmpty()}" class="col-span-full text-center py-10">
+          <p class="text-gray-500">No favorite outfits found. Save some outfits you like!</p>
+          <a href="/dashboard" class="mt-4 inline-block px-4 py-2 bg-teal text-white rounded-lg hover:bg-teal-light transition-colors">Generate Outfits</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Success Toast -->
+  <div id="favoriteActionToast" class="fixed bottom-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-md hidden">
+    <div class="flex items-center">
+      <i class="fas fa-check-circle mr-2"></i>
+      <p>Outfit removed from favorites!</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle occasion filter dropdown
+      const occasionFilterButton = document.getElementById('occasionFilterButton');
+      const occasionFilterDropdown = document.getElementById('occasionFilterDropdown');
+      const occasionFilterContainer = document.getElementById('occasionFilterContainer');
+
+      if (occasionFilterButton && occasionFilterDropdown && occasionFilterContainer) {
+        occasionFilterButton.addEventListener('click', function() {
+          occasionFilterDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+          if (!occasionFilterContainer.contains(event.target)) {
+            occasionFilterDropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      // Initialize filter dropdown button text
+      document.querySelectorAll('#occasionFilterDropdown a').forEach(link => {
+        link.addEventListener('click', function() {
+          const url = this.getAttribute('hx-get');
+          let occasionName = "Occasion";
+
+          if (url.includes('?occasion=')) {
+            const params = new URLSearchParams(url.split('?')[1]);
+            const occasionParam = params.get('occasion');
+            occasionName = occasionParam.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+          } else {
+            occasionName = "All Occasions";
+          }
+
+          document.querySelector('#occasionFilterButton span').textContent = occasionName;
+          occasionFilterDropdown.classList.add('hidden');
+        });
+      });
+    });
+  </script>
+</div>

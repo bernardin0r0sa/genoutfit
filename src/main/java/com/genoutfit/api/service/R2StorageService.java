@@ -26,7 +26,7 @@ public class R2StorageService {
     @Autowired
     private R2Config r2Config;
 
-    private AmazonS3 getR2Client() {
+    public AmazonS3 getR2Client() {
         try {
             return r2Config.r2Client();
         } catch (Exception e) {
