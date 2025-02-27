@@ -1,7 +1,7 @@
 <!-- fragments/outfit-placeholders.html -->
 <div th:fragment="outfit-placeholders">
   <!-- Generate a placeholder card for each placeholder item -->
-  <div th:each="placeholder : ${placeholders}" th:data-outfit-id="${placeholder.outfitId}" class="bg-white rounded-lg overflow-hidden shadow-sm loading">
+  <div th:each="placeholder : ${placeholders}" th:data-outfit-id="${placeholder.outfitId}" class="bg-white rounded-lg overflow-hidden shadow-sm">
     <div class="relative">
       <div class="w-full h-56 flex items-center justify-center bg-gray-100">
         <div class="spinner"></div>
