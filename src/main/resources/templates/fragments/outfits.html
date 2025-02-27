@@ -41,15 +41,16 @@
         <img th:src="${outfit.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover">
         <div class="absolute inset-0 bg-gradient-to-t from-charcoal to-transparent opacity-0 hover:opacity-70 transition-opacity flex items-end justify-center pb-4">
           <button class="bg-coral text-white p-2 rounded-full mr-2"
-                  hx-post="@{/api/outfits/{id}/favorite(id=${outfit.id})}"
+                  th:hx-post="@{/api/outfits/{id}/favorite(id=${outfit.id})}"
                   hx-swap="none"
                   hx-trigger="click">
             <i th:class="${outfit.favorite} ? 'fas fa-heart text-xs' : 'far fa-heart text-xs'"></i>
           </button>
-          <a class="bg-teal text-white p-2 rounded-full flex items-center justify-center"
-             th:href="@{/outfits/{id}(id=${outfit.id})}">
+          <button class="bg-teal text-white p-2 rounded-full flex items-center justify-center"
+                  th:data-outfit-id="${outfit.id}"
+                  onclick="viewOutfitDetails(this.getAttribute('data-outfit-id'))">
             <i class="fas fa-eye text-xs"></i>
-          </a>
+          </button>
         </div>
       </div>
       <div class="p-3">

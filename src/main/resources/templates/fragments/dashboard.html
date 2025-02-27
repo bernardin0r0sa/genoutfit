@@ -42,9 +42,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/date_night.jpg" alt="Date Night" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Date Night</h3>
@@ -62,9 +59,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/office_party.jpg" alt="Office Party" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Office Party</h3>
@@ -82,9 +76,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/wedding_guest.jpg" alt="Wedding Guest" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Wedding Guest</h3>
@@ -102,9 +93,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/casual_outing.jpg" alt="Casual Outing" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Casual Outing</h3>
@@ -122,9 +110,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/formal_event.jpg" alt="Formal Event" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Formal Event</h3>
@@ -145,9 +130,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/beach_vacation.jpg" alt="Beach Vacation" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Beach Vacation</h3>
@@ -165,9 +147,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/business_casual.jpg" alt="Business Casual" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Business Casual</h3>
@@ -185,9 +164,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/party.jpg" alt="Party" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Party</h3>
@@ -205,9 +181,6 @@
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
           <img src="/assets/images/occasions/gala.jpg" alt="Gala" class="w-full h-40 object-cover">
-          <button class="absolute top-2 right-2 text-white bg-black bg-opacity-30 rounded-full p-1.5 hover:bg-teal hover:bg-opacity-60 transition-colors">
-            <i class="far fa-heart text-sm"></i>
-          </button>
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Gala</h3>
@@ -384,33 +357,88 @@
     }
   }
 
-  function pollOutfitStatus(outfitId, cardElement) {
-    const statusCheckInterval = setInterval(() => {
-      fetch(`/api/outfits/${outfitId}/status`)
-        .then(response => response.json())
-        .then(status => {
-          if (status.isComplete) {
-            const imgElement = cardElement.querySelector('img');
-            if (imgElement && status.imageUrls && status.imageUrls.length > 0) {
-              imgElement.src = status.imageUrls[0];
-              cardElement.classList.remove('loading');
-              clearInterval(statusCheckInterval);
+function pollOutfitStatus(outfitId, cardElement) {
+  const statusCheckInterval = setInterval(() => {
+    fetch(`/api/outfits/${outfitId}/status`)
+      .then(response => response.json())
+      .then(status => {
+        console.log('Polling status:', status); // Log the status for debugging
+        if (status.complete) {
+          const imgElement = cardElement.querySelector('img');
+          if (imgElement && status.imageUrls && status.imageUrls.length > 0) {
+            imgElement.src = status.imageUrls[0];
+            imgElement.classList.remove('hidden');
+            imgElement.alt = "Outfit"; // Update the alt text
+
+            // Update the text content of the paragraphs
+            const occasionElement = cardElement.querySelector('p.text-gray-500');
+            const dateElement = cardElement.querySelector('p.text-gray-400');
+            if (occasionElement) {
+             // occasionElement.textContent = status.occasion || "Unknown Occasion";
             }
-          } else if (status.errors && status.errors.length > 0) {
+            if (dateElement) {
+              const date = status.date || new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              }).replace(/(\d+)(st|nd|rd|th)/, '$1');
+              dateElement.textContent = date;
+            }
+
+            // Remove the loading spinner
+            const spinnerElement = cardElement.querySelector('.spinner');
+            if (spinnerElement) {
+              spinnerElement.remove();
+            }
+
+            // Add HTMX attributes for interactivity
+            const favoriteButton = document.createElement('button');
+            favoriteButton.classList.add('bg-coral', 'text-white', 'p-2', 'rounded-full', 'mr-2');
+            favoriteButton.setAttribute('hx-post', `/api/outfits/${outfitId}/favorite`);
+            favoriteButton.setAttribute('hx-swap', 'none');
+            favoriteButton.setAttribute('hx-trigger', 'click');
+            favoriteButton.innerHTML = '<i class="far fa-heart text-xs"></i>';
+
+            const viewButton = document.createElement('button');
+            viewButton.classList.add('bg-teal', 'text-white', 'p-2', 'rounded-full', 'flex', 'items-center', 'justify-center');
+            viewButton.setAttribute('data-outfit-id', outfitId);
+            viewButton.setAttribute('onclick', `viewOutfitDetails(this.getAttribute('data-outfit-id'))`);
+            viewButton.innerHTML = '<i class="fas fa-eye text-xs"></i>';
+
+            const hoverDiv = document.createElement('div');
+            hoverDiv.classList.add('absolute', 'inset-0', 'bg-gradient-to-t', 'from-charcoal', 'to-transparent', 'opacity-0', 'hover:opacity-70', 'transition-opacity', 'flex', 'items-end', 'justify-center', 'pb-4');
+            hoverDiv.appendChild(favoriteButton);
+            hoverDiv.appendChild(viewButton);
+
+            const relativeDiv = cardElement.querySelector('.relative');
+            if (relativeDiv) {
+              relativeDiv.appendChild(hoverDiv);
+            }
+
+            cardElement.classList.remove('loading');
             clearInterval(statusCheckInterval);
-            cardElement.innerHTML = `
-              <div class="p-4 bg-red-100 rounded-lg text-center h-full flex items-center justify-center">
-                <p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Generation failed</p>
-              </div>
-            `;
+            console.log('Image updated:', status.imageUrls[0]); // Log the updated image URL
+          } else {
+            console.error('Image URLs are missing or empty:', status.imageUrls);
           }
-        })
-        .catch(error => {
-          console.error('Error checking status:', error);
+        } else if (status.errors && status.errors.length > 0) {
           clearInterval(statusCheckInterval);
-        });
-    }, 2000);
-  }
+          cardElement.innerHTML = `
+            <div class="p-4 bg-red-100 rounded-lg text-center h-full flex items-center justify-center">
+              <p class="text-red-600"><i class="fas fa-exclamation-circle mr-2"></i>Generation failed</p>
+            </div>
+          `;
+          console.error('Generation errors:', status.errors); // Log the errors
+        }
+      })
+      .catch(error => {
+        console.error('Error checking status:', error);
+        clearInterval(statusCheckInterval);
+      });
+  }, 2000);
+}
+
+
 </script>
 
 </div>

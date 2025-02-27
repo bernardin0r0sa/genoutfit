@@ -77,7 +77,7 @@ public class R2StorageService {
             // Generate a presigned URL with a long but reasonable expiration (1 year)
             // For an MVP with 100 users, this is a practical balance between security and simplicity
             Date expiration = new Date();
-            expiration.setTime(expiration.getTime() + 365L * 24L * 60L * 60L * 1000L); // 1 year
+            expiration.setTime(expiration.getTime() + 7L * 24L * 60L * 60L * 1000L); // 7 days
 
             GeneratePresignedUrlRequest generatePresignedUrlRequest =
                     new GeneratePresignedUrlRequest(bucketName, key)

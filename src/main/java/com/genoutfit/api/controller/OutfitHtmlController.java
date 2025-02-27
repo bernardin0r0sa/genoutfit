@@ -48,15 +48,12 @@ public class OutfitHtmlController {
 
             // Create three placeholder cards
             List<PlaceholderOutfit> placeholders = new ArrayList<>();
-            for (int i = 0; i < 3; i++) {
-                placeholders.add(new PlaceholderOutfit(
-                        response.getId(),
-                        i,
-                        "/assets/images/placeholder.jpg",
-                        occasion.getDisplayName()
-                ));
-            }
-
+            placeholders.add(new PlaceholderOutfit(
+                    response.getId(),
+                    0,
+                    "/assets/images/placeholder.jpg",
+                    occasion.getDisplayName()
+            ));
             model.addAttribute("placeholders", placeholders);
 
             // Return the placeholders fragment
