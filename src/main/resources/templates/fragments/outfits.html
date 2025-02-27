@@ -7,7 +7,7 @@
 <!-- Outfit grid fragment -->
 <div th:fragment="outfit-grid">
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-    <div th:each="outfit : ${outfits}" th:class="'outfit-card ' + ${outfit.occasion.toString()}"
+    <div th:each="outfit : ${outfits}"
          class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover">
       <div class="relative">
         <img th:src="${outfit.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover">
@@ -30,4 +30,32 @@
       </div>
     </div>
   </div>
+</div>
+
+<div th:fragment="outfit-cards">
+  <!-- Keep the cards inside the proper grid layout classes -->
+  <th:block th:each="outfit : ${outfits}">
+    <div th:class="'outfit-card ' + ${outfit.occasion}"
+         class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer card-hover">
+      <div class="relative">
+        <img th:src="${outfit.imageUrls[0]}" alt="Outfit" class="w-full h-56 object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-charcoal to-transparent opacity-0 hover:opacity-70 transition-opacity flex items-end justify-center pb-4">
+          <button class="bg-coral text-white p-2 rounded-full mr-2"
+                  hx-post="@{/api/outfits/{id}/favorite(id=${outfit.id})}"
+                  hx-swap="none"
+                  hx-trigger="click">
+            <i th:class="${outfit.favorite} ? 'fas fa-heart text-xs' : 'far fa-heart text-xs'"></i>
+          </button>
+          <a class="bg-teal text-white p-2 rounded-full flex items-center justify-center"
+             th:href="@{/outfits/{id}(id=${outfit.id})}">
+            <i class="fas fa-eye text-xs"></i>
+          </a>
+        </div>
+      </div>
+      <div class="p-3">
+        <p class="text-xs text-gray-500" th:text="${outfit.occasion}">Occasion</p>
+        <p class="text-xs text-gray-400" th:text="${#temporals.format(outfit.createdAt, 'MMM dd, yyyy')}">Date</p>
+      </div>
+    </div>
+  </th:block>
 </div>

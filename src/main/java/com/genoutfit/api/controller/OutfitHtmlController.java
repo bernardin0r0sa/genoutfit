@@ -153,12 +153,8 @@ public class OutfitHtmlController {
 
             if (occasion != null) {
                 outfits = outfitService.getOutfits(userPrincipal.getId(), occasion, "newest");
-                // Update the filter button text with the selected occasion
-                model.addAttribute("selectedOccasion", occasion.getDisplayName());
             } else {
                 outfits = outfitService.getOutfits(userPrincipal.getId(), null, "newest");
-                // Reset filter button text
-                model.addAttribute("selectedOccasion", "All Occasions");
             }
 
             model.addAttribute("outfits", outfits);
@@ -166,7 +162,7 @@ public class OutfitHtmlController {
             if (outfits.isEmpty()) {
                 return "fragments/outfits :: no-outfits";
             } else {
-                return "fragments/outfits :: outfit-grid";
+                return "fragments/outfits :: outfit-grid";  // Return the full grid
             }
         } catch (Exception e) {
             // Handle error case
