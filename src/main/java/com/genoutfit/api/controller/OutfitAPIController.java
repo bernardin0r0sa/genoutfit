@@ -5,6 +5,7 @@ import com.genoutfit.api.model.OutfitRequestDto;
 import com.genoutfit.api.model.OutfitResponseDto;
 import com.genoutfit.api.model.UserPrincipal;
 import com.genoutfit.api.service.OutfitGenerationService;
+import com.genoutfit.api.service.OutfitService;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import jakarta.validation.Valid;
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.*;
 public class OutfitAPIController {
     @Autowired
     private final OutfitGenerationService outfitGenerationService;
+
+    @Autowired
+    private final OutfitService outfitService;
 
     @Value("${API_WEBHOOK_KEY}")
     private String apiWebhookKey;
@@ -84,6 +88,19 @@ public class OutfitAPIController {
         }
     }
 
+    @GetMapping("/{outfitId}")
+    public ResponseEntity<OutfitResponseDto> getOutfitDetails(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @PathVariable String outfitId) {
 
+        try {
+            OutfitResponseDto outfit = outfitService.getOutfitDetailsDto(
+                    outfitId, userPrincipal.getId());
+            return ResponseEntity.ok(outfit);
+        } catch (Exception e) {
+            log.error("Error getting outfit details: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to get outfit details", e);
+        }
+    }
 
 }

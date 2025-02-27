@@ -137,6 +137,9 @@
   </div>
 </div>
 
+<!-- Include the Outfit Detail Modal -->
+<div th:replace="~{fragments/outfit-modal :: outfit-modal}"></div>
+
 <!-- JavaScript -->
 <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function() {
@@ -169,5 +172,246 @@
             });
         });
     </script>
+
+<script th:inline="javascript">
+  // Modal state variables
+  let currentOutfitId = null;
+  let currentImageIndex = 0;
+  let outfitImages = [];
+
+  // Open the outfit detail modal
+  function viewOutfitDetails(outfitId) {
+    // Show loading state
+    document.getElementById('modalImageContainer').innerHTML = `
+        <div class="w-full h-64 flex items-center justify-center bg-gray-100">
+            <div class="spinner"></div>
+        </div>
+    `;
+    document.getElementById('modalOccasion').textContent = 'Loading...';
+    document.getElementById('modalDescription').textContent = 'Loading...';
+    document.getElementById('modalStyle').textContent = 'Loading...';
+
+    // Show the modal
+    document.getElementById('outfitDetailModal').classList.remove('hidden');
+
+    // Prevent body scrolling
+    document.body.style.overflow = 'hidden';
+
+    // Fetch outfit details from API
+    fetch(`/api/outfits/${outfitId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load outfit details');
+            }
+            return response.json();
+        })
+        .then(outfit => {
+            // Store current outfit ID and reset image index
+            currentOutfitId = outfitId;
+            currentImageIndex = 0;
+            outfitImages = outfit.imageUrls;
+
+            // Update the modal with outfit details
+            updateModalContent(outfit);
+        })
+        .catch(error => {
+            console.error('Error loading outfit details:', error);
+            document.getElementById('modalImageContainer').innerHTML = `
+                <div class="w-full h-64 flex items-center justify-center bg-gray-100">
+                    <p class="text-red-500">Error loading outfit details</p>
+                </div>
+            `;
+        });
+}
+
+
+  // Update modal content with outfit details
+  function updateModalContent(outfit) {
+      // Set basic outfit information
+      document.getElementById('modalTitle').textContent = `${outfit.occasion} Outfit`;
+      document.getElementById('modalOccasion').textContent = outfit.occasion;
+      document.getElementById('modalStyle').textContent = outfit.style || 'Not specified';
+
+      // Set description if available
+      if (outfit.clothingDetails && outfit.clothingDetails.description) {
+          document.getElementById('modalDescription').textContent = outfit.clothingDetails.description;
+      } else {
+          document.getElementById('modalDescription').textContent = 'No detailed description available';
+      }
+
+      // Setup favorite button
+      const favoriteBtn = document.getElementById('favoriteBtn');
+      if (outfit.favorite) {
+          favoriteBtn.innerHTML = '<i class="fas fa-heart"></i><span>Remove from Favorites</span>';
+      } else {
+          favoriteBtn.innerHTML = '<i class="far fa-heart"></i><span>Add to Favorites</span>';
+      }
+
+      // Setup favorite button click handler
+      favoriteBtn.onclick = function() {
+          toggleFavorite(currentOutfitId);
+      };
+
+      // Setup images
+      setupImageSlider(outfit.imageUrls);
+  }
+
+  // Setup image slider in the modal
+  function setupImageSlider(imageUrls) {
+      const container = document.getElementById('modalImageContainer');
+      const prevBtn = document.getElementById('prevImageBtn');
+      const nextBtn = document.getElementById('nextImageBtn');
+      const counter = document.getElementById('imageCounter');
+
+      // Clear previous content
+      container.innerHTML = '';
+
+      // Show navigation controls only if there are multiple images
+      if (imageUrls.length > 1) {
+          prevBtn.classList.remove('hidden');
+          nextBtn.classList.remove('hidden');
+          counter.classList.remove('hidden');
+          counter.textContent = `1/${imageUrls.length}`;
+
+          // Add click handlers for navigation
+          prevBtn.onclick = showPreviousImage;
+          nextBtn.onclick = showNextImage;
+      } else {
+          prevBtn.classList.add('hidden');
+          nextBtn.classList.add('hidden');
+          counter.classList.add('hidden');
+      }
+
+      // Create image elements
+      imageUrls.forEach((url, index) => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = `Outfit image ${index + 1}`;
+          img.className = 'w-full h-auto rounded-lg';
+          img.style.display = index === 0 ? 'block' : 'none';
+          img.id = `modal-image-${index}`;
+          container.appendChild(img);
+      });
+  }
+
+  // Show the previous image in the slider
+  function showPreviousImage() {
+      // Hide current image
+      document.getElementById(`modal-image-${currentImageIndex}`).style.display = 'none';
+
+      // Update index
+      currentImageIndex = (currentImageIndex - 1 + outfitImages.length) % outfitImages.length;
+
+      // Show new image
+      document.getElementById(`modal-image-${currentImageIndex}`).style.display = 'block';
+
+      // Update counter
+      document.getElementById('imageCounter').textContent = `${currentImageIndex + 1}/${outfitImages.length}`;
+  }
+
+  // Show the next image in the slider
+  function showNextImage() {
+      // Hide current image
+      document.getElementById(`modal-image-${currentImageIndex}`).style.display = 'none';
+
+      // Update index
+      currentImageIndex = (currentImageIndex + 1) % outfitImages.length;
+
+      // Show new image
+      document.getElementById(`modal-image-${currentImageIndex}`).style.display = 'block';
+
+      // Update counter
+      document.getElementById('imageCounter').textContent = `${currentImageIndex + 1}/${outfitImages.length}`;
+  }
+
+  // Close the outfit detail modal
+  function closeOutfitModal() {
+      document.getElementById('outfitDetailModal').classList.add('hidden');
+
+      // Re-enable body scrolling
+      document.body.style.overflow = 'auto';
+
+      // Reset variables
+      currentOutfitId = null;
+      currentImageIndex = 0;
+      outfitImages = [];
+  }
+
+  // Toggle favorite status and update UI
+  function toggleFavorite(outfitId) {
+      if (!outfitId) return;
+
+      fetch(`/api/outfits/${outfitId}/favorite`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => {
+          // Update the favorite button in the modal
+          const favoriteBtn = document.getElementById('favoriteBtn');
+          if (data.favorite) {
+              favoriteBtn.innerHTML = '<i class="fas fa-heart"></i><span>Remove from Favorites</span>';
+          } else {
+              favoriteBtn.innerHTML = '<i class="far fa-heart"></i><span>Add to Favorites</span>';
+          }
+
+          // Find all instances of this outfit in the UI and update the heart icon
+          const favoriteButtons = document.querySelectorAll(`button[onclick*="${outfitId}"] i`);
+          favoriteButtons.forEach(icon => {
+              if (data.favorite) {
+                  icon.classList.remove('far');
+                  icon.classList.add('fas');
+              } else {
+                  icon.classList.remove('fas');
+                  icon.classList.add('far');
+              }
+          });
+
+          // Show a success message
+          const successToast = document.getElementById('generationSuccessToast');
+          if (successToast) {
+              successToast.querySelector('p').textContent = data.favorite ?
+                  'Outfit added to favorites!' : 'Removed from favorites!';
+              successToast.classList.remove('hidden');
+
+              // Auto-hide toast after 2 seconds
+              setTimeout(() => {
+                  successToast.classList.add('hidden');
+              }, 2000);
+          }
+      })
+      .catch(error => {
+          console.error('Error toggling favorite:', error);
+      });
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('outfitDetailModal');
+
+      // Add click handler to close when clicking outside the modal content
+      modal.addEventListener('click', function(event) {
+          if (event.target === modal) {
+              closeOutfitModal();
+          }
+      });
+
+      // Add keyboard handler for Escape key
+      document.addEventListener('keydown', function(event) {
+          if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+              closeOutfitModal();
+          }
+      });
+  });
+</script>
+
+
 </body>
 </html>
