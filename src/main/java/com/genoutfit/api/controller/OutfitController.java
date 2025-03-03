@@ -4,6 +4,7 @@ import com.genoutfit.api.model.Occasion;
 import com.genoutfit.api.model.Outfit;
 import com.genoutfit.api.model.User;
 import com.genoutfit.api.model.UserPrincipal;
+import com.genoutfit.api.service.OccasionImageService;
 import com.genoutfit.api.service.OutfitGenerationService;
 import com.genoutfit.api.service.OutfitService;
 import com.genoutfit.api.service.UserService;
@@ -31,6 +32,9 @@ public class OutfitController {
     @Autowired
     OutfitService outfitService;
 
+    @Autowired
+    OccasionImageService occasionImageService;
+
     @GetMapping("/")
     public String landingPage(Model model, HttpServletRequest request) {
         model.addAllAttributes(createOpenGraphData(
@@ -52,6 +56,10 @@ public class OutfitController {
             // Get recent outfits (latest 10)
             List<Outfit> recentOutfits = outfitService.getRecentOutfits(user.getId(), 10);
             model.addAttribute("outfits", recentOutfits);
+
+            // Get personalized occasion images based on user characteristics
+            Map<String, String> occasionImages = occasionImageService.getPersonalizedImages(user);
+            model.addAttribute("occasionImages", occasionImages);
 
             // Set active page for navigation
             model.addAttribute("activePage", "dashboard");

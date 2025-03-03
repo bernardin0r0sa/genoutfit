@@ -26,10 +26,6 @@
 
   <!-- Occasions Section -->
   <section class="mb-10 px-6">
-    <div class="flex justify-between items-center mb-5">
-      <h2 class="text-lg font-semibold">Choose your occasion</h2>
-    </div>
-
     <!-- First row of occasions -->
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4">
       <!-- Date Night -->
@@ -41,7 +37,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/date_night.jpg" alt="Date Night" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.DATE_NIGHT}" alt="Date Night" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Date Night</h3>
@@ -58,7 +54,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/office_party.jpg" alt="Office Party" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.OFFICE_PARTY}" alt="Office Party" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Office Party</h3>
@@ -75,7 +71,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/wedding_guest.jpg" alt="Wedding Guest" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.WEDDING_GUEST}" alt="Wedding Guest" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Wedding Guest</h3>
@@ -92,7 +88,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/casual_outing.jpg" alt="Casual Outing" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.CASUAL_OUTING}" alt="Casual Outing" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Casual Outing</h3>
@@ -109,7 +105,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/formal_event.jpg" alt="Formal Event" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.FORMAL_EVENT}" alt="Formal Event" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Formal Event</h3>
@@ -129,7 +125,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/beach_vacation.jpg" alt="Beach Vacation" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.BEACH_VACATION}" alt="Beach Vacation" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Beach Vacation</h3>
@@ -146,7 +142,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/business_casual.jpg" alt="Business Casual" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.BUSINESS_CASUAL}" alt="Business Casual" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Business Casual</h3>
@@ -163,7 +159,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/party.jpg" alt="Party" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.PARTY}" alt="Party" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Party</h3>
@@ -180,7 +176,7 @@
            hx-on::after-request="scrollToGeneratedSection(); refreshAllOutfits();"
            hx-indicator="#outfitsLoadingIndicator">
         <div class="relative">
-          <img src="/assets/images/occasions/gala.jpg" alt="Gala" class="w-full h-40 object-cover">
+          <img th:src="${occasionImages.GALA}" alt="Gala" class="w-full h-40 object-cover">
         </div>
         <div class="p-3 border-t border-gray-50">
           <h3 class="font-medium text-charcoal">Gala</h3>
