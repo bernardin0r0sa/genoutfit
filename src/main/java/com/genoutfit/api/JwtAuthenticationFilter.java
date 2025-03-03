@@ -10,7 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -30,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String jwt = getJwtFromRequest(request);
+            String jwt = getJwtFromRequest(request, response);
 
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String userId = tokenProvider.getUserIdFromToken(jwt);
@@ -39,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 System.out.println(userDetails.getAuthorities());
 
                 // Add this debug line
-               // logger.debug((Object) "User authorities: {}", (Throwable) userDetails.getAuthorities());
+               // logger.debug("User authorities: {}", userDetails.getAuthorities());
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -54,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private String getJwtFromRequest(HttpServletRequest request) {
+    private String getJwtFromRequest(HttpServletRequest request, HttpServletResponse response) {
         logger.debug("Extracting JWT from request...");
 
         // First try to get from Authorization header
@@ -66,7 +65,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return bearerToken.substring(7);
         }
 
-        // If not in header, check cookies
+        // Check for token in URL parameters
+        String tokenParam = request.getParameter("token");
+        logger.debug("URL token parameter: " + (tokenParam != null ? "Present" : "Not present"));
+
+        if (StringUtils.hasText(tokenParam)) {
+            logger.debug("Returning JWT from URL parameter");
+
+            // Set a cookie for future requests
+            Cookie authCookie = new Cookie("authToken", tokenParam);
+            authCookie.setPath("/");
+            authCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+            authCookie.setHttpOnly(true);
+            response.addCookie(authCookie);
+            logger.debug("Set authToken cookie for future requests");
+
+            return tokenParam;
+        }
+
+        // If not in header or URL, check cookies
         Cookie[] cookies = request.getCookies();
         logger.debug("Cookies: " + (cookies != null ? cookies.length + " cookies found" : "No cookies found"));
 
