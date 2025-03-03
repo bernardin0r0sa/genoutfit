@@ -45,7 +45,7 @@ public class OnboardingAPIController {
 
         return ResponseEntity.ok(Map.of(
                 "status", "success",
-                "nextStep", "/preview"
+                "nextStep", "/payment"
         ));
     }
 
@@ -80,8 +80,7 @@ public class OnboardingAPIController {
     private String getNextStep(User user) {
         return switch (user.getOnboardingStatus()) {
             case NEW -> "/onboarding/profile";
-            case PROFILE_COMPLETED -> "/onboarding/preview";
-            case PAYMENT_PENDING -> "/onboarding/payment";
+            case PROFILE_COMPLETED, PAYMENT_PENDING -> "/onboarding/payment";
             case COMPLETED -> "/dashboard";
         };
     }
