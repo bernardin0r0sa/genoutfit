@@ -1,0 +1,188 @@
+<!-- fragments/pricing-plans.html -->
+<div th:fragment="pricing-plans" class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-teal tracking-tight sm:text-4xl">
+                Choose Your Perfect Plan
+            </h2>
+            <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
+                Get personalized outfit recommendations tailored to your style, body type, and occasion
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
+            <!-- Trial Plan -->
+            <div class="bg-white rounded-lg border-2 border-gray-200 hover:border-teal shadow-sm overflow-hidden transition-all duration-300">
+                <div class="px-6 py-8">
+                    <h3 class="text-2xl font-bold text-charcoal">Trial</h3>
+                    <div class="mt-4 flex items-baseline">
+                        <span class="text-5xl font-extrabold text-teal">$2.99</span>
+                        <span class="ml-1 text-xl font-medium text-gray-500">one-time</span>
+                    </div>
+                    <p class="mt-5 text-lg text-gray-600">
+                        Perfect for trying out our AI stylist service
+                    </p>
+                </div>
+                <div class="px-6 pb-8">
+                    <ul class="mt-6 space-y-4">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">5 outfit recommendations</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Personalized to your style</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">One-time purchase</p>
+                        </li>
+                    </ul>
+
+                    <div class="mt-8">
+                        <a href="/onboarding/set-plan?plan=TRIAL" class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center">
+                            Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basic Plan -->
+            <div class="bg-white rounded-lg border-2 border-teal shadow-lg transform scale-105 z-10 overflow-hidden">
+                <div class="px-6 py-8">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl font-bold text-charcoal">Basic</h3>
+                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-teal-light text-white">
+              Popular
+            </span>
+                    </div>
+                    <div class="mt-4 flex items-baseline">
+                        <span class="text-5xl font-extrabold text-teal">$19</span>
+                        <span class="ml-1 text-xl font-medium text-gray-500">/month</span>
+                    </div>
+                    <p class="mt-5 text-lg text-gray-600">
+                        Perfect for regular outfit inspiration
+                    </p>
+                </div>
+                <div class="px-6 pb-8">
+                    <ul class="mt-6 space-y-4">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">100 outfit recommendations/month</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Personalized to your preferences</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Seasonal trend updates</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Email support</p>
+                        </li>
+                    </ul>
+
+                    <div class="mt-8">
+                        <a href="/onboarding/set-plan?plan=BASIC" class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center">
+                            Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="bg-white rounded-lg border-2 border-gray-200 hover:border-teal shadow-sm overflow-hidden transition-all duration-300">
+                <div class="px-6 py-8">
+                    <h3 class="text-2xl font-bold text-charcoal">Premium</h3>
+                    <div class="mt-4 flex items-baseline">
+                        <span class="text-5xl font-extrabold text-teal">$49</span>
+                        <span class="ml-1 text-xl font-medium text-gray-500">/month</span>
+                    </div>
+                    <p class="mt-5 text-lg text-gray-600">
+                        For fashion enthusiasts who want it all
+                    </p>
+                </div>
+                <div class="px-6 pb-8">
+                    <ul class="mt-6 space-y-4">
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">350 outfit recommendations/month</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Premium collections access</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Advanced style customization</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Priority support</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <p class="ml-3 text-base text-gray-700">Early access to new features</p>
+                        </li>
+                    </ul>
+
+                    <div class="mt-8">
+                        <a href="/onboarding/set-plan?plan=PREMIUM" class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center">
+                            Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

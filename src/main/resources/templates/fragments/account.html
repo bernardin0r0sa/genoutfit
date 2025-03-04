@@ -60,9 +60,9 @@
         </form>
       </div>
 
-      <!-- Subscription Section -->
+      <!-- Billing Section (renamed from Subscription Section) -->
       <div class="bg-white shadow-sm rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4">Subscription Management</h2>
+        <h2 class="text-lg font-semibold mb-4">Billing</h2>
 
         <!-- Subscription Status -->
         <div class="mb-6">
@@ -75,11 +75,14 @@
                   <span th:text="${subscription.status}">Active</span> -
                   <span th:text="'Renews on ' + ${#temporals.format(subscription.renewalDate, 'MMM dd, yyyy')}">Renews on Feb 26, 2026</span>
                 </p>
+                <p class="text-sm text-gray-500" th:if="${subscription != null && subscription.remainingOutfits != null}">
+                  <span th:text="${subscription.remainingOutfits} + ' outfits remaining'">25 outfits remaining</span>
+                </p>
                 <p class="text-sm text-gray-500" th:if="${subscription == null}">
                   Limited features available
                 </p>
               </div>
-              <div th:if="${subscription != null && subscription.status == 'ACTIVE'}" class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+              <div th:if="${subscription != null && subscription.status == 'Active'}" class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
                 Active
               </div>
             </div>
@@ -88,9 +91,9 @@
 
         <!-- Stripe Portal Link -->
         <div class="flex flex-col space-y-2">
-          <a th:href="${stripePortalUrl}" href="#" target="_blank" class="px-4 py-2 bg-teal text-white rounded-md hover:bg-teal-light transition-colors text-center">
+          <a href="https://billing.stripe.com/p/login/test_aEU7um5QD5EEfJu9AA" target="_blank" class="px-4 py-2 bg-teal text-white rounded-md hover:bg-teal-light transition-colors text-center">
             <i class="fas fa-external-link-alt mr-1 text-xs"></i>
-            Manage Subscription in Stripe
+            Stripe Customer Portal
           </a>
         </div>
       </div>

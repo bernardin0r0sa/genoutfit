@@ -70,7 +70,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private String getNextStep(User user) {
         return switch (user.getOnboardingStatus()) {
-            case NEW -> "/onboarding/profile";
+            case NEW -> "/";  // If user is new and has no plan, go to landing page
+            case PLAN_SELECTED -> "/onboarding/profile";
             case PROFILE_COMPLETED, PAYMENT_PENDING -> "/onboarding/payment";
             case COMPLETED -> "/dashboard";
         };

@@ -1,13 +1,8 @@
 package com.genoutfit.api.controller;
 
-import com.genoutfit.api.model.Occasion;
-import com.genoutfit.api.model.Outfit;
-import com.genoutfit.api.model.User;
-import com.genoutfit.api.model.UserPrincipal;
-import com.genoutfit.api.service.OccasionImageService;
-import com.genoutfit.api.service.OutfitGenerationService;
-import com.genoutfit.api.service.OutfitService;
-import com.genoutfit.api.service.UserService;
+import com.genoutfit.api.model.*;
+import com.genoutfit.api.repository.UserSubscriptionRepository;
+import com.genoutfit.api.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @Slf4j
@@ -35,6 +31,12 @@ public class OutfitController {
     @Autowired
     OccasionImageService occasionImageService;
 
+    @Autowired
+    UserSubscriptionRepository subscriptionRepository;
+
+    @Autowired
+    StripeService stripeService;
+
     @GetMapping("/")
     public String landingPage(Model model, HttpServletRequest request) {
         model.addAllAttributes(createOpenGraphData(
@@ -43,7 +45,7 @@ public class OutfitController {
                 "/assets/images/homepage-banner.jpg",
                 "Get personalized outfit recommendations tailored to your style, body type, and occasion"
         ));
-        return "index";
+        return "landingpage";
     }
 
     @GetMapping("/dashboard")
@@ -153,19 +155,34 @@ public class OutfitController {
             User user = userService.getCurrentUser(userPrincipal);
             model.addAttribute("user", user);
 
-            // Add subscription details directly from the user
-            if (user.isPremiumUser()) {
-                model.addAttribute("subscription", Map.of(
-                        "planName", "Premium Plan",
-                        "status", "Active",
-                        "renewalDate", user.getPremiumExpiryDate()
-                ));
+            // Get subscription information
+            Optional<UserSubscription> userSubscriptionOpt = subscriptionRepository.findById(user.getId());
+
+            if (userSubscriptionOpt.isPresent()) {
+                UserSubscription userSubscription = userSubscriptionOpt.get();
+                Map<String, Object> subscriptionData = new HashMap<>();
+
+                // Map subscription details to the model
+                subscriptionData.put("planName", userSubscription.getPlan().getDisplayName());
+                subscriptionData.put("status", userSubscription.isActive() ? "Active" : "Inactive");
+                subscriptionData.put("remainingOutfits", userSubscription.getRemainingOutfits());
+                subscriptionData.put("nextBillingDate", userSubscription.getNextBillingDate());
+                subscriptionData.put("renewalDate", userSubscription.getNextBillingDate());
+
+                model.addAttribute("subscription", subscriptionData);
             } else {
+                // No subscription found
                 model.addAttribute("subscription", null);
             }
 
-            // Get subscription information if any
-           // model.addAttribute("subscription", userService.getSubscriptionDetails(user.getId()));
+            if (userSubscriptionOpt.isPresent()) {
+                UserSubscription subscription = userSubscriptionOpt.get();
+                if (subscription.getStripeCustomerId() != null) {
+                    // Generate a session-specific portal URL
+                    String portalUrl = stripeService.createCustomerPortalSession(subscription.getStripeCustomerId());
+                    model.addAttribute("stripePortalUrl", portalUrl);
+                }
+            }
 
             // Set header titles
             model.addAttribute("headerTitle", "Account Settings");
@@ -179,6 +196,7 @@ public class OutfitController {
 
             return "home";
         } catch (Exception e) {
+            log.error("Error in account page: ", e);
             // Handle errors
             return "redirect:/error";
         }

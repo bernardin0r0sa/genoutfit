@@ -28,14 +28,12 @@ public class SecurityConfig {
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    // Remove direct dependency on AuthenticationManager and create it as a bean within this class
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    private final JwtTokenProvider tokenProvider; // Inject this
+    private final JwtTokenProvider tokenProvider;
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
@@ -53,22 +51,38 @@ public class SecurityConfig {
                         .requestMatchers("/process-login").permitAll()
                         .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**").permitAll()
 
-                        // API endpoints
+                        // Public API endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/onboarding/**").authenticated()
-                        .requestMatchers("/api/outfits/webhook/**").permitAll()
 
-                        // Onboarding pages - allow for authenticated users
-                        .requestMatchers("/onboarding/**").authenticated()
+                        // Plan selection endpoints (must be public)
+                        .requestMatchers("/api/onboarding/select-plan").permitAll()
+                        .requestMatchers("/onboarding/set-plan").permitAll()
 
-                        // Protected API endpoints
-                        .requestMatchers("/api/**").hasRole("PAID_USER")
+                        // Onboarding endpoints - require authentication
+                        .requestMatchers("/api/onboarding/set-plan-after-login").authenticated()
+                        .requestMatchers("/api/onboarding/profile").authenticated()
+                        .requestMatchers("/api/onboarding/proceed-to-payment").authenticated()
+                        .requestMatchers("/onboarding/profile", "/onboarding/payment").authenticated()
+
+                        // Stripe webhook (must be public)
+                        .requestMatchers("/api/onboarding/webhook/stripe").permitAll()
+
+                        // Success page (requires authentication)
+                        .requestMatchers("/onboarding/success").authenticated()
+
+                        // Protected API endpoints (requires PAID_USER role for full access)
+                        .requestMatchers("/api/outfits/**").hasRole("PAID_USER")
+
+                        // Account/billing pages (requires authentication)
+                        .requestMatchers("/account").authenticated()
+                        .requestMatchers("/api/user/**").authenticated()
+                        .requestMatchers("/api/subscription/**").authenticated()
 
                         // All other requests need authentication
                         .anyRequest().authenticated()
                 )
-                        // Disable form login since we're using a REST API
+                // Disable form login since we're using a REST API
                 .formLogin(formLogin -> formLogin.disable())
                 .oauth2Login(oauth2Login -> oauth2Login
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint

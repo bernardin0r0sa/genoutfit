@@ -6,10 +6,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-// Update User entity to use Ethnicity instead of SkinTone
 @Entity
 @Table(name = "users")
 @Data
@@ -28,6 +26,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private AuthProvider provider = AuthProvider.LOCAL;
+
     private String providerId;
 
     @Enumerated(EnumType.STRING)
@@ -54,4 +53,9 @@ public class User {
     private boolean premiumUser = false;
 
     private LocalDateTime premiumExpiryDate;
+
+    // Add selected plan field
+    @Enumerated(EnumType.STRING)
+    @Column(name = "selected_plan")
+    private SubscriptionPlan selectedPlan;
 }

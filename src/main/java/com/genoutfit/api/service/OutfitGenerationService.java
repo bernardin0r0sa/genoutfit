@@ -6,6 +6,7 @@ import com.genoutfit.api.model.*;
 import com.genoutfit.api.repository.OutfitHistoryRepository;
 import com.genoutfit.api.repository.OutfitRepository;
 import com.genoutfit.api.repository.PromptTemplateRepository;
+import com.genoutfit.api.repository.UserSubscriptionRepository;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -48,6 +50,9 @@ public class OutfitGenerationService {
 
     @Autowired
     private OutfitHistoryRepository outfitHistoryRepository;
+    @Autowired
+    private UserSubscriptionRepository subscriptionRepository;
+
 
     @Value("${GENERATION_MAX_ATTEMPTS}")
     private int maxAttempts;
@@ -68,6 +73,12 @@ public class OutfitGenerationService {
 
     public OutfitResponseDto initiateOutfitGeneration(String userId, OutfitRequestDto request) throws Exception {
         User user = userService.getUserById(userId);
+
+        // Check quota first
+        if (!hasRemainingOutfitQuota(userId)) {
+            throw new Exception("You've reached your outfit generation limit. Please upgrade your plan for more outfits.");
+        }
+
         List<OutfitVector> similarOutfits = findSimilarOutfits(user, request.getOccasion());
 
         if (similarOutfits.isEmpty()) {
@@ -111,6 +122,9 @@ public class OutfitGenerationService {
 
         // Start async image generation
         startAsyncImageGeneration(outfit.getId(), prompts);
+
+        // Decrement quota after successful generation
+        useOutfitQuota(userId);
 
         return mapToOutfitResponse(outfit);
     }
@@ -452,6 +466,47 @@ public class OutfitGenerationService {
 
         // Delegate to the standard outfit generation method
         return initiateOutfitGeneration(userId, request);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean hasRemainingOutfitQuota(String userId) {
+        UserSubscription subscription = subscriptionRepository.findById(userId).orElse(null);
+
+        if (subscription == null) {
+            return false; // No subscription found
+        }
+
+        return subscription.isActive() && subscription.getRemainingOutfits() > 0;
+    }
+
+    /**
+     * Check user's remaining quota
+     */
+    @Transactional(readOnly = true)
+    public int getRemainingOutfitQuota(String userId) {
+        UserSubscription subscription = subscriptionRepository.findById(userId).orElse(null);
+
+        if (subscription == null) {
+            return 0; // No subscription found
+        }
+
+        return subscription.isActive() ? subscription.getRemainingOutfits() : 0;
+    }
+
+    /**
+     * Use one outfit quota
+     */
+    @Transactional
+    public void useOutfitQuota(String userId) {
+        UserSubscription subscription = subscriptionRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("No active subscription found"));
+
+        if (!subscription.isActive() || subscription.getRemainingOutfits() <= 0) {
+            throw new IllegalStateException("No remaining outfit quota");
+        }
+
+        subscription.useOutfit();
+        subscriptionRepository.save(subscription);
     }
 
 }
