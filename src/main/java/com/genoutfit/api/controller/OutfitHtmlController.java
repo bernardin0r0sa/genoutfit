@@ -53,7 +53,7 @@ public class OutfitHtmlController {
             placeholders.add(new PlaceholderOutfit(
                     response.getId(),
                     0,
-                    "/assets/images/placeholder.jpg",
+                    "/assets/images/placeholder.png",
                     occasion.getDisplayName()
             ));
             model.addAttribute("placeholders", placeholders);
@@ -96,7 +96,7 @@ public class OutfitHtmlController {
             placeholders.add(new PlaceholderOutfit(
                     response.getId(),
                     0,
-                    "/assets/images/placeholder.jpg",
+                    "/assets/images/placeholder.png",
                     randomOccasion.getDisplayName()
             ));
 

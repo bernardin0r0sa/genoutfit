@@ -70,6 +70,7 @@ public class SecurityConfig {
 
                         // Stripe webhook (must be public)
                         .requestMatchers("/api/onboarding/webhook/stripe").permitAll()
+                        .requestMatchers("/api/outfits/webhook/**").permitAll()
 
                         // Success page (requires authentication)
                         .requestMatchers("/onboarding/success").authenticated()

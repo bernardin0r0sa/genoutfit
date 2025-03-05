@@ -246,11 +246,12 @@ public class OutfitGenerationService {
                 boolean allImagesGenerated = outfit.getImageUrls().stream()
                         .noneMatch(url -> url.equals(placeholderImageUrl));
 
+                // In your backend controller
                 if (allImagesGenerated) {
                     return new OutfitGenerationStatus(true, outfit.getImageUrls(), Collections.emptyList());
                 } else {
-                    return new OutfitGenerationStatus(false, outfit.getImageUrls(),
-                            Collections.singletonList("Generation in progress"));
+                    // Return empty errors list and use a separate status field
+                    return new OutfitGenerationStatus(false, outfit.getImageUrls(), Collections.emptyList());
                 }
             } catch (Exception e) {
                 return new OutfitGenerationStatus(false, Collections.emptyList(),
