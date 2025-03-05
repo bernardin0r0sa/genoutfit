@@ -6,7 +6,7 @@
       <div class="px-6 py-5 bg-white bg-opacity-90">
         <div class="flex flex-col md:flex-row md:items-center justify-between">
           <div>
-            <h2 class="text-lg font-medium text-charcoal mb-1">Welcome back</span></h2>
+            <h2 class="text-lg font-medium text-charcoal mb-1">Welcome back</h2>
             <p class="text-gray-600 text-sm">Your style assistant is ready to help</p>
           </div>
           <button class="mt-4 md:mt-0 px-5 py-2 bg-teal text-white rounded-lg hover:bg-teal-light transition-colors text-sm font-medium inline-flex items-center gap-2"
@@ -348,6 +348,20 @@
     </div>
   </section>
 
+  <!-- Latest Generated Outfits (New Ones) - MOVED OUTSIDE the Generated Outfits section -->
+  <section id="latestOutfitsContainer" class="px-6 mb-8 hidden">
+    <h3 class="text-md font-medium mb-4 text-teal">Just Generated</h3>
+    <div id="latestOutfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <!-- Will be populated by HTMX -->
+    </div>
+  </section>
+
+  <!-- Loading Indicator - Placed between sections -->
+  <div id="outfitsLoadingIndicator" class="flex justify-center items-center py-10 hidden px-6">
+    <div class="spinner mr-3"></div>
+    <p>Loading outfits...</p>
+  </div>
+
   <!-- Generated Outfits Section -->
   <section class="px-6 pb-8">
     <div class="flex flex-wrap justify-between items-center mb-6">
@@ -373,20 +387,6 @@
             </ul>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Loading Indicator -->
-    <div id="outfitsLoadingIndicator" class="flex justify-center items-center py-10 hidden">
-      <div class="spinner mr-3"></div>
-      <p>Loading outfits...</p>
-    </div>
-
-    <!-- Latest Generated Outfits (New Ones) -->
-    <div id="latestOutfitsContainer" class="mb-8 hidden">
-      <h3 class="text-md font-medium mb-4 text-teal">Just Generated</h3>
-      <div id="latestOutfitsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
-        <!-- Will be populated by HTMX -->
       </div>
     </div>
 
