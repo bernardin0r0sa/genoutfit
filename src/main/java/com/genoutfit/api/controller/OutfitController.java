@@ -170,6 +170,13 @@ public class OutfitController {
                 subscriptionData.put("renewalDate", userSubscription.getNextBillingDate());
 
                 model.addAttribute("subscription", subscriptionData);
+
+                //Stripe Customer Portal
+                String billingPortal= stripeService.createCustomerPortalSession(userSubscription.getStripeCustomerId());
+
+                model.addAttribute("billingPortal", billingPortal);
+
+
             } else {
                 // No subscription found
                 model.addAttribute("subscription", null);
