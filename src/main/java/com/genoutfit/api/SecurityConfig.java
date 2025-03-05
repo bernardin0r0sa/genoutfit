@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -89,6 +90,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2Login -> oauth2Login
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
                                 .baseUri("/oauth2/authorize")
+                                .authorizationRequestRepository(new HttpSessionOAuth2AuthorizationRequestRepository())
                         )
                         .redirectionEndpoint(redirectionEndpoint -> redirectionEndpoint
                                 .baseUri("/oauth2/callback/*")

@@ -10,6 +10,7 @@ import com.stripe.model.checkout.Session;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,7 +47,11 @@ public class OnboardingController {
     public String setPlanAfterLogin(
             @RequestParam("plan") String planName,
             Authentication authentication,
-            Model model) {
+            Model model,
+            HttpSession session) {
+
+        // Store the plan in session in case authentication is required
+        session.setAttribute("selectedPlan", planName);
 
         if (authentication != null && authentication.isAuthenticated()) {
             try {

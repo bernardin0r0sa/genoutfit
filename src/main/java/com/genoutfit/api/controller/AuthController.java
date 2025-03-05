@@ -151,4 +151,13 @@ public class AuthController {
         attributes.put("ogPageDescription", description);
         return attributes;
     }
+
+    @GetMapping("/oauth2/authorize/google")
+    public String authorizeGoogle(@RequestParam(required = false) String plan, HttpServletRequest request) {
+        if (plan != null) {
+            request.getSession().setAttribute("selectedPlan", plan);
+        }
+        // Redirect to Spring Security's OAuth2 authorization endpoint
+        return "redirect:/oauth2/authorization/google";
+    }
 }

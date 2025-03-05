@@ -108,7 +108,7 @@ public class StripeService {
         params.put("line_items", List.of(lineItem));
         params.put("mode", "subscription"); // subscription
         params.put("customer", customer.getId());
-        params.put("success_url", baseUrl + "/payment/success?session_id={CHECKOUT_SESSION_ID}&plan=" + plan.name());
+        params.put("success_url", baseUrl + "/onboarding/success?session_id={CHECKOUT_SESSION_ID}&plan=" + plan.name());
         params.put("cancel_url", baseUrl + "/payment/cancel");
 
         // Add metadata
