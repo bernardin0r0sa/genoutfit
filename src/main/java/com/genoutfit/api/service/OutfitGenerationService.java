@@ -94,8 +94,13 @@ public class OutfitGenerationService {
         // If all outfits used, reset history and use all outfits
         if (availableOutfits.isEmpty()) {
             log.info("User {} has seen all outfits, resetting history", userId);
-            resetUserOutfitHistory(userId);
-            availableOutfits = similarOutfits;
+            try {
+                resetUserOutfitHistory(userId);
+                availableOutfits = similarOutfits;
+            } catch (Exception e) {
+                log.error("Error resetting user history, using all outfits anyway: {}", e.getMessage());
+                availableOutfits = similarOutfits;
+            }
         }
 
         // Select random outfit here, in the main method
@@ -438,6 +443,7 @@ public class OutfitGenerationService {
     }
 
     // Method to reset user's outfit history
+    @Transactional
     public void resetUserOutfitHistory(String userId) {
         outfitHistoryRepository.deleteByUserId(userId);
         log.info("Reset outfit history for user {}", userId);
