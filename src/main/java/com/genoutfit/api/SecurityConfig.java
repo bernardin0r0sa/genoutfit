@@ -48,6 +48,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+
+                        // Static resources - allow public access to assets
+                        .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                         // Public endpoints
                         .requestMatchers("/process-login").permitAll()
                         .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**").permitAll()

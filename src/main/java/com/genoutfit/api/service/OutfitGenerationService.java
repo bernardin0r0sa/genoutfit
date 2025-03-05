@@ -69,7 +69,7 @@ public class OutfitGenerationService {
 
 
     // Store pending outfit generations
-    private final Map<String, OutfitGenerationTask> pendingGenerations = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, OutfitGenerationTask> pendingGenerations = new ConcurrentHashMap<>();
 
     public OutfitResponseDto initiateOutfitGeneration(String userId, OutfitRequestDto request) throws Exception {
         User user = userService.getUserById(userId);
@@ -198,6 +198,7 @@ public class OutfitGenerationService {
         try {
             String falImageUrl = extractImageUrl(result);
 
+            // Get the outfit outside of the synchronized block
             Outfit outfit = outfitRepository.findById(outfitId)
                     .orElseThrow(() -> new RuntimeException("Outfit not found: " + outfitId));
 
@@ -205,25 +206,33 @@ public class OutfitGenerationService {
             String userId = user.getId();
             String occasion = outfit.getOccasion().name().toLowerCase();
 
+            // Upload to R2 storage
             String permanentImageUrl = r2StorageService.uploadFile(falImageUrl, userId, occasion);
             log.info("Image stored permanently at: {}", permanentImageUrl);
 
-            List<String> currentImages = outfit.getImageUrls();
-            if (imageIndex < currentImages.size()) {
-                currentImages.set(imageIndex, permanentImageUrl);
-                outfit.setImageUrls(currentImages);
-                outfitRepository.save(outfit);
+            // Lock on the outfit ID when updating
+            synchronized (outfitId.intern()) {
+                // Reload the outfit to get latest state
+                outfit = outfitRepository.findById(outfitId)
+                        .orElseThrow(() -> new RuntimeException("Outfit not found: " + outfitId));
 
-                OutfitGenerationTask task = pendingGenerations.get(outfitId);
-                if (task != null) {
-                    task.setImageComplete(imageIndex, permanentImageUrl);
+                List<String> currentImages = outfit.getImageUrls();
+                if (imageIndex < currentImages.size()) {
+                    currentImages.set(imageIndex, permanentImageUrl);
+                    outfit.setImageUrls(currentImages);
+                    outfitRepository.save(outfit);
 
-                    if (task.isComplete()) {
-                        pendingGenerations.remove(outfitId);
+                    OutfitGenerationTask task = pendingGenerations.get(outfitId);
+                    if (task != null) {
+                        task.setImageComplete(imageIndex, permanentImageUrl);
+
+                        if (task.isComplete()) {
+                            pendingGenerations.remove(outfitId);
+                        }
                     }
-                }
 
-                log.info("Updated image {} for outfit {}", imageIndex, outfitId);
+                    log.info("Updated image {} for outfit {}", imageIndex, outfitId);
+                }
             }
         } catch (Exception e) {
             log.error("Error handling webhook for outfit {} image {}: {}",
