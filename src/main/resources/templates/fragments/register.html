@@ -1,39 +1,156 @@
-<!-- This is the register fragment file (register.html) -->
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Register</title>
-</head>
-<body>
 <div th:fragment="register">
-    <h2>Create Account</h2>
-    <p>Get started with your OutfitGenerator account</p>
-
-    <form id="registerForm" th:action="@{/api/auth/register}" method="post">
-        <input type="email" name="email" placeholder="Email" required>
-
-        <div class="password-field">
-            <input type="password" id="register-password" name="password"
-                   placeholder="Password (6-20 characters)" required minlength="6" maxlength="20">
-            <span class="password-toggle" onclick="toggleRegisterPassword()">
-                <i class="far fa-eye"></i>
-            </span>
+    <div class="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <img class="mx-auto h-16 w-auto" src="/assets/images/logo.svg" alt="OutfitGenerator">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Create your account
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Or
+                <a th:href="@{/login(plan=${param.plan})}" class="font-medium text-teal hover:text-teal-dark">
+                    sign in to your account
+                </a>
+            </p>
         </div>
 
-        <button type="submit" class="btn">Sign Up</button>
-    </form>
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <div id="errorMessage" class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded" style="display: none">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <p id="errorText">Error message will appear here</p>
+                    </div>
+                </div>
 
-    <div class="divider">Or Continue With</div>
+                <!-- Important: Don't use th:action for the API endpoint, we'll use JavaScript to handle the submission -->
+                <form id="registerForm" class="space-y-6">
+                    <!-- Hidden field for plan -->
+                    <input type="hidden" name="planCode" th:value="${param.plan}" id="planCode">
 
-    <div class="social-login">
-        <a href="/oauth2/authorize/google" class="google-btn">
-            <i class="fab fa-google"></i> Google
-        </a>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">
+                            Email address
+                        </label>
+                        <div class="mt-1">
+                            <input id="email" name="email" type="email" autocomplete="email" required
+                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal focus:border-teal sm:text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">
+                            Password
+                        </label>
+                        <div class="mt-1 relative">
+                            <input id="password" name="password" type="password" autocomplete="new-password" required minlength="6" maxlength="20"
+                                   class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-teal focus:border-teal sm:text-sm">
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button type="button" id="togglePassword" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                    <i class="far fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Must be 6-20 characters</p>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal hover:bg-teal-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal">
+                            Create Account
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">
+                                Or continue with
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <a th:href="@{/oauth2/authorize/google(plan=${param.plan})}" id="googleLoginBtn"
+                           class="w-full flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal">
+                            <img src="/assets/images/google-icon.svg" alt="Google" class="h-5 w-5 mr-2">
+                            Google
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div style="text-align: center; margin-top: 24px;">
-        <p>Already have an account? <a href="/login">Log in</a></p>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password visibility
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+
+                // Toggle icon
+                const icon = togglePassword.querySelector('i');
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            });
+
+            // Handle form submission with fetch API
+            const registerForm = document.getElementById('registerForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            const planCode = document.getElementById('planCode');
+
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                // Create the request payload
+                const data = {
+                    email: email,
+                    password: password
+                };
+
+                // Send POST request to the API endpoint
+                fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+.then(data => {
+    if (data.error) {
+        // Show error message
+        errorText.textContent = data.error;
+        errorMessage.style.display = 'block';
+    } else if (data.token) {
+        // Get the selected plan
+        const planCode = document.getElementById('planCode').value;
+
+        // Decode the JWT token to get the user ID (tokens have 3 parts: header.payload.signature)
+        const payload = data.token.split('.')[1];
+        const decodedPayload = JSON.parse(atob(payload));
+        const userId = decodedPayload.sub; // 'sub' is the standard claim for subject/userID
+
+        // Redirect to the confirm-plan endpoint with userId and plan
+        window.location.href = `/onboarding/confirm-plan?userId=${userId}&plan=${planCode}&token=${data.token}`;
+    }
+})
+                .catch(error => {
+                    errorText.textContent = 'Registration failed. Please try again.';
+                    errorMessage.style.display = 'block';
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
 </div>
-</body>
-</html>

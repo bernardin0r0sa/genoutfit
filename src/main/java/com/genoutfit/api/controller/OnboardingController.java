@@ -1,20 +1,27 @@
 package com.genoutfit.api.controller;
 
-import com.genoutfit.api.model.OnboardingStatus;
-import com.genoutfit.api.model.SubscriptionPlan;
-import com.genoutfit.api.model.User;
-import com.genoutfit.api.model.UserPrincipal;
+import com.genoutfit.api.JwtTokenProvider;
+import com.genoutfit.api.model.*;
+import com.genoutfit.api.repository.UserSubscriptionRepository;
 import com.genoutfit.api.service.StripeService;
 import com.genoutfit.api.service.UserService;
+import com.stripe.model.Subscription;
+import com.stripe.model.checkout.Session;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +36,12 @@ public class OnboardingController {
     @Autowired
     private StripeService stripeService;
 
-    /**
-     * After login/signup, set the selected plan for the user and redirect to profile
-     */
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+
+    @Autowired
+    private UserSubscriptionRepository subscriptionRepository;
+
     @GetMapping("/set-plan")
     public String setPlanAfterLogin(
             @RequestParam("plan") String planName,
@@ -58,8 +68,8 @@ public class OnboardingController {
             }
         }
 
-        // If not authenticated, redirect to login with plan parameter
-        return "redirect:/login?plan=" + planName;
+        // If not authenticated, redirect to register with plan parameter instead of login
+        return "redirect:/register?plan=" + planName;
     }
 
     @GetMapping("/profile")
@@ -140,15 +150,115 @@ public class OnboardingController {
     }
 
     @GetMapping("/success")
-    public String showSuccess(Model model, HttpServletRequest request) {
-        model.addAttribute("content", "fragments/success");
-        model.addAllAttributes(createOpenGraphData(
-                "Payment Successful - OutfitGenerator",
-                request.getRequestURL().toString(),
-                "/assets/images/success-banner.jpg",
-                "Thank you for becoming a premium member"
-        ));
-        return "index";
+    public String showSuccess(
+            @RequestParam("session_id") String sessionId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            Model model,
+            HttpServletRequest request) {
+
+        try {
+            // Get the user
+            User user = userService.getCurrentUser(userPrincipal);
+
+            // Get plan from the user's selected plan
+            SubscriptionPlan plan = user.getSelectedPlan();
+            if (plan == null) {
+                // Default to BASIC if somehow no plan is selected
+                plan = SubscriptionPlan.BASIC;
+            }
+
+            // Update subscription details using the Stripe session
+            Session session = Session.retrieve(sessionId);
+
+            // 1. Activate premium status
+            user.setPremiumUser(true);
+            user.setOnboardingStatus(OnboardingStatus.COMPLETED);
+            userService.saveUser(user);
+
+// 2. Create or update subscription record
+            UserSubscription subscription = subscriptionRepository.findById(user.getId()).orElse(
+                    new UserSubscription(
+                            user.getId(),
+                            plan,
+                            session.getSubscription(),  // For subscription plans
+                            session.getCustomer()
+                    )
+            );
+
+// Always update these fields whether new or existing
+            subscription.setPlan(plan);
+            subscription.setRemainingOutfits(plan.getMonthlyOutfitQuota());
+            subscription.setActive(true);
+
+// Update subscription ID for recurring plans
+            if (plan != SubscriptionPlan.TRIAL && session.getSubscription() != null) {
+                subscription.setStripeSubscriptionId(session.getSubscription());
+
+                // Set next billing date for subscriptions
+                Subscription stripeSubscription = Subscription.retrieve(session.getSubscription());
+                LocalDateTime nextBillingDate = LocalDateTime.ofInstant(
+                        Instant.ofEpochSecond(stripeSubscription.getCurrentPeriodEnd()),
+                        ZoneId.systemDefault());
+                subscription.setNextBillingDate(nextBillingDate);
+            }
+
+            subscriptionRepository.save(subscription);
+
+            // Add the success model attributes
+            model.addAttribute("content", "fragments/success");
+            model.addAttribute("plan", plan.getDisplayName());
+            model.addAttribute("outfitQuota", plan.getMonthlyOutfitQuota());
+            model.addAllAttributes(createOpenGraphData(
+                    "Payment Successful - OutfitGenerator",
+                    request.getRequestURL().toString(),
+                    "/assets/images/success-banner.jpg",
+                    "Thank you for becoming a premium member"
+            ));
+
+            return "index";
+        } catch (Exception e) {
+            // Log error and redirect to error page
+            e.printStackTrace();
+            return "redirect:/error?message=payment-processing-failed";
+        }
+    }
+    @GetMapping("/confirm-plan")
+    public String confirmPlan(
+            @RequestParam("userId") String userId,
+            @RequestParam("plan") String planName,
+            @RequestParam("token") String token,
+            HttpServletResponse response) {
+
+        try {
+            // Verify the token is valid and contains the user ID
+            if (!tokenProvider.validateToken(token)) {
+                return "redirect:/login?error=InvalidToken";
+            }
+
+            String tokenUserId = tokenProvider.getUserIdFromToken(token);
+            if (!tokenUserId.equals(userId)) {
+                return "redirect:/login?error=InvalidUser";
+            }
+
+            // Get the user and update their plan
+            User user = userService.getUserById(userId);
+            SubscriptionPlan plan = SubscriptionPlan.valueOf(planName.toUpperCase());
+            user.setSelectedPlan(plan);
+            user.setOnboardingStatus(OnboardingStatus.PLAN_SELECTED);
+            userService.saveUser(user);
+
+            // Set the token as a cookie for future requests
+            Cookie authCookie = new Cookie("authToken", token);
+            authCookie.setPath("/");
+            authCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+            authCookie.setHttpOnly(true);
+            response.addCookie(authCookie);
+
+            // Redirect to profile page
+            return "redirect:/onboarding/profile";
+        } catch (Exception e) {
+            return "redirect:/?error=InvalidPlan";
+        }
     }
 
     private Map<String, String> createOpenGraphData(String title, String url, String imageUrl, String description) {

@@ -75,8 +75,8 @@ public class StripeService {
         params.put("line_items", List.of(lineItem));
         params.put("mode", "payment"); // one-time payment
         params.put("customer", customer.getId());
-        params.put("success_url", baseUrl + "/payment/success?session_id={CHECKOUT_SESSION_ID}&plan=TRIAL");
-        params.put("cancel_url", baseUrl + "/payment/cancel");
+        params.put("success_url", baseUrl + "/onboarding/success?session_id={CHECKOUT_SESSION_ID}");
+        params.put("cancel_url", baseUrl + "/");
 
         // Add metadata
         Map<String, String> metadata = new HashMap<>();

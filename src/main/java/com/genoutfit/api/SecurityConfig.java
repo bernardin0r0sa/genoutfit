@@ -58,6 +58,8 @@ public class SecurityConfig {
                         // Plan selection endpoints (must be public)
                         .requestMatchers("/api/onboarding/select-plan").permitAll()
                         .requestMatchers("/onboarding/set-plan").permitAll()
+                        .requestMatchers("/onboarding/confirm-plan").permitAll()
+
 
                         // Onboarding endpoints - require authentication
                         .requestMatchers("/api/onboarding/set-plan-after-login").authenticated()
