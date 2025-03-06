@@ -1,8 +1,8 @@
 <!-- fragments/pricing-plans.html -->
-<div th:fragment="pricing-plans" class="py-12 bg-white">
+<div th:fragment="pricing-plans" class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-bold text-teal tracking-tight sm:text-4xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-charcoal tracking-tight sm:text-4xl">
                 Choose Your Perfect Plan
             </h2>
             <p class="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
@@ -52,7 +52,10 @@
                     </ul>
 
                     <div class="mt-8">
-                        <a href="/onboarding/set-plan?plan=TRIAL" class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center">
+                        <a
+                                th:href="@{/onboarding/set-plan(plan='TRIAL')}"
+                                hx-boost="true"
+                                class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center transition-colors">
                             Get Started
                         </a>
                     </div>
@@ -60,13 +63,13 @@
             </div>
 
             <!-- Basic Plan -->
-            <div class="bg-white rounded-lg border-2 border-teal shadow-lg transform scale-105 z-10 overflow-hidden">
+            <div class="bg-white rounded-lg border-2 border-teal shadow-lg transform md:scale-105 z-10 overflow-hidden">
                 <div class="px-6 py-8">
                     <div class="flex justify-between items-center">
                         <h3 class="text-2xl font-bold text-charcoal">Basic</h3>
                         <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-teal-light text-white">
-              Popular
-            </span>
+                          Popular
+                        </span>
                     </div>
                     <div class="mt-4 flex items-baseline">
                         <span class="text-5xl font-extrabold text-teal">$19</span>
@@ -84,15 +87,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <p class="ml-3 text-base text-gray-700">100 outfit recommendations/month</p>
-                        </li>
-                        <li class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <p class="ml-3 text-base text-gray-700">Personalized to your preferences</p>
+                            <p class="ml-3 text-base text-gray-700"><strong>100</strong> outfit recommendations/month</p>
                         </li>
                         <li class="flex items-start">
                             <div class="flex-shrink-0">
@@ -108,13 +103,24 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
+                            <p class="ml-3 text-base text-gray-700">Basic style customization</p>
+                        </li>
+                        <li class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-6 w-6 text-teal" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
                             <p class="ml-3 text-base text-gray-700">Email support</p>
                         </li>
                     </ul>
 
                     <div class="mt-8">
-                        <a href="/onboarding/set-plan?plan=BASIC" class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center">
-                            Get Started
+                        <a
+                                th:href="@{/onboarding/set-plan(plan='BASIC')}"
+                                hx-boost="true"
+                                class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center transition-colors">
+                            Choose Basic
                         </a>
                     </div>
                 </div>
@@ -129,7 +135,7 @@
                         <span class="ml-1 text-xl font-medium text-gray-500">/month</span>
                     </div>
                     <p class="mt-5 text-lg text-gray-600">
-                        For fashion enthusiasts who want it all
+                        Advanced features for fashion enthusiasts
                     </p>
                 </div>
                 <div class="px-6 pb-8">
@@ -140,7 +146,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <p class="ml-3 text-base text-gray-700">350 outfit recommendations/month</p>
+                            <p class="ml-3 text-base text-gray-700"><strong>350</strong> outfit recommendations/month</p>
                         </li>
                         <li class="flex items-start">
                             <div class="flex-shrink-0">
@@ -148,7 +154,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <p class="ml-3 text-base text-gray-700">Premium collections access</p>
+                            <p class="ml-3 text-base text-gray-700">Exclusive premium collections</p>
                         </li>
                         <li class="flex items-start">
                             <div class="flex-shrink-0">
@@ -177,12 +183,33 @@
                     </ul>
 
                     <div class="mt-8">
-                        <a href="/onboarding/set-plan?plan=PREMIUM" class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center">
-                            Get Started
+                        <a
+                                th:href="@{/onboarding/set-plan(plan='PREMIUM')}"
+                                hx-boost="true"
+                                class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center transition-colors">
+                            Choose Premium
                         </a>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Money-back guarantee and No credit card for trial -->
+        <div class="mt-10 text-center">
+            <p class="text-gray-600">
+                <span class="inline-flex items-center mr-3">
+                    <svg class="h-5 w-5 text-teal mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    30-day money-back guarantee
+                </span>
+                <span class="inline-flex items-center">
+                    <svg class="h-5 w-5 text-teal mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Cancel anytime
+                </span>
+            </p>
         </div>
     </div>
 </div>
