@@ -216,14 +216,35 @@ public class OccasionImageService {
      * - MIXED and MIDDLE_EASTERN -> Random selection from available ethnicities
      */
     private String normalizeEthnicity(String ethnicity) {
+        if (ethnicity == null) return null;
+
+        // Handle all Asian variations
         if (ethnicity.contains("ASIAN")) {
             return "ASIAN";
-        } else if (ethnicity.equals("MIXED") || ethnicity.equals("MIDDLE_EASTERN")) {
-            // For mixed or middle eastern, randomly select an ethnicity
-            return getRandomEthnicity(ethnicity);
         }
 
-        // Return original ethnicity for WHITE, BLACK, LATINO ethnicities
+        // Handle all Black variations
+        if (ethnicity.contains("BLACK")) {
+            return "BLACK";
+        }
+
+        // Handle all White variations
+        if (ethnicity.contains("WHITE")) {
+            return "WHITE";
+        }
+
+        // Handle all Latino variations
+        if (ethnicity.contains("LATINO")) {
+            return "LATINO";
+        }
+
+        // Handle special cases
+        if (ethnicity.equals("MIXED") || ethnicity.equals("MIDDLE_EASTERN")) {
+            // For mixed or middle eastern, return a specific ethnicity
+            return "LATINO"; // Could also randomly select from main ethnicities
+        }
+
+        // Return original ethnicity if no match found
         return ethnicity;
     }
 
