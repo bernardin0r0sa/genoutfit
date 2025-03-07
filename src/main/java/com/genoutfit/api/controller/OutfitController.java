@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,7 +40,33 @@ public class OutfitController {
     StripeService stripeService;
 
     @GetMapping("/")
-    public String landingPage(Model model, HttpServletRequest request) {
+    public String landingPage(Model model, HttpServletRequest request, Authentication authentication) {
+        // Check if user is already authenticated
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+
+            try {
+                // Get the user principal
+                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                User user = userService.getCurrentUser(userPrincipal);
+
+                // Check if user is a paid user and has completed onboarding
+                if (user.isPremiumUser() && user.getOnboardingStatus() == OnboardingStatus.COMPLETED) {
+                    // User is paid and has completed onboarding, redirect to dashboard
+                    return "redirect:/dashboard";
+                } else {
+                    // User is authenticated but either not paid or not completed onboarding
+                    // Determine the next step in the onboarding process
+                    String nextStep = getNextStep(user);
+                    return "redirect:" + nextStep;
+                }
+            } catch (Exception e) {
+                // If there's an error, log it and continue to landing page
+                log.error("Error checking user status: {}", e.getMessage());
+            }
+        }
+
+        // Not authenticated or error occurred, show landing page
         model.addAllAttributes(createOpenGraphData(
                 "OutfitGenerator - AI-Powered Fashion Recommendations",
                 request.getRequestURL().toString(),
@@ -47,6 +75,8 @@ public class OutfitController {
         ));
         return "landingpage";
     }
+
+
 
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal UserPrincipal userPrincipal, Model model, HttpServletRequest request) {
@@ -216,5 +246,17 @@ public class OutfitController {
         attributes.put("ogImageUrl", imageUrl);
         attributes.put("ogPageDescription", description);
         return attributes;
+    }
+
+    /**
+     * Helper method to determine the next step in onboarding process
+     */
+    private String getNextStep(User user) {
+        return switch (user.getOnboardingStatus()) {
+            case NEW -> "/";  // If user is new and has no plan, go to landing page
+            case PLAN_SELECTED -> "/onboarding/profile";
+            case PROFILE_COMPLETED, PAYMENT_PENDING -> "/onboarding/payment";
+            case COMPLETED -> "/dashboard";
+        };
     }
 }

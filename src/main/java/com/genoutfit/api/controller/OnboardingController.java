@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -48,7 +52,8 @@ public class OnboardingController {
             @RequestParam("plan") String planName,
             Authentication authentication,
             Model model,
-            HttpSession session) {
+            HttpSession session,
+            HttpServletResponse response) {
 
         // Store the plan in session in case authentication is required
         session.setAttribute("selectedPlan", planName);
@@ -74,7 +79,14 @@ public class OnboardingController {
         }
 
         // If not authenticated, redirect to register with plan parameter instead of login
-        return "redirect:/register?plan=" + planName;
+        // This ensures a completely new request is made to /register
+        try {
+            response.sendRedirect("/register?plan=" + URLEncoder.encode(planName, StandardCharsets.UTF_8.toString()));
+            return null; // Return null since we've already sent the response
+        } catch (IOException e) {
+           // log.error("Error redirecting to register page: {}", e.getMessage());
+            return "redirect:/?error=RedirectError";
+        }
     }
 
     @GetMapping("/profile")
@@ -273,5 +285,14 @@ public class OnboardingController {
         attributes.put("ogImageUrl", imageUrl);
         attributes.put("ogPageDescription", description);
         return attributes;
+    }
+
+    private String getNextStep(User user) {
+        return switch (user.getOnboardingStatus()) {
+            case NEW -> "/";  // If user is new and has no plan, go to landing page
+            case PLAN_SELECTED -> "/onboarding/profile";
+            case PROFILE_COMPLETED, PAYMENT_PENDING -> "/onboarding/payment";
+            case COMPLETED -> "/dashboard";
+        };
     }
 }
