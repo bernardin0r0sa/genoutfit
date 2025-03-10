@@ -6,6 +6,7 @@ import com.genoutfit.api.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +59,19 @@ public class AuthController {
         return "index";
     }
 
-    @GetMapping("/register")
-    public String register(Model model, HttpServletRequest request, @RequestParam(required = false) String plan) {
+    @GetMapping("/onboard")
+    public String register(Model model, HttpServletRequest request,
+                           @RequestParam(required = false) String plan,
+                           @RequestParam(required = false) Boolean onboarding,
+                           Authentication authentication,
+                           HttpSession session) {
+
+
         model.addAttribute("content", "fragments/register");
 
-        // Pass the plan parameter if it exists
+        // Store plan in session for use after registration if provided
         if (plan != null && !plan.isEmpty()) {
+            session.setAttribute("selectedPlan", plan);
             model.addAttribute("selectedPlan", plan);
         }
 
@@ -73,6 +81,7 @@ public class AuthController {
                 "/assets/images/signup-banner.jpg",
                 "Create your OutfitGenerator account"
         ));
+
         return "index";
     }
 

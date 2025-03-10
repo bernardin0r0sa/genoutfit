@@ -81,7 +81,7 @@ public class OnboardingController {
         // If not authenticated, redirect to register with plan parameter instead of login
         // This ensures a completely new request is made to /register
         try {
-            response.sendRedirect("/register?plan=" + URLEncoder.encode(planName, StandardCharsets.UTF_8.toString()));
+            response.sendRedirect("/onboard?plan=" + URLEncoder.encode(planName, StandardCharsets.UTF_8.toString()));
             return null; // Return null since we've already sent the response
         } catch (IOException e) {
            // log.error("Error redirecting to register page: {}", e.getMessage());

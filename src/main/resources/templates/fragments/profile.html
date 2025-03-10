@@ -21,8 +21,8 @@
               th:value="${gender}" th:text="${gender.displayName}">Gender</option>
     </select>
 
-    <input type="number" name="height" id="height" placeholder="Height (cm)" required>
-    <input type="number" name="age" id="age" placeholder="Age" required min="13">
+    <input type="hidden" name="height"  value="160" id="height" placeholder="Height (cm)" required>
+    <input type="hidden" name="age" value="27" id="age" placeholder="Age" required min="13">
 
     <div class="style-prefs">
       <label>Style Preferences (optional)</label>

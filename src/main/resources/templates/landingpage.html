@@ -61,7 +61,7 @@
     .animate-scroll {
       animation: scroll 25s linear infinite;
       display: flex;
-      width: calc(280px * 6); /* Adjust this based on the number of images and their width */
+      width: calc(280px * 8); /* Adjust this based on the number of images and their width */
     }
 
     .animate-scroll:hover {
@@ -129,7 +129,7 @@
         Stop Stressing About What to Wear
       </h1>
       <p class="text-lg text-gray-600 mt-6">
-        AI-powered outfit recommendations tailored to your body type, ethnicity, and personal style for any occasion. Look your best without the guesswork.
+        AI-powered outfit recommendations tailored to your body type and personal style for any occasion. Look your best without the guesswork.
       </p>
       <div class="flex w-full justify-center md:justify-start mt-8">
         <a href="#pricing">
@@ -161,12 +161,15 @@
         <div class="flex gap-4 animate-scroll">
           <!-- First set of images -->
           <img th:src="@{/assets/images/showcase/outfit1.jpg}" alt="Woman in business casual outfit" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
-          <img th:src="@{/assets/images/showcase/outfit2.jpg}" alt="Woman in evening gown" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
           <img th:src="@{/assets/images/showcase/outfit3.jpg}" alt="Woman in casual weekend outfit" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img th:src="@{/assets/images/showcase/outfit2.jpg}" alt="Woman in evening gown" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img th:src="@{/assets/images/showcase/outfit4.jpg}" alt="Man in stylish outfit" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
           <!-- Duplicate set of images for seamless loop -->
           <img th:src="@{/assets/images/showcase/outfit1.jpg}" alt="Woman in business casual outfit" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
-          <img th:src="@{/assets/images/showcase/outfit2.jpg}" alt="Woman in evening gown" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
           <img th:src="@{/assets/images/showcase/outfit3.jpg}" alt="Woman in casual weekend outfit" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img th:src="@{/assets/images/showcase/outfit2.jpg}" alt="Woman in evening gown" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+          <img th:src="@{/assets/images/showcase/outfit4.jpg}" alt="Man in stylish outfit" class="w-[280px] h-[560px] object-cover rounded-2xl shadow-lg">
+
         </div>
       </div>
     </div>
@@ -186,7 +189,7 @@
         <div class="text-teal text-4xl mb-4">👤</div>
         <h3 class="text-xl font-semibold mb-2 text-charcoal">Personalized to You</h3>
         <p class="text-gray-600">
-          Receive outfit recommendations tailored to your body type, ethnicity, and style preferences. No one-size-fits-all solutions.
+          Receive outfit recommendations tailored to your body type and style preferences. No one-size-fits-all solutions.
         </p>
       </div>
 
@@ -224,7 +227,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <!-- Occasion 1 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/date_night.jpg}" alt="Date Night" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/date_night.jpg}" alt="Date Night" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Date Night</h3>
         </div>
@@ -232,7 +235,7 @@
 
       <!-- Occasion 2 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/office_party.jpg}" alt="Office Party" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/office_party.jpg}" alt="Office Party" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Office Party</h3>
         </div>
@@ -240,7 +243,7 @@
 
       <!-- Occasion 3 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/wedding_guest.jpg}" alt="Wedding Guest" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/wedding_guest.jpg}" alt="Wedding Guest" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Wedding Guest</h3>
         </div>
@@ -248,7 +251,7 @@
 
       <!-- Occasion 4 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/casual_outing.jpg}" alt="Casual Outing" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/casual_outing.jpg}" alt="Casual Outing" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Casual Outing</h3>
         </div>
@@ -256,7 +259,7 @@
 
       <!-- Occasion 5 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/formal_event.jpg}" alt="Formal Event" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/formal_event.jpg}" alt="Formal Event" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Formal Event</h3>
         </div>
@@ -264,7 +267,7 @@
 
       <!-- Occasion 6 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/beach_vacation.jpg}" alt="Beach Vacation" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/beach_vacation.jpg}" alt="Beach Vacation" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Beach Vacation</h3>
         </div>
@@ -272,7 +275,7 @@
 
       <!-- Occasion 7 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/business_casual.jpg}" alt="Business Casual" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/business_casual.jpg}" alt="Business Casual" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Business Casual</h3>
         </div>
@@ -280,7 +283,7 @@
 
       <!-- Occasion 8 -->
       <div class="relative group overflow-hidden rounded-lg shadow-md">
-        <img th:src="@{/assets/images/occasions/gala.jpg}" alt="Gala" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110">
+        <img th:src="@{/assets/images/occasions/gala.jpg}" alt="Gala" class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
           <h3 class="text-white font-semibold">Gala</h3>
         </div>
@@ -304,7 +307,7 @@
         </div>
         <h3 class="text-xl font-semibold mb-4 mt-4 text-charcoal">Create Your Profile</h3>
         <p class="text-gray-600">
-          Tell us about your body type, ethnicity, and style preferences. The more we know, the better we can tailor recommendations to you.
+          Tell us about your body type and style preferences. The more we know, the better we can tailor recommendations to you.
         </p>
       </div>
 
@@ -365,7 +368,7 @@
           </div>
         </div>
         <p class="text-gray-600 italic">
-          "I used to spend hours figuring out what to wear for important events. OutfitGenerator has been a lifesaver! I love how the AI actually considers my body type."
+          "I used to spend hours figuring out what to wear for important events. GenOutfit has been a lifesaver! I love how the AI actually considers my body type."
         </p>
       </div>
 
@@ -424,7 +427,7 @@
       <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
         <h3 class="text-xl font-semibold mb-2 text-charcoal">How personalized are the outfit recommendations?</h3>
         <p class="text-gray-600">
-          Our AI generates highly personalized outfits based on your body type, skin tone, gender, style preferences, and the specific occasion you're dressing for. Each recommendation is unique to you.
+          Our AI generates highly personalized outfits based on your body type, gender, style preferences, and the specific occasion you're dressing for. Each recommendation is tailored to you.
         </p>
       </div>
 
@@ -504,7 +507,7 @@
         <ul class="space-y-2">
           <li class="text-gray-400">
             <a href="mailto:support@outfitgenerator.ai" class="hover:text-white transition-colors">
-              support@outfitgenerator.ai
+              support@genoutfit.com
             </a>
           </li>
           <li class="text-gray-400">Follow us:</li>
@@ -531,7 +534,7 @@
 
     <div class="mt-12 pt-8 border-t border-gray-700 text-center">
       <p class="text-gray-500">
-        &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2023</span> OutfitGenerator. All rights reserved.
+        &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2023</span> GenOutfit. All rights reserved.
       </p>
     </div>
   </div>
