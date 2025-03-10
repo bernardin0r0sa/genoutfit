@@ -52,11 +52,10 @@
                     </ul>
 
                     <div class="mt-8">
-                        <a
-                                th:href="@{/onboarding/set-plan(plan='TRIAL',onboarding='true')}"
-                                hx-boost="true"
-                                class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center transition-colors">
-                            Get Started
+                        <a href="#"
+                           onclick="window.location.href='/onboarding/set-plan?plan=TRIAL&onboarding=true'; return false;"
+                           class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center transition-colors">
+                            Choose Premium
                         </a>
                     </div>
                 </div>
@@ -117,7 +116,8 @@
 
                     <div class="mt-8">
                         <a
-                                th:href="@{/onboarding/set-plan(plan='BASIC',onboarding='true')}"
+                                href="#"
+                                onclick="window.location.href='/onboarding/set-plan?plan=BASIC&onboarding=true'; return false;"
                                 hx-boost="true"
                                 class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center transition-colors">
                             Choose Basic
@@ -176,7 +176,8 @@
 
                     <div class="mt-8">
                         <a
-                                th:href="@{/onboarding/set-plan(plan='PREMIUM',onboarding='true')}"
+                                href="#"
+                                onclick="window.location.href='/onboarding/set-plan?plan=PREMIUM&onboarding=true'; return false;"
                                 hx-boost="true"
                                 class="block w-full bg-teal hover:bg-teal-dark text-white font-medium rounded-md px-4 py-3 text-center transition-colors">
                             Choose Premium
