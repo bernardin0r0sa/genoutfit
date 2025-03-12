@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -303,6 +304,8 @@ public class OutfitGenerationService {
     }
 
     private List<OutfitVector> findSimilarOutfits(User user, Occasion occasion) {
+        return findOutfitsWithFallback(user, occasion);
+        /*
         Map<String, Object> searchCriteria = new HashMap<>();
         searchCriteria.put("occasion", occasion.name());
         searchCriteria.put("gender", user.getGender().name());
@@ -317,7 +320,8 @@ public class OutfitGenerationService {
         } catch (Exception e) {
             log.error("Error finding similar outfits: {}", e.getMessage());
             throw new RuntimeException("Failed to find similar outfits", e);
-        }
+        }*/
+
     }
 
     private String formatPrompt(PromptTemplate template, String userDescription, String clothingDescription) {
@@ -523,6 +527,339 @@ public class OutfitGenerationService {
 
         subscription.useOutfit();
         subscriptionRepository.save(subscription);
+    }
+
+
+    /**
+     * Find outfits with fallback policy:
+     * 1. Try with user preferences
+     * 2. If no results, try basic search
+     * 3. If still no results, use generic prompts
+     */
+    private List<OutfitVector> findOutfitsWithFallback(User user, Occasion occasion) {
+        log.info("Searching for outfits for user {} and occasion {}", user.getId(), occasion);
+        List<OutfitVector> outfits = new ArrayList<>();
+
+        // ATTEMPT 1: Search with all user preferences
+        if (user.getStylePreferences() != null && !user.getStylePreferences().isEmpty()) {
+            try {
+                Map<String, Object> fullCriteria = new HashMap<>();
+                fullCriteria.put("occasion", occasion.name());
+                fullCriteria.put("gender", user.getGender().name());
+                fullCriteria.put("bodyType", user.getBodyType().name());
+                fullCriteria.put("style", new ArrayList<>(user.getStylePreferences()));
+
+                outfits = outfitReferenceService.search(fullCriteria, 5);
+                log.info("Found {} outfits using full user preferences", outfits.size());
+            } catch (Exception e) {
+                log.error("Error searching with preferences: {}", e.getMessage());
+            }
+        }
+
+        // ATTEMPT 2: If no results, try basic search without style preferences
+        if (outfits.isEmpty()) {
+            try {
+                Map<String, Object> basicCriteria = new HashMap<>();
+                basicCriteria.put("occasion", occasion.name());
+                basicCriteria.put("gender", user.getGender().name());
+                basicCriteria.put("bodyType", user.getBodyType().name());
+
+                outfits = outfitReferenceService.search(basicCriteria, 5);
+                log.info("Found {} outfits using basic criteria (no style preferences)", outfits.size());
+            } catch (Exception e) {
+                log.error("Error searching with basic criteria: {}", e.getMessage());
+            }
+        }
+
+        // ATTEMPT 3: If still no results, use generic fallback
+        if (outfits.isEmpty()) {
+            OutfitVector genericOutfit = createGenericOutfit(user, occasion);
+            outfits.add(genericOutfit);
+            log.info("Using generic outfit fallback for occasion {}", occasion);
+        }
+
+        return outfits;
+    }
+
+    /**
+     * Create a generic outfit when no matching outfits are found
+     */
+    private OutfitVector createGenericOutfit(User user, Occasion occasion) {
+        // Get generic clothing pieces for the occasion
+        Map<String, List<String>> clothingPieces = getGenericClothingPieces(occasion, user.getGender());
+
+        // Get suitable colors based on occasion
+        List<String> colors = getGenericColors(occasion);
+
+        // Create a unique ID for the generic outfit
+        String id = "generic-" + occasion.name() + "-" + UUID.randomUUID().toString();
+
+        // Create metadata
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("isGeneric", "true");
+        metadata.put("generatedFor", user.getId());
+        metadata.put("occasion", occasion.name());
+        metadata.put("gender", user.getGender().name());
+        metadata.put("bodyType", user.getBodyType().name());
+        metadata.put("season", getCurrentSeason());
+        metadata.put("formality", getOccasionFormality(occasion));
+
+        // Create additional metadata
+        Map<String, Object> additionalMetadata = new HashMap<>();
+        additionalMetadata.put("bodyTypes", List.of(user.getBodyType().name()));
+        additionalMetadata.put("occasions", List.of(occasion.name().toLowerCase()));
+        additionalMetadata.put("generatedAt", LocalDateTime.now().toString());
+
+        // Build and return generic outfit vector
+        return OutfitVector.builder()
+                .id(id)
+                .style(getGenericStyle(occasion))
+                .clothingPieces(clothingPieces)
+                .colors(colors)
+                .metadata(metadata)
+                .additionalMetadata(additionalMetadata)
+                .build();
+    }
+
+    /**
+     * Get generic clothing pieces for an occasion based on gender
+     */
+    private Map<String, List<String>> getGenericClothingPieces(Occasion occasion, Gender gender) {
+        Map<String, List<String>> pieces = new HashMap<>();
+
+        if (gender == Gender.FEMALE) {
+            switch (occasion) {
+                case DATE_NIGHT:
+                    pieces.put("top", List.of("elegant blouse", "silk top"));
+                    pieces.put("bottom", List.of("tailored pants", "midi skirt"));
+                    pieces.put("outerwear", List.of("fitted blazer"));
+                    pieces.put("accessories", List.of("statement earrings", "clutch purse"));
+                    pieces.put("shoes", List.of("heeled sandals", "elegant pumps"));
+                    break;
+                case OFFICE_PARTY:
+                    pieces.put("top", List.of("formal blouse", "elegant top"));
+                    pieces.put("bottom", List.of("tailored pants", "pencil skirt"));
+                    pieces.put("outerwear", List.of("statement blazer"));
+                    pieces.put("accessories", List.of("simple necklace", "structured handbag"));
+                    pieces.put("shoes", List.of("comfortable heels", "loafers"));
+                    break;
+                case WEDDING_GUEST:
+                    pieces.put("dress", List.of("elegant midi dress", "formal maxi dress"));
+                    pieces.put("accessories", List.of("statement jewelry", "small clutch"));
+                    pieces.put("shoes", List.of("strappy heels", "elegant pumps"));
+                    break;
+                case CASUAL_OUTING:
+                    pieces.put("top", List.of("casual t-shirt", "light sweater"));
+                    pieces.put("bottom", List.of("jeans", "casual pants"));
+                    pieces.put("outerwear", List.of("denim jacket", "light cardigan"));
+                    pieces.put("accessories", List.of("casual bag", "simple jewelry"));
+                    pieces.put("shoes", List.of("sneakers", "casual flats"));
+                    break;
+                case FORMAL_EVENT:
+                    pieces.put("dress", List.of("formal gown", "elegant cocktail dress"));
+                    pieces.put("accessories", List.of("statement jewelry", "evening clutch"));
+                    pieces.put("shoes", List.of("formal heels", "designer pumps"));
+                    break;
+                case BEACH_VACATION:
+                    pieces.put("top", List.of("light tank top", "beach cover-up"));
+                    pieces.put("bottom", List.of("shorts", "flowy skirt"));
+                    pieces.put("accessories", List.of("sun hat", "beach bag", "sunglasses"));
+                    pieces.put("shoes", List.of("sandals", "espadrilles"));
+                    break;
+                case BUSINESS_CASUAL:
+                    pieces.put("top", List.of("blouse", "button-down shirt"));
+                    pieces.put("bottom", List.of("slacks", "knee-length skirt"));
+                    pieces.put("outerwear", List.of("casual blazer", "cardigan"));
+                    pieces.put("accessories", List.of("simple necklace", "professional bag"));
+                    pieces.put("shoes", List.of("loafers", "low heels"));
+                    break;
+                case PARTY:
+                    pieces.put("top", List.of("sequin top", "going-out blouse"));
+                    pieces.put("bottom", List.of("stylish jeans", "statement skirt"));
+                    pieces.put("accessories", List.of("statement jewelry", "clutch"));
+                    pieces.put("shoes", List.of("heels", "fashionable boots"));
+                    break;
+                case GALA:
+                    pieces.put("dress", List.of("formal gown", "floor-length dress"));
+                    pieces.put("accessories", List.of("fine jewelry", "elegant clutch"));
+                    pieces.put("shoes", List.of("formal heels", "designer shoes"));
+                    break;
+                default:
+                    pieces.put("top", List.of("versatile blouse"));
+                    pieces.put("bottom", List.of("classic pants"));
+                    pieces.put("accessories", List.of("simple jewelry"));
+                    pieces.put("shoes", List.of("versatile flats"));
+            }
+        } else { // MALE
+            switch (occasion) {
+                case DATE_NIGHT:
+                    pieces.put("top", List.of("button-down shirt", "polo shirt"));
+                    pieces.put("bottom", List.of("chinos", "dress pants"));
+                    pieces.put("outerwear", List.of("blazer", "leather jacket"));
+                    pieces.put("accessories", List.of("watch", "leather belt"));
+                    pieces.put("shoes", List.of("dress shoes", "loafers"));
+                    break;
+                case OFFICE_PARTY:
+                    pieces.put("top", List.of("dress shirt", "button-down"));
+                    pieces.put("bottom", List.of("dress pants", "chinos"));
+                    pieces.put("outerwear", List.of("blazer", "sport coat"));
+                    pieces.put("accessories", List.of("tie", "pocket square"));
+                    pieces.put("shoes", List.of("oxfords", "loafers"));
+                    break;
+                case WEDDING_GUEST:
+                    pieces.put("top", List.of("dress shirt"));
+                    pieces.put("bottom", List.of("suit pants"));
+                    pieces.put("outerwear", List.of("suit jacket"));
+                    pieces.put("accessories", List.of("tie", "pocket square", "cufflinks"));
+                    pieces.put("shoes", List.of("formal dress shoes"));
+                    break;
+                case CASUAL_OUTING:
+                    pieces.put("top", List.of("t-shirt", "casual button-down"));
+                    pieces.put("bottom", List.of("jeans", "chinos"));
+                    pieces.put("outerwear", List.of("casual jacket", "sweater"));
+                    pieces.put("accessories", List.of("casual watch", "hat"));
+                    pieces.put("shoes", List.of("sneakers", "casual boots"));
+                    break;
+                case FORMAL_EVENT:
+                    pieces.put("top", List.of("formal dress shirt", "tuxedo shirt"));
+                    pieces.put("bottom", List.of("formal suit pants", "tuxedo pants"));
+                    pieces.put("outerwear", List.of("suit jacket", "tuxedo jacket"));
+                    pieces.put("accessories", List.of("bow tie", "cufflinks"));
+                    pieces.put("shoes", List.of("formal oxford shoes"));
+                    break;
+                case BEACH_VACATION:
+                    pieces.put("top", List.of("linen shirt", "t-shirt"));
+                    pieces.put("bottom", List.of("shorts", "linen pants"));
+                    pieces.put("accessories", List.of("sunglasses", "hat"));
+                    pieces.put("shoes", List.of("sandals", "boat shoes"));
+                    break;
+                case BUSINESS_CASUAL:
+                    pieces.put("top", List.of("button-down shirt", "polo"));
+                    pieces.put("bottom", List.of("chinos", "khakis"));
+                    pieces.put("outerwear", List.of("sport coat", "cardigan"));
+                    pieces.put("accessories", List.of("leather belt", "watch"));
+                    pieces.put("shoes", List.of("loafers", "dress shoes"));
+                    break;
+                case PARTY:
+                    pieces.put("top", List.of("stylish shirt", "graphic tee"));
+                    pieces.put("bottom", List.of("jeans", "chinos"));
+                    pieces.put("outerwear", List.of("bomber jacket", "denim jacket"));
+                    pieces.put("accessories", List.of("watch", "casual accessories"));
+                    pieces.put("shoes", List.of("stylish sneakers", "casual boots"));
+                    break;
+                case GALA:
+                    pieces.put("top", List.of("tuxedo shirt", "formal dress shirt"));
+                    pieces.put("bottom", List.of("tuxedo pants", "formal suit pants"));
+                    pieces.put("outerwear", List.of("tuxedo jacket", "formal suit jacket"));
+                    pieces.put("accessories", List.of("bow tie", "cufflinks", "pocket square"));
+                    pieces.put("shoes", List.of("patent leather shoes", "formal oxfords"));
+                    break;
+                default:
+                    pieces.put("top", List.of("versatile button-down"));
+                    pieces.put("bottom", List.of("classic pants"));
+                    pieces.put("accessories", List.of("simple watch"));
+                    pieces.put("shoes", List.of("versatile leather shoes"));
+            }
+        }
+
+        return pieces;
+    }
+
+    /**
+     * Get generic colors based on occasion
+     */
+    private List<String> getGenericColors(Occasion occasion) {
+        switch (occasion) {
+            case DATE_NIGHT:
+                return List.of("black", "burgundy", "navy", "red");
+            case OFFICE_PARTY:
+                return List.of("navy", "charcoal", "burgundy", "forest green");
+            case WEDDING_GUEST:
+                return List.of("navy", "dusty blue", "blush", "champagne", "emerald");
+            case CASUAL_OUTING:
+                return List.of("blue", "white", "gray", "beige");
+            case FORMAL_EVENT:
+                return List.of("black", "navy", "white", "gold", "silver");
+            case BEACH_VACATION:
+                return List.of("white", "blue", "coral", "turquoise", "yellow");
+            case BUSINESS_CASUAL:
+                return List.of("navy", "gray", "white", "light blue", "khaki");
+            case PARTY:
+                return List.of("black", "red", "silver", "gold", "purple");
+            case GALA:
+                return List.of("black", "navy", "emerald", "burgundy", "gold");
+            default:
+                return List.of("black", "navy", "white", "gray");
+        }
+    }
+
+    /**
+     * Get a generic style based on occasion
+     */
+    private String getGenericStyle(Occasion occasion) {
+        switch (occasion) {
+            case DATE_NIGHT:
+                return "romantic";
+            case OFFICE_PARTY:
+                return "business casual";
+            case WEDDING_GUEST:
+                return "formal";
+            case CASUAL_OUTING:
+                return "casual";
+            case FORMAL_EVENT:
+                return "formal";
+            case BEACH_VACATION:
+                return "resort wear";
+            case BUSINESS_CASUAL:
+                return "business casual";
+            case PARTY:
+                return "party";
+            case GALA:
+                return "formal";
+            default:
+                return "casual";
+        }
+    }
+
+    /**
+     * Get current season based on month
+     */
+    private String getCurrentSeason() {
+        int month = LocalDateTime.now().getMonthValue();
+
+        if (month >= 3 && month <= 5) {
+            return "spring";
+        } else if (month >= 6 && month <= 8) {
+            return "summer";
+        } else if (month >= 9 && month <= 11) {
+            return "fall";
+        } else {
+            return "winter";
+        }
+    }
+
+    /**
+     * Get formality level based on occasion (1-5 scale)
+     */
+    private int getOccasionFormality(Occasion occasion) {
+        switch (occasion) {
+            case FORMAL_EVENT:
+            case GALA:
+                return 5;
+            case WEDDING_GUEST:
+                return 4;
+            case DATE_NIGHT:
+            case OFFICE_PARTY:
+                return 3;
+            case BUSINESS_CASUAL:
+                return 2;
+            case CASUAL_OUTING:
+            case BEACH_VACATION:
+            case PARTY:
+                return 1;
+            default:
+                return 2;
+        }
     }
 
 }

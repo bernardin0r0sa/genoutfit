@@ -3,15 +3,17 @@ package com.genoutfit.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.genoutfit.api.model.OutfitReference;
-import com.genoutfit.api.model.OutfitVector;
+import com.genoutfit.api.model.*;
 import com.genoutfit.api.repository.OutfitReferenceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.genoutfit.api.model.Occasion.*;
 
 @Service
 @Slf4j
@@ -78,7 +80,10 @@ public class OutfitReferenceService {
 
         } catch (Exception e) {
             log.error("Error searching outfits: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to search outfits", e);
+
+            // Instead of throwing an exception, return an empty list
+            // This allows the fallback system to take over
+            return Collections.emptyList();
         }
     }
 
@@ -248,4 +253,5 @@ public class OutfitReferenceService {
         // Keep as enum format for matching with JSON stored values
         return occasion;
     }
+
 }
