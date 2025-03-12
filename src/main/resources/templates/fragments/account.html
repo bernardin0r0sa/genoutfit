@@ -89,12 +89,65 @@
           </div>
         </div>
 
+        <!-- Upgrade Options Section -->
+        <div class="mb-6" th:if="${subscription != null}">
+          <h3 class="text-md font-medium mb-3">Upgrade Options</h3>
+          <!-- Show upgrade buttons based on current plan -->
+          <div class="flex flex-wrap gap-2">
+            <!-- Trial Plan - Show Basic and Premium upgrade options -->
+            <div th:if="${subscription.planName == 'Trial'}">
+              <button
+                      hx-post="/api/subscription/upgrade"
+                      hx-vals='{"plan": "BASIC"}'
+                      class="px-4 py-2 bg-teal text-white rounded-md hover:bg-teal-dark transition-colors">
+                Upgrade to Basic
+              </button>
+              <button
+                      hx-post="/api/subscription/upgrade"
+                      hx-vals='{"plan": "PREMIUM"}'
+                      class="px-4 py-2 ml-2 bg-coral text-white rounded-md hover:opacity-90 transition-colors">
+                Upgrade to Premium
+              </button>
+            </div>
+
+            <!-- Basic Plan - Show only Premium upgrade option -->
+            <div th:if="${subscription.planName == 'Basic'}">
+              <button
+                      hx-post="/api/subscription/upgrade"
+                      hx-vals='{"plan": "PREMIUM"}'
+                      class="px-4 py-2 bg-coral text-white rounded-md hover:opacity-90 transition-colors">
+                Upgrade to Premium
+              </button>
+            </div>
+
+            <!-- Premium Plan - No upgrade options needed -->
+            <div th:if="${subscription.planName == 'Premium'}" class="bg-teal-light text-white px-3 py-1 rounded text-sm">
+              You're on our best plan!
+            </div>
+          </div>
+
+          <!-- Why upgrade info -->
+          <div class="mt-3 text-sm text-gray-600" th:if="${subscription.planName != 'Premium'}">
+            <p>Upgrade for more outfit recommendations and premium features</p>
+          </div>
+        </div>
+
         <!-- Stripe Portal Link -->
         <div class="flex flex-col space-y-2">
           <a th:href="${billingPortal}" target="_blank" class="px-4 py-2 bg-teal text-white rounded-md hover:bg-teal-light transition-colors text-center">
             <i class="fas fa-external-link-alt mr-1 text-xs"></i>
             Manage Billing
           </a>
+
+          <!-- Cancel Subscription Button -->
+          <button
+                  th:if="${subscription != null && subscription.status == 'Active'}"
+                  class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors text-center mt-2"
+                  hx-post="/api/subscription/cancel"
+                  hx-confirm="Are you sure you want to cancel your subscription? You'll still have access until the end of your billing period."
+                  hx-swap="none">
+            Cancel Subscription
+          </button>
         </div>
       </div>
     </div>
@@ -156,6 +209,60 @@
             document.getElementById('passwordErrorMessage').textContent = 'Failed to update password';
           }
           document.getElementById('passwordErrorAlert').classList.remove('hidden');
+        }
+      });
+
+      // Handle subscription cancellation response
+      htmx.on('body', 'htmx:afterRequest', function(event) {
+        if (event.detail.elt.getAttribute('hx-post') === '/api/subscription/cancel' && event.detail.successful) {
+          // Show success toast
+          const toast = document.getElementById('accountActionToast');
+          toast.classList.remove('hidden');
+          setTimeout(() => {
+            toast.classList.add('hidden');
+          }, 3000);
+
+          // Reload page to update subscription status
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+      });
+
+      // Handle subscription upgrade response
+      htmx.on('button[hx-post="/api/subscription/upgrade"]', 'htmx:afterRequest', function(event) {
+        if (event.detail.successful) {
+          try {
+            const response = JSON.parse(event.detail.xhr.responseText);
+            if (response.checkoutUrl) {
+              // Redirect to Stripe checkout
+              window.location.href = response.checkoutUrl;
+            } else if (response.nextStep) {
+              // Redirect to next step in the onboarding flow
+              window.location.href = response.nextStep;
+            } else {
+              // Fallback: reload the page
+              window.location.reload();
+            }
+          } catch (e) {
+            // If response parsing fails, just reload the page
+            window.location.reload();
+          }
+        } else {
+          // Show error toast
+          const toast = document.getElementById('accountActionToast');
+          toast.classList.remove('hidden');
+          toast.classList.remove('bg-green-100', 'border-green-500', 'text-green-700');
+          toast.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+          toast.querySelector('p').textContent = 'Failed to process upgrade. Please try again.';
+
+          setTimeout(() => {
+            toast.classList.add('hidden');
+            // Reset toast to success state
+            toast.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+            toast.classList.remove('bg-red-100', 'border-red-500', 'text-red-700');
+            toast.querySelector('p').textContent = 'Your changes have been saved!';
+          }, 3000);
         }
       });
     });

@@ -117,6 +117,60 @@ public class SubscriptionController {
     }
 
     /**
+     * New endpoint to handle subscription upgrades
+     * To be added to SubscriptionController.java
+     */
+    @PostMapping("/upgrade")
+    public ResponseEntity<?> upgradeSubscription(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestParam("plan") String planName) throws Exception {
+
+        try {
+            // Validate plan
+            SubscriptionPlan plan = SubscriptionPlan.valueOf(planName.toUpperCase());
+
+            // Get current user
+            User user = userService.getCurrentUser(userPrincipal);
+
+            // Get current subscription
+            UserSubscription currentSubscription = subscriptionRepository.findById(user.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("No subscription found"));
+
+            // Verify not downgrading or same plan
+            if (currentSubscription.getPlan() == plan) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "You are already on this plan"
+                ));
+            }
+
+            // Make sure not downgrading (PREMIUM > BASIC > TRIAL)
+            if ((currentSubscription.getPlan() == SubscriptionPlan.PREMIUM) ||
+                    (currentSubscription.getPlan() == SubscriptionPlan.BASIC && plan == SubscriptionPlan.TRIAL)) {
+                return ResponseEntity.badRequest().body(Map.of(
+                        "error", "Cannot downgrade plan through this flow"
+                ));
+            }
+
+            // Update user with selected plan for upgrade
+            user.setSelectedPlan(plan);
+            userService.saveUser(user);
+
+            // Create checkout URL for the new plan
+            String checkoutUrl = stripeService.createSubscriptionCheckoutSession(
+                    user.getEmail(), user.getId(), plan);
+
+            return ResponseEntity.ok(Map.of(
+                    "checkoutUrl", checkoutUrl
+            ));
+        } catch (Exception e) {
+            log.error("Error upgrading subscription: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Failed to upgrade: " + e.getMessage()
+            ));
+        }
+    }
+
+    /**
      * Stripe webhook handler
 
     @PostMapping("/webhook")
