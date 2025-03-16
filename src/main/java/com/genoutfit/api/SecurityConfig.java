@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                         // Public endpoints
                         .requestMatchers("/process-login").permitAll()
-                        .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**","/onboard").permitAll()
+                        .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**","/onboard","/terms","/privacy").permitAll()
 
                         // Public API endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
@@ -113,7 +113,15 @@ public class SecurityConfig {
                                     + authException.getMessage() + "\"}");
                         })
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("authToken")
+                .permitAll()
+        );
 
         return http.build();
     }

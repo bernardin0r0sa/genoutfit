@@ -169,4 +169,5 @@ public class AuthController {
         // Redirect to Spring Security's OAuth2 authorization endpoint
         return "redirect:/oauth2/authorization/google";
     }
+
 }
