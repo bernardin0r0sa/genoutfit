@@ -1,7 +1,7 @@
 {
-  "name": "timeless-love-ai",
+  "name": "genoutfit",
   "version": "1.0.0",
-  "description": "Timeless Love AI",
+  "description": "GenOutfit",
   "scripts": {
     "minify-js": "mkdir -p src/main/resources/static/js/minified && uglifyjs src/main/resources/static/js/*.js --compress --mangle --output src/main/resources/static/js/minified/app.min.js",
     "minify": "npm run minify-js"
