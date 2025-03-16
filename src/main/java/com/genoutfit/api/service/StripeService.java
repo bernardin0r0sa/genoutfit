@@ -29,22 +29,22 @@ import java.util.Map;
 @Service
 @Slf4j
 public class StripeService {
-    @Value("${stripe.api.key}")
+    @Value("${STRIPE_API_KEY}")
     private String stripeApiKey;
 
-    @Value("${stripe.price.trial}")
+    @Value("${STRIPE_PRICE_ID_TRIAL}")
     private String stripeTrial;
 
-    @Value("${stripe.price.basic}")
+    @Value("${STRIPE_PRICE_ID_BASIC}")
     private String stripeBasicPrice;
 
-    @Value("${stripe.price.premium}")
+    @Value("${STRIPE_PRICE_ID_PREMIUM}")
     private String stripePremiumPrice;
 
     @Value("${stripe.webhook.secret}")
     private String stripeWebhookSecret;
 
-    @Value("${base.url}")
+    @Value("${BASE_URL}")
     private String baseUrl;
 
     @Autowired
