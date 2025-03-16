@@ -10,7 +10,7 @@ COPY src /app/src
 
 # If you have a package.json file, copy it into the container
 COPY package.json /app/
-COPY package-lock.json /app/
+#COPY package-lock.json /app/
 
 # Build the application
 RUN mvn clean package -DskipTests
