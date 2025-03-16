@@ -22,7 +22,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the built jar file from the Maven container
-COPY --from=build /app/target/ourlifetogether-1.0.0.jar ./ourlifetogether.jar
+COPY --from=build /app/target/genoutfit-1.0.0.jar ./genoutfit.jar
 
 # Copy the static resources
 COPY --from=build /app/src/main/resources/static ./src/main/resources/static
@@ -42,5 +42,8 @@ RUN openssl s_client -showcerts -connect c2137757a033f71e5abddb52bba08b3f.r2.clo
 # Import the certificate into the Java trust store
 RUN keytool -import -alias cloudflare-r2 -file /app/server.crt -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt
 
+# Expose the port your application runs on
+EXPOSE 8080
+
 # Run the application with logging enabled
-ENTRYPOINT ["java", "-Dlogging.file=/app/logs/application.log", "-jar", "ourlifetogether.jar"]
+ENTRYPOINT ["java", "-Dlogging.file=/app/logs/application.log", "-jar", "genoutfit.jar"]

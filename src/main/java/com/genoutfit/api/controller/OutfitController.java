@@ -259,4 +259,14 @@ public class OutfitController {
             case COMPLETED -> "/dashboard";
         };
     }
+
+    @GetMapping("/terms")
+    public String termsOfService() {
+        return "terms";
+    }
+
+    @GetMapping("/privacy")
+    public String privacyPolicy() {
+        return "privacy";
+    }
 }
