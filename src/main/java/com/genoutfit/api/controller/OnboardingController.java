@@ -145,16 +145,18 @@ public class OnboardingController {
                 checkoutUrl = stripeService.createSubscriptionCheckoutSession(
                         user.getEmail(),
                         user.getId(),
-                        SubscriptionPlan.BASIC
+                        SubscriptionPlan.BASIC,
+                        request
                 );
             } else if (user.getSelectedPlan() == SubscriptionPlan.TRIAL) {
-                checkoutUrl = stripeService.createTrialCheckoutSession(user.getEmail(), user.getId());
+                checkoutUrl = stripeService.createTrialCheckoutSession(user.getEmail(), user.getId(),request);
             } else {
                 // For BASIC or PREMIUM subscriptions
                 checkoutUrl = stripeService.createSubscriptionCheckoutSession(
                         user.getEmail(),
                         user.getId(),
-                        user.getSelectedPlan()
+                        user.getSelectedPlan(),
+                        request
                 );
             }
 

@@ -13,6 +13,7 @@ import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.model.Subscription;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +37,10 @@ public class SubscriptionController {
      */
     @PostMapping("/checkout/trial")
     public ResponseEntity<Map<String, String>> createTrialCheckout(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+            @AuthenticationPrincipal UserPrincipal userPrincipal,HttpServletRequest request) {
         try {
             User user = userService.getCurrentUser(userPrincipal);
-            String checkoutUrl = stripeService.createTrialCheckoutSession(user.getEmail(), user.getId());
+            String checkoutUrl = stripeService.createTrialCheckoutSession(user.getEmail(), user.getId(),request);
 
             return ResponseEntity.ok(Map.of("checkoutUrl", checkoutUrl));
         } catch (Exception e) {
@@ -54,13 +55,13 @@ public class SubscriptionController {
     @PostMapping("/checkout/{plan}")
     public ResponseEntity<Map<String, String>> createSubscriptionCheckout(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @PathVariable String plan) {
+            @PathVariable String plan, HttpServletRequest request) {
         try {
             User user = userService.getCurrentUser(userPrincipal);
             SubscriptionPlan subscriptionPlan = SubscriptionPlan.valueOf(plan.toUpperCase());
 
             String checkoutUrl = stripeService.createSubscriptionCheckoutSession(
-                    user.getEmail(), user.getId(), subscriptionPlan);
+                    user.getEmail(), user.getId(), subscriptionPlan, request);
 
             return ResponseEntity.ok(Map.of("checkoutUrl", checkoutUrl));
         } catch (Exception e) {
@@ -123,7 +124,7 @@ public class SubscriptionController {
     @PostMapping("/upgrade")
     public ResponseEntity<?> upgradeSubscription(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @RequestParam("plan") String planName) throws Exception {
+            @RequestParam("plan") String planName, HttpServletRequest request) throws Exception {
 
         try {
             // Validate plan
@@ -157,7 +158,7 @@ public class SubscriptionController {
 
             // Create checkout URL for the new plan
             String checkoutUrl = stripeService.createSubscriptionCheckoutSession(
-                    user.getEmail(), user.getId(), plan);
+                    user.getEmail(), user.getId(), plan, request);
 
             return ResponseEntity.ok(Map.of(
                     "checkoutUrl", checkoutUrl

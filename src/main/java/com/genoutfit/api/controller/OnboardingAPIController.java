@@ -8,6 +8,7 @@ import com.genoutfit.api.model.UserPrincipal;
 import com.genoutfit.api.service.StripeService;
 import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,7 +118,7 @@ public class OnboardingAPIController {
      */
     @PostMapping("/proceed-to-payment")
     public ResponseEntity<?> proceedToPayment(
-            @AuthenticationPrincipal UserPrincipal userPrincipal) throws Exception {
+            @AuthenticationPrincipal UserPrincipal userPrincipal, HttpServletRequest request) throws Exception {
 
         User user = userService.getCurrentUser(userPrincipal);
         user.setOnboardingStatus(PAYMENT_PENDING);
@@ -132,10 +133,10 @@ public class OnboardingAPIController {
 
         // Create the appropriate checkout session based on plan
         if (plan == SubscriptionPlan.TRIAL) {
-            checkoutUrl = stripeService.createTrialCheckoutSession(user.getEmail(), user.getId());
+            checkoutUrl = stripeService.createTrialCheckoutSession(user.getEmail(), user.getId(), request);
         } else {
             // For BASIC or PREMIUM subscriptions
-            checkoutUrl = stripeService.createSubscriptionCheckoutSession(user.getEmail(), user.getId(), plan);
+            checkoutUrl = stripeService.createSubscriptionCheckoutSession(user.getEmail(), user.getId(), plan, request);
         }
 
         return ResponseEntity.ok(Map.of(

@@ -24,6 +24,9 @@
     <input type="hidden" name="height"  value="160" id="height" placeholder="Height (cm)" required>
     <input type="hidden" name="age" value="27" id="age" placeholder="Age" required min="13">
 
+    <!-- Add this hidden field for the email -->
+    <input type="hidden" id="userEmail" name="userEmail" th:value="${user != null ? user.email : ''}">
+
     <div class="style-prefs">
       <label>Style Preferences (optional)</label>
       <div class="checkbox-group">
@@ -80,6 +83,15 @@
           return response.json();
         })
         .then(data => {
+  // Add affiliate tracking code here
+  if (typeof window.Affonso !== 'undefined') {
+    const userEmail = document.getElementById('userEmail').value;
+    if (userEmail) {
+      window.Affonso.signup(userEmail);
+      console.log('Affiliate signup tracked:', userEmail);
+    }
+  }
+
           // Handle success - redirect to next step
           if (data && data.nextStep) {
             window.location.href = data.nextStep;

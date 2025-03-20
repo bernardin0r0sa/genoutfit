@@ -13,6 +13,8 @@ import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.billingportal.SessionCreateParams;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +63,7 @@ public class StripeService {
     /**
      * Create a checkout session for a trial purchase (one-time)
      */
-    public String createTrialCheckoutSession(String userEmail, String userId) throws StripeException {
+    public String createTrialCheckoutSession(String userEmail, String userId, HttpServletRequest request) throws StripeException {
         // Create a new Stripe customer or get existing
         Customer customer = getOrCreateCustomer(userEmail, userId);
 
@@ -82,7 +84,34 @@ public class StripeService {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("userId", userId);
         metadata.put("plan", "TRIAL");
+
+        String affonsoReferral = null;
+
+        if (request!=null){
+            // Check for Affonso referral cookie
+            // Get Affonso referral ID from cookie if exists
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("affonso_referral".equals(cookie.getName())) {
+                        affonsoReferral = cookie.getValue();
+                        metadata.put("affonso_referral", cookie.getValue());
+                        break;
+                    }
+                }
+            }
+
+        }
+
         params.put("metadata", metadata);
+
+        // Apply 10% first-month discount coupon if this is an Affonso referral
+        if (affonsoReferral != null && !affonsoReferral.isEmpty()) {
+            params.put("discounts", List.of(
+                    Map.of("coupon", "10_FIRST_MONTH") // Replace with your actual coupon ID from Stripe
+            ));
+        }
+
 
         Session session = Session.create(params);
         return session.getUrl();
@@ -91,7 +120,7 @@ public class StripeService {
     /**
      * Create a checkout session for a subscription (basic or premium)
      */
-    public String createSubscriptionCheckoutSession(String userEmail, String userId, SubscriptionPlan plan) throws StripeException {
+    public String createSubscriptionCheckoutSession(String userEmail, String userId, SubscriptionPlan plan, HttpServletRequest request) throws StripeException {
         // Create a new Stripe customer or get existing
         Customer customer = getOrCreateCustomer(userEmail, userId);
 
@@ -115,7 +144,35 @@ public class StripeService {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("userId", userId);
         metadata.put("plan", plan.name());
+
+
+        String affonsoReferral = null;
+
+        if (request!=null){
+            // Check for Affonso referral cookie
+            // Get Affonso referral ID from cookie if exists
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("affonso_referral".equals(cookie.getName())) {
+                        affonsoReferral = cookie.getValue();
+                        metadata.put("affonso_referral", cookie.getValue());
+                        break;
+                    }
+                }
+            }
+
+        }
+
+
         params.put("metadata", metadata);
+
+        // Apply 10% first-month discount coupon if this is an Affonso referral
+        if (affonsoReferral != null && !affonsoReferral.isEmpty()) {
+            params.put("discounts", List.of(
+                    Map.of("coupon", "10_FIRST_MONTH") // Replace with your actual coupon ID from Stripe
+            ));
+        }
 
         Session session = Session.create(params);
         return session.getUrl();
