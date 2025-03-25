@@ -570,3 +570,40 @@
     // HTMX initialization or additional scripts can go here
   });
 </script>
+
+<!-- In your login.html or main layout template -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Token handling and validation script goes here
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const status = urlParams.get('status');
+
+        if (token) {
+            localStorage.setItem('authToken', token);
+
+            if (status === 'new_user') {
+                console.log('New user detected');
+                // Potential new user welcome logic
+            }
+
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        const storedToken = localStorage.getItem('authToken');
+        if (storedToken) {
+            fetch('/api/validate-token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: storedToken })
+            }).then(response => {
+                if (!response.ok) {
+                    localStorage.removeItem('authToken');
+                    window.location.href = '/login';
+                }
+            });
+        }
+    });
+</script>

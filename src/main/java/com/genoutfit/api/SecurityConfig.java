@@ -58,6 +58,7 @@ public class SecurityConfig {
                         // Public API endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/validate-token").permitAll()
 
                         // Plan selection endpoints (must be public)
                         .requestMatchers("/api/onboarding/select-plan").permitAll()

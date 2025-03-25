@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import static com.genoutfit.api.model.OnboardingStatus.*;
 
 @Component
+@Slf4j
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtTokenProvider tokenProvider;
     private final String redirectUri;
@@ -45,24 +47,15 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        String token = tokenProvider.createToken(userPrincipal);
-
-        // Set token as cookie for future requests
-        Cookie authCookie = new Cookie("authToken", token);
-        authCookie.setPath("/");
-        authCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
-        authCookie.setHttpOnly(true);
-        response.addCookie(authCookie);
-
         try {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            String token = tokenProvider.createToken(userPrincipal);
+
+            // Detect mobile device
+            boolean isMobileDevice = isMobileDevice(request);
+
             // Get user and check onboarding status
             User user = userService.getUserById(userPrincipal.getId());
-            System.out.println("Informacao do USER onboard:"+user.getOnboardingStatus());
-
-
-            // Check if we have a plan in the session or request
-            // String plan = extractPlanParameter(request);
 
             // Retrieve the plan from the session
             HttpSession session = request.getSession(false);
@@ -81,22 +74,66 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     user.setOnboardingStatus(OnboardingStatus.PLAN_SELECTED);
                     userService.saveUser(user);
                 } catch (IllegalArgumentException e) {
-                    // Invalid plan, continue with normal flow
+                    log.warn("Invalid plan provided during OAuth: " + plan);
                 }
             }
 
+            // Determine next step based on user's onboarding status
             String nextStep = getNextStep(user);
 
-            // Add token as URL parameter for first request (will be picked up by filter)
-            String targetUrl = nextStep + "?token=" + token;
+            // Set authentication cookie
+            Cookie authCookie = new Cookie("authToken", token);
+            authCookie.setPath("/");
+            authCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+            authCookie.setHttpOnly(true);
 
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+            // Add SameSite and Secure attributes for better cross-platform support
+            response.addHeader("Set-Cookie",
+                    authCookie.getName() + "=" + authCookie.getValue() +
+                            "; Path=" + authCookie.getPath() +
+                            "; Max-Age=" + authCookie.getMaxAge() +
+                            "; HttpOnly" +
+                            "; SameSite=Lax" +
+                            "; Secure"
+            );
+
+            // Construct redirect URL with token and status
+            String redirectUrl;
+            if (isMobileDevice) {
+                // For mobile, add more context to the redirect
+                redirectUrl = nextStep +
+                        "?token=" + token +
+                        "&status=" + user.getOnboardingStatus().name() +
+                        "&mobile=true";
+            } else {
+                // For web, standard redirect
+                redirectUrl = nextStep + "?token=" + token;
+            }
+
+            // Log the redirect for debugging
+            log.info("OAuth Redirect URL: " + redirectUrl);
+
+            // Perform redirect
+            getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+
         } catch (Exception e) {
-            logger.error("Error determining redirect URL", e);
-            getRedirectStrategy().sendRedirect(request, response, "/error");
+            log.error("OAuth Authentication Error", e);
+            response.sendRedirect("/login?error=authentication_failed");
         }
     }
 
+    // Mobile device detection method
+    private boolean isMobileDevice(HttpServletRequest request) {
+        String userAgent = request.getHeader("User-Agent");
+        return userAgent != null && (
+                userAgent.contains("Android") ||
+                        userAgent.contains("webOS") ||
+                        userAgent.contains("iPhone") ||
+                        userAgent.contains("iPad") ||
+                        userAgent.contains("iPod") ||
+                        userAgent.contains("BlackBerry")
+        );
+    }
 
     private String getNextStep(User user) {
         return switch (user.getOnboardingStatus()) {
