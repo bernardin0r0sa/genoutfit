@@ -47,9 +47,16 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 
+        // Log request details
+        log.info("OAuth2 Authentication Request Details:");
+        log.info("User Agent: {}", request.getHeader("User-Agent"));
+        log.info("Remote Address: {}", request.getRemoteAddr());
+        log.info("Request URL: {}", request.getRequestURL());
+
         try {
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             String token = tokenProvider.createToken(userPrincipal);
+
 
             log.info("Enter OAuth Sucess");
 
@@ -121,6 +128,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         } catch (Exception e) {
             log.error("OAuth Authentication Error", e);
+            // Extremely detailed error logging
+            log.error("OAuth2 Authentication Failure", e);
+            log.error("Exception Class: {}", e.getClass().getName());
+            log.error("Exception Message: {}", e.getMessage());
+
             response.sendRedirect("/login?error=authentication_failed");
         }
     }
@@ -128,6 +140,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     // Mobile device detection method
     private boolean isMobileDevice(HttpServletRequest request) {
         String userAgent = request.getHeader("User-Agent");
+
+        log.info("Device Detection:");
+        log.info("User Agent: {}", userAgent);
+        log.info("Is Mobile Device: {}", true);
+
         return userAgent != null && (
                 userAgent.contains("Android") ||
                         userAgent.contains("webOS") ||
