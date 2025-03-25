@@ -137,7 +137,7 @@ public class AuthController {
             return "redirect:" + nextStep;
 
         } catch (AuthenticationException e) {
-            // Add error parameter for error message display
+           System.out.println("Error on Authentication:"+e);
             return "redirect:/login?error=true";
         }
     }

@@ -51,6 +51,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             String token = tokenProvider.createToken(userPrincipal);
 
+            log.info("Enter OAuth Sucess");
+
+
             // Detect mobile device
             boolean isMobileDevice = isMobileDevice(request);
 
