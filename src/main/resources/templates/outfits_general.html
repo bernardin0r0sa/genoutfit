@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outfit Ideas: Stylish & Versatile Looks for Everyone</title>
+  <meta name="description" content="Discover amazing outfit ideas that elevate your style for any occasion. From casual to formal, find perfect looks that boost your confidence and express your personality.">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: '#2A9D8F',
+            'teal-dark': '#264653',
+            'teal-light': '#4ECDC4',
+            coral: '#FF8A71',
+            charcoal: '#2C3E50',
+            offwhite: '#F7F7F7',
+            primary: {
+              500: '#2A9D8F'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+  <!-- Crisp Chat -->
+  <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="98c1167d-8076-4ff4-a3d7-446ed3559102";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CC4216GCTK"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-CC4216GCTK');
+</script>
+
+  <style>
+    /* Hide scrollbar but keep functionality */
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    @keyframes scroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .animate-scroll {
+      animation: scroll 25s linear infinite;
+      display: flex;
+      width: calc(280px * 8); /* Adjust this based on the number of images and their width */
+    }
+
+    .animate-scroll:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(20px);
+      }
+    }
+
+    .animate-chevron-1 {
+      animation: slide 1s infinite alternate;
+    }
+  </style>
+  <style>
+    @keyframes curve-reveal {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .curve-highlight {
+      animation: curve-reveal 0.8s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-white">
+<!-- Navigation -->
+<nav class="fixed w-full bg-white/90 backdrop-blur z-50 border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <a th:href="@{/}" class="flex items-center hover:opacity-80 transition-opacity">
+        <img th:src="@{/assets/logoOnly.png}" alt="GenOutfit Logo" class="h-8 w-8 rounded-lg mr-2">
+        <span class="text-lg font-normal text-charcoal">GenOutfit</span>
+      </a>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="#women-styles" class="text-charcoal hover:text-teal">Style Tips</a>
+        <a href="#occasions" class="text-charcoal hover:text-teal">Occasions</a>
+        <a th:href="@{/login}" class="text-charcoal hover:text-teal">Login</a>
+        <a href="#pricing" class="text-teal hover:text-teal-dark px-4 py-2 rounded-lg border border-teal hover:border-teal-dark">
+          Generate My Outfit
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden flex items-center">
+        <button id="mobile-menu-button" class="text-charcoal hover:text-teal focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu (Hidden by Default) -->
+  <div id="mobile-menu" class="hidden md:hidden">
+    <a href="#women-styles" class="block px-4 py-2 text-charcoal hover:text-teal">Style Tips</a>
+    <a href="#occasions" class="block px-4 py-2 text-charcoal hover:text-teal">Occasions</a>
+    <a th:href="@{/login}" class="block px-4 py-2 text-charcoal hover:text-teal">Login</a>
+    <a href="#pricing" class="block px-4 py-2 text-teal hover:text-teal-dark border border-teal hover:border-teal-dark rounded-lg mx-4 my-2 text-center">
+      Generate My Outfit
+    </a>
+  </div>
+</nav>
+<!-- Hero Section -->
+<section class="pt-24 pb-16 bg-offwhite">
+  <div class="max-w-7xl mx-auto px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold text-charcoal mb-6">
+      Stunning Outfit Ideas That Express Your Unique Style
+    </h1>
+    <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
+      Discover confidence-boosting outfit ideas designed for everyone. Find inspiration to mix and match pieces that reflect your personality and make you feel amazing in any setting.
+    </p>
+
+    <!-- Showcase Slider -->
+    <div class="relative w-full max-w-6xl mx-auto overflow-hidden">
+      <div class="flex gap-6 animate-scroll">
+        <!-- Diverse Outfit Slides -->
+        <img src="/assets/images/outfits/casual-everyday.jpg" alt="Casual Everyday Outfit" class="w-[280px] h-[420px] object-cover rounded-2xl">
+        <img src="/assets/images/outfits/business-professional.jpg" alt="Business Professional Look" class="w-[280px] h-[420px] object-cover rounded-2xl">
+        <img src="/assets/images/outfits/weekend-style.jpg" alt="Weekend Style Outfit" class="w-[280px] h-[420px] object-cover rounded-2xl">
+        <img src="/assets/images/outfits/evening-elegance.jpg" alt="Evening Elegance Outfit" class="w-[280px] h-[420px] object-cover rounded-2xl">
+
+        <!-- Duplicate slides for seamless loop -->
+        <img src="/assets/images/outfits/casual-everyday.jpg" alt="Casual Everyday Outfit" class="w-[280px] h-[420px] object-cover rounded-2xl">
+        <img src="/assets/images/outfits/business-professional.jpg" alt="Business Professional Look" class="w-[280px] h-[420px] object-cover rounded-2xl">
+        <img src="/assets/images/outfits/weekend-style.jpg" alt="Weekend Style Outfit" class="w-[280px] h-[420px] object-cover rounded-2xl">
+        <img src="/assets/images/outfits/evening-elegance.jpg" alt="Evening Elegance Outfit" class="w-[280px] h-[420px] object-cover rounded-2xl">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Style Philosophy Section -->
+<section id="style-philosophy" class="py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-charcoal">
+      Style Philosophy: Finding Outfits That Speak to You
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">💖</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Self-Expression</h3>
+        <p class="text-gray-600">
+          Your outfit is a canvas for self-expression. Choose pieces that tell your story and reflect who you are, regardless of trends or conventions.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">✨</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Adaptability</h3>
+        <p class="text-gray-600">
+          The best outfits work for multiple scenarios. Create a versatile wardrobe with pieces that can be dressed up or down depending on the occasion.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">🌈</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Comfort & Confidence</h3>
+        <p class="text-gray-600">
+          True style comes from confidence. When you feel comfortable in what you're wearing, your natural confidence shines through in any outfit.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Occasions Section -->
+<section id="occasions" class="py-16 bg-offwhite">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-4 text-charcoal">
+      Outfit Ideas for Every Occasion
+    </h2>
+    <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+      Discover stylish looks perfect for any event, season, or mood — from everyday casual to special celebrations
+    </p>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Popular Occasion Categories -->
+      <a href="/outfit-ideas/casual" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/casual.jpg" alt="Casual Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Casual Outfits</h3>
+        </div>
+      </a>
+
+      <a href="/outfit-ideas/work" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/work.jpg" alt="Work Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Work Outfits</h3>
+        </div>
+      </a>
+
+      <a href="/outfit-ideas/date-night" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/date-night.jpg" alt="Date Night Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Date Night</h3>
+        </div>
+      </a>
+
+      <a href="/outfit-ideas/weekend" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/weekend.jpg" alt="Weekend Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Weekend Style</h3>
+        </div>
+      </a>
+
+      <a href="/outfit-ideas/party" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/party.jpg" alt="Party Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Party Outfits</h3>
+        </div>
+      </a>
+
+      <a href="/outfit-ideas/travel" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/travel.jpg" alt="Travel Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Travel Outfits</h3>
+        </div>
+      </a>
+
+      <a href="/outfit-ideas/formal" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/formal.jpg" alt="Formal Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Formal Events</h3>
+        </div>
+      </a>
+
+      <a href="/outfit-ideas/seasonal" class="relative group overflow-hidden rounded-lg shadow-md">
+        <img src="/assets/images/outfits/occasions/seasonal.jpg" alt="Seasonal Outfit Ideas"
+             class="w-full h-50 object-cover transition-transform duration-300 group-hover:scale-110">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+          <h3 class="text-white font-semibold">Seasonal Looks</h3>
+        </div>
+      </a>
+    </div>
+
+    <div class="mt-10 text-center">
+      <a href="/outfit-ideas/all" class="inline-flex items-center justify-center text-base font-medium text-teal hover:text-teal-dark transition-colors duration-150">
+        Explore all outfit ideas
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-1">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Styling Tips Section -->
+<section id="styling-tips" class="py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-charcoal">
+      Universal Styling Tips for Great Outfits
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">🧩</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">The Rule of Three</h3>
+        <p class="text-gray-600">
+          A complete outfit typically has at least three pieces: a top, bottom, and a third element that adds interest—like a jacket, statement accessory, or special shoes.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">🎨</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Color Cohesion</h3>
+        <p class="text-gray-600">
+          Create cohesive looks by using a consistent color palette. The 60-30-10 rule works well: 60% primary color, 30% secondary color, and 10% accent color.
+        </p>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">🔄</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Capsule Building</h3>
+        <p class="text-gray-600">
+          Build a capsule wardrobe of versatile pieces that mix and match well. This creates countless outfit options from a relatively small number of carefully chosen items.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Seasonal Section -->
+<section id="seasonal-outfits" class="py-16 bg-offwhite">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-4 text-charcoal">
+      Outfit Ideas for Every Season
+    </h2>
+    <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+      How to adapt your style through spring, summer, fall, and winter while staying true to your personal aesthetic
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Seasonal Categories -->
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <img src="/assets/images/outfits/seasons/spring.jpg" alt="Spring Outfit Ideas"
+             class="w-full h-40 object-cover rounded-lg mb-4">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Spring</h3>
+        <p class="text-gray-600 mb-4">
+          Light layers, fresh colors, and playful patterns. Think cotton cardigans, floral dresses, and comfortable denim.
+        </p>
+        <a href="/outfit-ideas/spring" class="text-teal hover:text-teal-dark transition-colors duration-150 font-medium">
+          Spring outfit ideas →
+        </a>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <img src="/assets/images/outfits/seasons/summer.jpg" alt="Summer Outfit Ideas"
+             class="w-full h-40 object-cover rounded-lg mb-4">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Summer</h3>
+        <p class="text-gray-600 mb-4">
+          Breathable fabrics, bright hues, and effortless silhouettes. Perfect for linen shorts, breezy tops, and sundresses.
+        </p>
+        <a href="/outfit-ideas/summer" class="text-teal hover:text-teal-dark transition-colors duration-150 font-medium">
+          Summer outfit ideas →
+        </a>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <img src="/assets/images/outfits/seasons/fall.jpg" alt="Fall Outfit Ideas"
+             class="w-full h-40 object-cover rounded-lg mb-4">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Fall</h3>
+        <p class="text-gray-600 mb-4">
+          Rich textures, warm tones, and strategic layering. Showcase cozy sweaters, leather jackets, and ankle boots.
+        </p>
+        <a href="/outfit-ideas/fall" class="text-teal hover:text-teal-dark transition-colors duration-150 font-medium">
+          Fall outfit ideas →
+        </a>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <img src="/assets/images/outfits/seasons/winter.jpg" alt="Winter Outfit Ideas"
+             class="w-full h-40 object-cover rounded-lg mb-4">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Winter</h3>
+        <p class="text-gray-600 mb-4">
+          Sophisticated layers, cozy accessories, and statement outerwear. Embrace chunky knits, wool coats, and stylish boots.
+        </p>
+        <a href="/outfit-ideas/winter" class="text-teal hover:text-teal-dark transition-colors duration-150 font-medium">
+          Winter outfit ideas →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trending Section -->
+<section id="trending-outfits" class="py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-charcoal">
+      Trending Outfit Ideas
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">🔥</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Monochromatic Looks</h3>
+        <p class="text-gray-600">
+          Single-color outfits in varying shades create a sophisticated, cohesive look that's both on-trend and timeless.
+        </p>
+        <a href="/outfit-ideas/monochromatic" class="mt-4 inline-block text-teal hover:text-teal-dark transition-colors duration-150 font-medium">
+          Explore monochromatic outfits →
+        </a>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">🌟</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Statement Sleeves</h3>
+        <p class="text-gray-600">
+          Puff sleeves, bell sleeves, and dramatic cuts are having a moment. They add visual interest to even the simplest outfits.
+        </p>
+        <a href="/outfit-ideas/statement-sleeves" class="mt-4 inline-block text-teal hover:text-teal-dark transition-colors duration-150 font-medium">
+          See statement sleeve looks →
+        </a>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <div class="text-teal text-4xl mb-4">✨</div>
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Sustainable Styling</h3>
+        <p class="text-gray-600">
+          Eco-conscious outfit construction is more than a trend—it's a movement. Learn to create stylish looks while shopping responsibly.
+        </p>
+        <a href="/outfit-ideas/sustainable" class="mt-4 inline-block text-teal hover:text-teal-dark transition-colors duration-150 font-medium">
+          Discover sustainable outfit ideas →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEW: Value Proposition / SaaS Information Section -->
+<section class="mb-12 bg-teal/10 p-8 rounded-lg">
+  <div class="flex flex-col md:flex-row gap-8 items-center">
+    <div class="md:w-1/2">
+      <h2 class="text-2xl font-bold text-primary-500 mb-4">Stop Stressing About What to Wear</h2>
+      <p class="text-gray-700 mb-4">
+        Finding the perfect outfit can be challenging, especially when you want something that flatters your body type and matches your personal style.
+      </p>
+      <p class="text-gray-700 mb-6">
+        GenOutfit uses cutting-edge AI technology to generate personalized outfit recommendations tailored specifically to your body type, style preferences, and the occasion you're dressing for.
+      </p>
+      <ul class="mb-6 space-y-2">
+        <li class="flex items-center">
+          <i class="fas fa-check-circle text-teal mr-2"></i>
+          <span>Personalized to your body type and style</span>
+        </li>
+        <li class="flex items-center">
+          <i class="fas fa-check-circle text-teal mr-2"></i>
+          <span>100+ outfit recommendations monthly</span>
+        </li>
+        <li class="flex items-center">
+          <i class="fas fa-check-circle text-teal mr-2"></i>
+          <span>Always on-trend styles for any occasion</span>
+        </li>
+      </ul>
+    </div>
+    <div class="md:w-1/2">
+      <img src="/assets/images/app-preview.jpg" alt="GenOutfit App Preview" class="rounded-lg shadow-lg w-full h-auto">
+    </div>
+  </div>
+
+  <!-- NEW: Strong CTA -->
+  <div class="mt-8 text-center">
+    <a href="/#pricing" class="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-primary-500 rounded-lg shadow-md hover:bg-teal-dark transition-colors duration-300">
+      Generate Your Perfect Outfit Now
+      <i class="fas fa-arrow-right ml-2"></i>
+    </a>
+    <p class="mt-3 text-sm text-gray-600">Join  our happy customers who love their personalized outfit recommendations</p>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-16 bg-offwhite">
+  <!-- Include the pricing fragment -->
+  <div th:replace="fragments/pricing-plans :: pricing-plans"></div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center mb-12 text-charcoal">
+      Frequently Asked Questions
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- FAQ Item 1 -->
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">How personalized are the outfit recommendations?</h3>
+        <p class="text-gray-600">
+          Our AI generates highly personalized outfits based on your body type, gender, style preferences, and the specific occasion you're dressing for. Each recommendation is tailored to you.
+        </p>
+      </div>
+
+      <!-- FAQ Item 2 -->
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Can I save my favorite outfit recommendations?</h3>
+        <p class="text-gray-600">
+          Yes! You can save unlimited outfit recommendations to your favorites for easy access later. Perfect for planning your wardrobe for upcoming events.
+        </p>
+      </div>
+
+      <!-- FAQ Item 3 -->
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">How often are new styles and trends added?</h3>
+        <p class="text-gray-600">
+          Our AI is continuously learning from fashion influencers and is updated weekly with the latest styles and trends to ensure your outfits are always current and fashionable.
+        </p>
+      </div>
+
+      <!-- FAQ Item 4 -->
+      <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
+        <h3 class="text-xl font-semibold mb-2 text-charcoal">Can I cancel my subscription anytime?</h3>
+        <p class="text-gray-600">
+          Absolutely! You can cancel your subscription at any time with no questions asked. You'll continue to have access until the end of your billing period.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 bg-teal">
+  <div class="max-w-7xl mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold text-white mb-6">
+      Ready to Transform Your Style?
+    </h2>
+    <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+      Join thousands of fashion-forward individuals who have discovered their perfect style with GenOutfit.
+    </p>
+
+    <a href="#pricing" class="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-teal rounded-full h-14 px-7 text-lg font-semibold transition-colors">
+      Get Started Today
+    </a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-charcoal text-white py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Logo & Description -->
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center mb-4">
+          <img th:src="@{/assets/logoOnly.png}" alt="GenOutfit Logo" class="h-8 w-8 rounded-lg mr-2">
+          <span class="text-lg font-semibold">GenOutfit</span>
+        </div>
+        <p class="text-gray-400 max-w-md">
+          Empowering individuals to look and feel their best with AI-powered fashion recommendations tailored to their unique style and body type.
+        </p>
+      </div>
+
+      <!-- Links -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+        <ul class="space-y-2">
+          <li><a href="#confidence-tips" class="text-gray-400 hover:text-white transition-colors">Style Tips</a></li>
+          <li><a href="#occasions" class="text-gray-400 hover:text-white transition-colors">Occasions</a></li>
+          <li><a href="/pricing" class="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+          <li><a href="/terms" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+          <li><a href="/privacy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+        <ul class="space-y-2">
+          <li class="text-gray-400">
+            <a href="mailto:info@genoutfit.com" class="hover:text-white transition-colors">
+              info@genoutfit.com
+            </a>
+          </li>
+          <li class="text-gray-400">Follow us:</li>
+          <li class="flex space-x-4 mt-2">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+              </svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-gray-700 text-center">
+      <p class="text-gray-500">
+        &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2023</span> GenOutfit. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 100, // Offset for the fixed header
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Add animation for curve highlights
+    const highlights = document.querySelectorAll('.curve-highlight');
+    highlights.forEach((el, index) => {
+      el.style.animationDelay = `${index * 0.2}s`;
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // HTMX initialization or additional scripts can go here
+  });
+</script>
+</body>
+</html>

@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                         // Public endpoints
                         .requestMatchers("/process-login").permitAll()
-                        .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**","/onboard","/terms","/privacy").permitAll()
+                        .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**","/onboard","/terms","/privacy","/plus-size-outfit-ideas","/plus-size-outfits/**","outfit-ideas-for-women","/women-outfits/**","/outfit-ideas","/outfit-ideas/**").permitAll()
 
                         // Public API endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
