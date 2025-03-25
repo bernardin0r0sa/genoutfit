@@ -423,39 +423,56 @@
 
 <!-- In your login.html or main layout template -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Token handling and validation script goes here
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        const status = urlParams.get('status');
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const status = urlParams.get('status');
 
-        if (token) {
-            localStorage.setItem('authToken', token);
+    // Only set token from URL if:
+    // 1. There's a token in the URL
+    // 2. There's NO existing token in localStorage
+    // OR
+    // 3. The new token is different from the existing one
+    const existingToken = localStorage.getItem('authToken');
 
-            if (status === 'new_user') {
-                console.log('New user detected');
-                // Potential new user welcome logic
+    if (token && (!existingToken || existingToken !== token)) {
+        localStorage.setItem('authToken', token);
+
+        if (status === 'new_user') {
+            console.log('New user detected');
+            // Potential new user welcome logic
+        }
+
+        // Clean up URL, remove token
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // Token validation
+    const storedToken = localStorage.getItem('authToken');
+    if (storedToken) {
+        fetch('/api/validate-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: storedToken })
+        }).then(response => {
+             if (response.ok) {
+                // Token is valid
+                // Optionally, you can set the token in a cookie here
+                document.cookie = `authToken=${storedToken}; path=/; max-age=${7*24*60*60}`;
+            } else {
+                // Invalid token
+                localStorage.removeItem('authToken');
+                window.location.href = '/login';
             }
-
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        const storedToken = localStorage.getItem('authToken');
-        if (storedToken) {
-            fetch('/api/validate-token', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token: storedToken })
-            }).then(response => {
-                if (!response.ok) {
-                    localStorage.removeItem('authToken');
-                    window.location.href = '/login';
-                }
-            });
-        }
-    });
+        }).catch(error => {
+            console.error('Token validation failed', error);
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+        });
+    }
+});
 </script>
 
 
