@@ -40,35 +40,30 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
 
 
     @Override
-    public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
+    public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest,
+                                         HttpServletRequest request,
+                                         HttpServletResponse response) {
         if (authorizationRequest == null) {
             return;
         }
+
         System.out.println("::CookieOAuth2AuthorizationRequestRepository::");
         System.out.println("::saveAuthorizationRequest::");
+
         // Generate a unique requestId
         String requestId = UUID.randomUUID().toString();
-        System.out.println("requestId:"+requestId);
+        System.out.println("requestId: " + requestId);
 
         // Store authorization request in session using requestId
-        request.getSession().setAttribute(requestId, authorizationRequest);
-        System.out.println("request.getSession().setAttribute(requestId, authorizationRequest):");
+        HttpSession session = request.getSession(true);
+        session.setAttribute(requestId, authorizationRequest);
+        System.out.println("Authorization request saved in session with requestId");
 
-        // Modify the redirect URI to include the requestId
-        String redirectUri = authorizationRequest.getRedirectUri() + "?requestId=" + requestId;
-        System.out.println("redirectUri:"+redirectUri);
-
-
-        try {
-            response.sendRedirect(redirectUri); // Redirect with requestId
-        } catch (IOException e) {
-            System.out.println("IOException:"+e.getMessage());
-            throw new RuntimeException("Failed to redirect", e);
-        }
+        // Modify the original redirect URI to include requestId
+        // This will be picked up by Spring Security's filter chain
+        session.setAttribute("SPRING_SECURITY_SAVED_REQUEST_URI",
+                authorizationRequest.getRedirectUri() + "?requestId=" + requestId);
     }
-
-
-
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
         String requestId = request.getParameter("requestId");
