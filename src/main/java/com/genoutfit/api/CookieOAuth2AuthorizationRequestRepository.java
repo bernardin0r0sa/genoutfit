@@ -4,6 +4,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.stereotype.Component;
@@ -20,64 +23,78 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
     private static final String SESSION_AUTHORIZATION_REQUEST_KEY = "OAUTH2_AUTH_REQUEST";
     private static final int COOKIE_EXPIRE_SECONDS = 180;
 
-    @Override
-    public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        String requestId = request.getParameter("requestId"); // Get requestId from URL
+        private static final Logger log = LoggerFactory.getLogger(CookieOAuth2AuthorizationRequestRepository.class);
 
-        if (requestId != null) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                OAuth2AuthorizationRequest authRequest = (OAuth2AuthorizationRequest) session.getAttribute(requestId);
-                if (authRequest != null) {
-                    System.out.println("Authorization request found in session for requestId: " + requestId);
+        @Autowired
+        private OAuth2FlowDebugger debugger;
+
+        @Override
+        public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+            log.error("LOAD AUTHORIZATION REQUEST CALLED");
+            debugger.logOAuth2Flow(request);
+
+            String requestId = request.getParameter("requestId");
+            log.error("RequestId from parameters: {}", requestId);
+
+            if (requestId != null) {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    OAuth2AuthorizationRequest authRequest =
+                            (OAuth2AuthorizationRequest) session.getAttribute(requestId);
+
+                    log.error("Authorization Request Found: {}", authRequest != null);
                     return authRequest;
                 }
             }
-        }
-        System.out.println("No authorization request found for requestId: " + requestId);
-        return null;
-    }
 
-
-    @Override
-    public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest,
-                                         HttpServletRequest request,
-                                         HttpServletResponse response) {
-        if (authorizationRequest == null) {
-            return;
+            log.error("No Authorization Request Found");
+            return null;
         }
 
-        System.out.println("::CookieOAuth2AuthorizationRequestRepository::");
-        System.out.println("::saveAuthorizationRequest::");
+        @Override
+        public void saveAuthorizationRequest(
+                OAuth2AuthorizationRequest authorizationRequest,
+                HttpServletRequest request,
+                HttpServletResponse response
+        ) {
+            log.error("SAVE AUTHORIZATION REQUEST CALLED");
+            debugger.logOAuth2Flow(request);
 
-        // Generate a unique requestId
-        String requestId = UUID.randomUUID().toString();
-        System.out.println("requestId: " + requestId);
-
-        // Store authorization request in session using requestId
-        HttpSession session = request.getSession(true);
-        session.setAttribute(requestId, authorizationRequest);
-        System.out.println("Authorization request saved in session with requestId");
-
-        // Modify the original redirect URI to include requestId
-        // This will be picked up by Spring Security's filter chain
-        session.setAttribute("SPRING_SECURITY_SAVED_REQUEST_URI",
-                authorizationRequest.getRedirectUri() + "?requestId=" + requestId);
-    }
-    @Override
-    public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
-        String requestId = request.getParameter("requestId");
-        if (requestId != null) {
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                OAuth2AuthorizationRequest authRequest = (OAuth2AuthorizationRequest) session.getAttribute(requestId);
-                session.removeAttribute(requestId); // Remove from session
-                System.out.println("Authorization request removed from session for requestId: " + requestId);
-                return authRequest;
+            if (authorizationRequest == null) {
+                log.error("Authorization Request is NULL");
+                return;
             }
+
+            String requestId = UUID.randomUUID().toString();
+            log.error("Generated RequestId: {}", requestId);
+
+            HttpSession session = request.getSession(true);
+            session.setAttribute(requestId, authorizationRequest);
+
+            log.error("Authorization Request saved in session");
+            log.error("Session ID: {}", session.getId());
         }
-        return null;
-    }
+
+        @Override
+        public OAuth2AuthorizationRequest removeAuthorizationRequest(
+                HttpServletRequest request,
+                HttpServletResponse response
+        ) {
+            log.error("REMOVE AUTHORIZATION REQUEST CALLED");
+            debugger.logOAuth2Flow(request);
+
+            String requestId = request.getParameter("requestId");
+            if (requestId != null) {
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    OAuth2AuthorizationRequest authRequest =
+                            (OAuth2AuthorizationRequest) session.getAttribute(requestId);
+                    session.removeAttribute(requestId);
+                    return authRequest;
+                }
+            }
+            return null;
+        }
 
     private OAuth2AuthorizationRequest getAuthorizationRequestFromSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
