@@ -15,6 +15,7 @@ import org.springframework.web.util.WebUtils;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Enumeration;
 import java.util.UUID;
 
 @Component
@@ -28,28 +29,54 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
         @Autowired
         private OAuth2FlowDebugger debugger;
 
-        @Override
-        public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-            log.error("LOAD AUTHORIZATION REQUEST CALLED");
-            debugger.logOAuth2Flow(request);
+    @Override
+    public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+        log.error("LOAD AUTHORIZATION REQUEST CALLED");
+        debugger.logOAuth2Flow(request);
 
-            String requestId = request.getParameter("requestId");
-            log.error("RequestId from parameters: {}", requestId);
+        // Check multiple ways to find the request
+        String requestId = request.getParameter("requestId");
+        String state = request.getParameter("state");
 
+        log.error("RequestId from parameters: {}", requestId);
+        log.error("State from parameters: {}", state);
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            log.error("Session ID: {}", session.getId());
+
+            // Try to find by requestId
             if (requestId != null) {
-                HttpSession session = request.getSession(false);
-                if (session != null) {
-                    OAuth2AuthorizationRequest authRequest =
-                            (OAuth2AuthorizationRequest) session.getAttribute(requestId);
+                OAuth2AuthorizationRequest authRequest =
+                        (OAuth2AuthorizationRequest) session.getAttribute(requestId);
 
-                    log.error("Authorization Request Found: {}", authRequest != null);
+                if (authRequest != null) {
+                    log.error("Authorization Request Found by RequestId: {}", authRequest != null);
                     return authRequest;
                 }
             }
 
-            log.error("No Authorization Request Found");
-            return null;
+            // Fallback: try to find by state
+            if (state != null) {
+                Enumeration<String> attributeNames = session.getAttributeNames();
+                while (attributeNames.hasMoreElements()) {
+                    String attrName = attributeNames.nextElement();
+                    Object attr = session.getAttribute(attrName);
+
+                    if (attr instanceof OAuth2AuthorizationRequest) {
+                        OAuth2AuthorizationRequest authRequest = (OAuth2AuthorizationRequest) attr;
+                        if (state.equals(authRequest.getState())) {
+                            log.error("Authorization Request Found by State: {}", authRequest != null);
+                            return authRequest;
+                        }
+                    }
+                }
+            }
         }
+
+        log.error("No Authorization Request Found");
+        return null;
+    }
 
         @Override
         public void saveAuthorizationRequest(

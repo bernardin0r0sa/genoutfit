@@ -11,6 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")  // Apply to all endpoints
                 .allowedOrigins(
                         "https://www.genoutfit.com",  // Production web domain
+                        "https://genoutfit.com",  // Production web domain
                         "https://6cf7-85-138-22-109.ngrok-free.app",  // Mobile/Development temporary domain
                         "https://localhost:8080"  // Local development
                 )
