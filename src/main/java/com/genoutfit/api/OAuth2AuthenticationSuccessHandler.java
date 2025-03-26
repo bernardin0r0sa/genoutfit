@@ -47,16 +47,23 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 
+        System.out.println("::OAuth2AuthenticationSuccessHandler::");
+        System.out.println(":onAuthenticationSuccess:");
+
+
         // Log request details
         log.info("OAuth2 Authentication Request Details:");
         log.info("User Agent: {}", request.getHeader("User-Agent"));
         log.info("Remote Address: {}", request.getRemoteAddr());
         log.info("Request URL: {}", request.getRequestURL());
 
+
+
         try {
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             String token = tokenProvider.createToken(userPrincipal);
 
+            System.out.println(":token:"+token);
 
             log.info("Enter OAuth Sucess");
 
@@ -64,8 +71,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             // Detect mobile device
             boolean isMobileDevice = isMobileDevice(request);
 
+            System.out.println(":isMobileDevice:"+isMobileDevice);
+
+
             // Get user and check onboarding status
             User user = userService.getUserById(userPrincipal.getId());
+
+            System.out.println(":user:"+user.toString());
+
 
             // Retrieve the plan from the session
             HttpSession session = request.getSession(false);
@@ -73,17 +86,25 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             // Remove the plan from session after retrieving it
             if (session != null) {
+
+                System.out.println(":Tem session:");
+
                 session.removeAttribute("selectedPlan");
             }
 
+
             // If user is NEW and we have a plan, set it and update status
             if (user.getOnboardingStatus() == OnboardingStatus.NEW && plan != null) {
+                System.out.println(":If user is NEW and we have a plan, set it and update status:");
                 try {
                     SubscriptionPlan selectedPlan = SubscriptionPlan.valueOf(plan.toUpperCase());
                     user.setSelectedPlan(selectedPlan);
                     user.setOnboardingStatus(OnboardingStatus.PLAN_SELECTED);
                     userService.saveUser(user);
+                    System.out.println(":userService.saveUser(user):");
+
                 } catch (IllegalArgumentException e) {
+                    System.out.println(":error:"+e.getMessage());
                     log.warn("Invalid plan provided during OAuth: " + plan);
                 }
             }
@@ -97,15 +118,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             authCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
             authCookie.setHttpOnly(true);
 
+            System.out.println(":Cookie:"+authCookie);
+
+
             // Add SameSite and Secure attributes for better cross-platform support
             response.addHeader("Set-Cookie",
                     authCookie.getName() + "=" + authCookie.getValue() +
                             "; Path=" + authCookie.getPath() +
                             "; Max-Age=" + authCookie.getMaxAge() +
                             "; HttpOnly" +
-                            "; SameSite=Lax" +
-                            "; Secure"
+                            "; SameSite=None" +  // Changed from Lax to None for mobile
+                            "; Secure"  // Still keep Secure flag
             );
+            System.out.println(":response:"+response.toString());
 
             // Construct redirect URL with token and status
             String redirectUrl;
@@ -120,6 +145,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 redirectUrl = nextStep + "?token=" + token;
             }
 
+            System.out.println("OAuth Redirect URL: " + redirectUrl);
+
             // Log the redirect for debugging
             log.info("OAuth Redirect URL: " + redirectUrl);
 
@@ -129,6 +156,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             getRedirectStrategy().sendRedirect(request, response, redirectUrl);
 
         } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+
             log.error("OAuth Authentication Error", e);
             // Extremely detailed error logging
             log.error("OAuth2 Authentication Failure", e);
