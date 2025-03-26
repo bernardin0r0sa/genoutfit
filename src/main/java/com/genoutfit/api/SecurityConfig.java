@@ -42,60 +42,49 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationRequestRepository() {
+        return new CookieOAuth2AuthorizationRequestRepository();
+    }
+
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
-                .cors(withDefaults())
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(withDefaults()) // Ensure CORS is properly configured
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions
                 .authorizeHttpRequests(auth -> auth
-
-                        // Static resources - allow public access to assets
+                        // Static resources - allow public access
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                         // Public endpoints
-                        .requestMatchers("/process-login").permitAll()
-                        .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**","/onboard","/terms","/privacy").permitAll()
-
+                        .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**", "/onboard", "/terms", "/privacy").permitAll()
                         // Public API endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/validate-token").permitAll()
-
-                        // Plan selection endpoints (must be public)
-                        .requestMatchers("/api/onboarding/select-plan").permitAll()
-                        .requestMatchers("/onboarding/set-plan").permitAll()
-                        .requestMatchers("/onboarding/confirm-plan").permitAll()
-
-
-                        // Onboarding endpoints - require authentication
-                        .requestMatchers("/api/onboarding/set-plan-after-login").authenticated()
-                        .requestMatchers("/api/onboarding/profile").authenticated()
-                        .requestMatchers("/api/onboarding/proceed-to-payment").authenticated()
+                        // Plan selection endpoints (public)
+                        .requestMatchers("/api/onboarding/select-plan", "/onboarding/set-plan", "/onboarding/confirm-plan").permitAll()
+                        // Onboarding endpoints (authentication required)
+                        .requestMatchers("/api/onboarding/set-plan-after-login", "/api/onboarding/profile", "/api/onboarding/proceed-to-payment").authenticated()
                         .requestMatchers("/onboarding/profile", "/onboarding/payment").authenticated()
-
                         // Stripe webhook (must be public)
-                        .requestMatchers("/api/onboarding/webhook/stripe").permitAll()
-                        .requestMatchers("/api/outfits/webhook/**").permitAll()
-
-                        // Success page (requires authentication)
+                        .requestMatchers("/api/onboarding/webhook/stripe", "/api/outfits/webhook/**").permitAll()
+                        // Success page (authentication required)
                         .requestMatchers("/onboarding/success").authenticated()
-
-                        // Protected API endpoints (requires PAID_USER role for full access)
+                        // Protected API endpoints (requires PAID_USER role)
                         .requestMatchers("/api/outfits/**").hasRole("PAID_USER")
-
-                        // Account/billing pages (requires authentication)
-                        .requestMatchers("/account").authenticated()
-                        .requestMatchers("/api/user/**").authenticated()
-                        .requestMatchers("/api/subscription/**").authenticated()
-
+                        // Account/billing pages (authentication required)
+                        .requestMatchers("/account", "/api/user/**", "/api/subscription/**").authenticated()
                         // All other requests need authentication
                         .anyRequest().authenticated()
                 )
-                // Disable form login since we're using a REST API
-                .formLogin(formLogin -> formLogin.disable())
+                // Disable form login (we are using REST API)
+                .formLogin(withDefaults())
+                // OAuth2 Login Configuration
                 .oauth2Login(oauth2Login -> oauth2Login
                         .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
                                 .baseUri("/oauth2/authorize")
-                                .authorizationRequestRepository(new HttpSessionOAuth2AuthorizationRequestRepository())
+                                .authorizationRequestRepository(cookieOAuth2AuthorizationRequestRepository())
                         )
                         .redirectionEndpoint(redirectionEndpoint -> redirectionEndpoint
                                 .baseUri("/oauth2/callback/*")
@@ -105,7 +94,7 @@ public class SecurityConfig {
                         )
                         .successHandler(oAuth2AuthenticationSuccessHandler)
                 )
-                // Add custom authentication entry point for handling authentication errors
+                // Custom authentication error handling
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setContentType("application/json");
@@ -114,16 +103,19 @@ public class SecurityConfig {
                                     + authException.getMessage() + "\"}");
                         })
                 )
+                // Add JWT authentication filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                // Logout configuration
                 .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("authToken")
-                .permitAll()
-        );
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("authToken")
+                        .permitAll()
+                );
 
         return http.build();
     }
+
 }
