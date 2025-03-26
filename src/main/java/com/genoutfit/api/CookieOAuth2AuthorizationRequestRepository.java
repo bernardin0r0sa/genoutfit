@@ -17,19 +17,28 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
+
+        System.out.println("::CookieOAuth2AuthorizationRequestRepository::");
+        System.out.println("::loadAuthorizationRequest::");
+
         // Get the cookie from the request
         Cookie cookie = WebUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
 
+
+
         // Check if the cookie exists and has a valid value
         if (cookie == null || cookie.getValue().isEmpty()) {
+            System.out.println("cookie is NULL:");
             return null;
         }
 
         try {
+            System.out.println("cookie is :"+ cookie.getValue());
             // Decode the Base64-encoded value and deserialize it
             return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(Base64.getDecoder().decode(cookie.getValue()));
         } catch (Exception e) {
             // Log error and return null if deserialization fails
+            System.out.println("Erro cookie :"+ e);
             e.printStackTrace();
             return null;
         }

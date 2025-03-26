@@ -31,10 +31,13 @@ public class AuthAPIController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody EmailSignupRequest request) {
+        System.out.println("::::AuthAPIController::::");
+        System.out.println("/register");
         if (userService.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email already registered"));
         }
+
 
         // Create user with email/password
         User user = new User();
@@ -44,9 +47,12 @@ public class AuthAPIController {
         user.setOnboardingStatus(OnboardingStatus.NEW);
         userService.saveUser(user);
 
+        System.out.println("::::User created::::"+user.toString());
+
         // Generate auth token
         String token = tokenProvider.createToken(UserPrincipal.create(user));
 
+        System.out.println("token");
         return ResponseEntity.ok(new AuthResponse(token));
     }
 

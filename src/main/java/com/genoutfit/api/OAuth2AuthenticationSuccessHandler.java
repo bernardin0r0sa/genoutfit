@@ -123,6 +123,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             // Log the redirect for debugging
             log.info("OAuth Redirect URL: " + redirectUrl);
 
+            //clearOAuth2Cookies(request, response);
+
             // Perform redirect
             getRedirectStrategy().sendRedirect(request, response, redirectUrl);
 
@@ -187,4 +189,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         return plan;
     }
+
+   /* private void clearOAuth2Cookies(HttpServletRequest request, HttpServletResponse response) {
+        CookieUtils.deleteCookie(request, response, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+        CookieUtils.deleteCookie(request, response, REDIRECT_URI_PARAM_COOKIE_NAME);
+    }*/
+
 }

@@ -27,8 +27,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
 
+        System.out.println(":::CustomAuthenticationSuccessHandler::::");
+        System.out.println(":::onAuthenticationSuccess::::");
+
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         String token = tokenProvider.createToken(userPrincipal);
+
+        System.out.println("token:"+token);
+
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
@@ -39,6 +45,9 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 "email", userPrincipal.getEmail(),
                 "roles", userPrincipal.getAuthorities()
         ));
+
+        System.out.println("response:"+response.toString());
+        System.out.println("responseBody:"+responseBody.toString());
 
         objectMapper.writeValue(response.getWriter(), responseBody);
     }

@@ -47,6 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception ex) {
+            System.out.println("JwtAuthenticationFilter - doFilterInternal : EXCEPTION:"+ex.toString());
             logger.error("Could not set user authentication in security context", ex);
         }
 
@@ -113,14 +114,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         String token = cookie.substring("authToken=".length());
                         logger.debug("authToken found in header with value: " +
                                 (token.length() > 10 ? token.substring(0, 10) + "..." : token));
+                        System.out.println("JwtAuthenticationFilter - getJwtFromRequest : Cookie header found");
                         return token;
                     }
                 }
             } else {
+                System.out.println("JwtAuthenticationFilter - getJwtFromRequest : No Cookie header found");
                 logger.debug("No Cookie header found");
             }
         }
-
+        System.out.println("JwtAuthenticationFilter - getJwtFromRequest : No JWT found in request");
         logger.debug("No JWT found in request");
         return null;
     }

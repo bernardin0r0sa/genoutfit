@@ -97,12 +97,20 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(email, password)
             );
 
+            System.out.println(":::AUTHCONTROLLER:::");
+            System.out.println(":/process-login:");
+
+
             // Set security context
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            System.out.println(":SecurityContextHolder.getContext():");
 
             // Create JWT token
             UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
             String token = tokenProvider.createToken(userPrincipal);
+
+            System.out.println(":token:"+token);
 
             // Set JWT as an HTTP-only cookie
             Cookie cookie = new Cookie("authToken", token);
@@ -111,8 +119,11 @@ public class AuthController {
             cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
             response.addCookie(cookie);
 
+            System.out.println(":cookie:"+cookie);
+
             // Check if plan code is provided
             if (planCode != null && !planCode.isEmpty()) {
+                System.out.println(":has planCode:"+planCode);
                 // Get user and update with selected plan
                 User user = userService.getCurrentUser(userPrincipal);
 
@@ -121,17 +132,22 @@ public class AuthController {
                     user.setSelectedPlan(plan);
                     user.setOnboardingStatus(OnboardingStatus.PLAN_SELECTED);
                     userService.saveUser(user);
-
+                    System.out.println(":userService.saveUser(user):");
                     // Redirect to the appropriate next step in onboarding
                     return "redirect:/onboarding/profile";
                 } catch (IllegalArgumentException e) {
+                    System.out.println(":IllegalArgumentException:"+e.getMessage());
+
                     // Invalid plan, continue with normal flow
                 }
             }
+            System.out.println(":No plan Code:");
 
             // Check onboarding status and redirect accordingly
             User user = userService.getCurrentUser(userPrincipal);
             String nextStep = getNextStep(user);
+
+            System.out.println(":nextStep:"+nextStep);
 
             // Redirect to the appropriate next step
             return "redirect:" + nextStep;
@@ -163,10 +179,14 @@ public class AuthController {
 
     @GetMapping("/oauth2/authorize/google")
     public String authorizeGoogle(@RequestParam(required = false) String plan, HttpServletRequest request) {
+        System.out.println(":/oauth2/authorize/google:");
         if (plan != null) {
+            System.out.println(":plan:"+plan);
             request.getSession().setAttribute("selectedPlan", plan);
+            System.out.println(":request.getSession().setAttribute:"+plan);
         }
         // Redirect to Spring Security's OAuth2 authorization endpoint
+        System.out.println(":redirect:/oauth2/authorization/google:");
         return "redirect:/oauth2/authorization/google";
     }
 

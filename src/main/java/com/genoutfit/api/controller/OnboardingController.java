@@ -55,8 +55,13 @@ public class OnboardingController {
             HttpSession session,
             HttpServletResponse response) {
 
+        System.out.println(":OnboardingController::");
+        System.out.println(":/set-plan:");
+
         // Store the plan in session in case authentication is required
         session.setAttribute("selectedPlan", planName);
+
+        System.out.println(":ession.setAttribute(\"selectedPlan\", planName);:"+planName);
 
         if (authentication != null && authentication.isAuthenticated()) {
             try {
@@ -64,16 +69,22 @@ public class OnboardingController {
                 UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
                 User user = userService.getCurrentUser(userPrincipal);
 
+                System.out.println(":Has user:");
+
+
                 // Set the selected plan
                 SubscriptionPlan plan = SubscriptionPlan.valueOf(planName.toUpperCase());
                 user.setSelectedPlan(plan);
                 user.setOnboardingStatus(OnboardingStatus.PLAN_SELECTED);
                 userService.saveUser(user);
 
+                System.out.println(":   userService.saveUser(user);:");
+
                 // Redirect to profile page
                 return "redirect:/onboarding/profile";
             } catch (Exception e) {
                 // If error, redirect to home
+                System.out.println(":Error:"+e.getMessage());
                 return "redirect:/?error=InvalidPlan";
             }
         }
@@ -81,16 +92,22 @@ public class OnboardingController {
         // If not authenticated, redirect to register with plan parameter instead of login
         // This ensures a completely new request is made to /register
         try {
+            System.out.println(":If not authenticated, redirect to register with plan parameter instead of login:");
+
             response.sendRedirect("/onboard?plan=" + URLEncoder.encode(planName, StandardCharsets.UTF_8.toString()));
             return null; // Return null since we've already sent the response
         } catch (IOException e) {
            // log.error("Error redirecting to register page: {}", e.getMessage());
+            System.out.println(":Error redirecting to register page: {}"+ e.getMessage());
+
             return "redirect:/?error=RedirectError";
         }
     }
 
     @GetMapping("/profile")
     public String showProfileForm(Model model, HttpServletRequest request, Authentication authentication) {
+        System.out.println("::::OnboardingController::::");
+        System.out.println(":/profile");
         // Check if user is authenticated and has selected a plan
         if (authentication != null && authentication.isAuthenticated()) {
             try {
@@ -99,12 +116,15 @@ public class OnboardingController {
 
                 // If user hasn't selected a plan, redirect to home
                 if (user.getSelectedPlan() == null) {
+                    System.out.println(":If user hasn't selected a plan, redirect to home");
+
                     return "redirect:/";
                 }
 
                 model.addAttribute("user", user);
                 model.addAttribute("selectedPlan", user.getSelectedPlan());
             } catch (Exception e) {
+                System.out.println(":/profile Exception"+e.getMessage());
                 // If error, continue without user data
             }
         }
@@ -122,6 +142,8 @@ public class OnboardingController {
                 "/assets/images/profile-banner.jpg",
                 "Complete your profile to get personalized outfit recommendations"
         ));
+        System.out.println(":Complete, will return the profile page");
+
         return "index";
     }
 
