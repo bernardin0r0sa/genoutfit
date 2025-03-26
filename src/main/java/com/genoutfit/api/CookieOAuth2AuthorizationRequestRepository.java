@@ -1,5 +1,6 @@
 package com.genoutfit.api;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
@@ -16,7 +17,22 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        return deserialize(WebUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME));
+        // Get the cookie from the request
+        Cookie cookie = WebUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+
+        // Check if the cookie exists and has a valid value
+        if (cookie == null || cookie.getValue().isEmpty()) {
+            return null;
+        }
+
+        try {
+            // Decode the Base64-encoded value and deserialize it
+            return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(Base64.getDecoder().decode(cookie.getValue()));
+        } catch (Exception e) {
+            // Log error and return null if deserialization fails
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -24,8 +40,21 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
         if (authorizationRequest == null) {
             return;
         }
-        String value = Base64.getEncoder().encodeToString(SerializationUtils.serialize(authorizationRequest));
-        WebUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME).setValue(value);
+        // Ensure cookie exists before setting a value
+        Cookie cookie = WebUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
+        if (cookie == null) {
+            cookie = new Cookie(OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, ""); // Initialize an empty cookie
+        }
+
+        // Encode the authorization request before saving it
+        String encodedValue = Base64.getEncoder().encodeToString(SerializationUtils.serialize(authorizationRequest));
+        cookie.setValue(encodedValue);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(180); // Expire in 3 minutes
+        cookie.setSecure(true); // Ensures cookies are only sent over HTTPS
+        cookie.setAttribute("SameSite", "None"); // Allows cross-site authentication (important for OAuth2 on mobile)
+        response.addCookie(cookie);
     }
 
     @Override
