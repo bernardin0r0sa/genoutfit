@@ -9,7 +9,10 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 import org.springframework.stereotype.Component;
 import org.springframework.util.SerializationUtils;
 import org.springframework.web.util.WebUtils;
+
+import java.io.IOException;
 import java.util.Base64;
+import java.util.UUID;
 
 @Component
 public class CookieOAuth2AuthorizationRequestRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
@@ -19,66 +22,66 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
 
     @Override
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest request) {
-        System.out.println("::CookieOAuth2AuthorizationRequestRepository::");
-        System.out.println("::loadAuthorizationRequest::");
+        String requestId = request.getParameter("requestId"); // Get requestId from URL
 
-        // Try to get the cookie from the request
-        Cookie cookie = WebUtils.getCookie(request, OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME);
-
-        if (cookie == null || cookie.getValue().isEmpty()) {
-            System.out.println("Cookie is NULL or empty. Checking session...");
-            return getAuthorizationRequestFromSession(request);
+        if (requestId != null) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                OAuth2AuthorizationRequest authRequest = (OAuth2AuthorizationRequest) session.getAttribute(requestId);
+                if (authRequest != null) {
+                    System.out.println("Authorization request found in session for requestId: " + requestId);
+                    return authRequest;
+                }
+            }
         }
-
-        try {
-            System.out.println("Cookie found: " + cookie.getValue());
-            return (OAuth2AuthorizationRequest) SerializationUtils.deserialize(Base64.getDecoder().decode(cookie.getValue()));
-        } catch (Exception e) {
-            System.out.println("Error decoding cookie: " + e.getMessage());
-            e.printStackTrace();
-            return null;
-        }
+        System.out.println("No authorization request found for requestId: " + requestId);
+        return null;
     }
+
 
     @Override
     public void saveAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, HttpServletRequest request, HttpServletResponse response) {
         if (authorizationRequest == null) {
             return;
         }
+        System.out.println("::CookieOAuth2AuthorizationRequestRepository::");
+        System.out.println("::saveAuthorizationRequest::");
+        // Generate a unique requestId
+        String requestId = UUID.randomUUID().toString();
+        System.out.println("requestId:"+requestId);
 
-        // Store in session FIRST
-        HttpSession session = request.getSession(true); // Ensure session exists
-        session.setAttribute(SESSION_AUTHORIZATION_REQUEST_KEY, authorizationRequest);
-        System.out.println("Authorization request saved in SESSION.");
+        // Store authorization request in session using requestId
+        request.getSession().setAttribute(requestId, authorizationRequest);
+        System.out.println("request.getSession().setAttribute(requestId, authorizationRequest):");
+
+        // Modify the redirect URI to include the requestId
+        String redirectUri = authorizationRequest.getRedirectUri() + "?requestId=" + requestId;
+        System.out.println("redirectUri:"+redirectUri);
+
 
         try {
-            // Also store in cookie as a backup
-            String encodedValue = Base64.getEncoder().encodeToString(SerializationUtils.serialize(authorizationRequest));
-            Cookie cookie = new Cookie(OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, encodedValue);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(COOKIE_EXPIRE_SECONDS);
-            cookie.setSecure(true);
-            cookie.setAttribute("SameSite", "None");
-            response.addCookie(cookie);
-
-            System.out.println("Authorization request saved in COOKIE.");
-        } catch (Exception e) {
-            System.out.println("Error saving authorization request in cookie: " + e.getMessage());
-            e.printStackTrace();
+            response.sendRedirect(redirectUri); // Redirect with requestId
+        } catch (IOException e) {
+            System.out.println("IOException:"+e.getMessage());
+            throw new RuntimeException("Failed to redirect", e);
         }
     }
 
 
+
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
-        OAuth2AuthorizationRequest authorizationRequest = loadAuthorizationRequest(request);
-        if (authorizationRequest != null) {
-            // Remove from both cookie and session
-            removeCookie(response);
-            removeAuthorizationRequestFromSession(request);
+        String requestId = request.getParameter("requestId");
+        if (requestId != null) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                OAuth2AuthorizationRequest authRequest = (OAuth2AuthorizationRequest) session.getAttribute(requestId);
+                session.removeAttribute(requestId); // Remove from session
+                System.out.println("Authorization request removed from session for requestId: " + requestId);
+                return authRequest;
+            }
         }
-        return authorizationRequest;
+        return null;
     }
 
     private OAuth2AuthorizationRequest getAuthorizationRequestFromSession(HttpServletRequest request) {
