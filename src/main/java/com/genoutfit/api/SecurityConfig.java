@@ -52,7 +52,7 @@ public class SecurityConfig {
         http
                 .cors(withDefaults()) // Ensure CORS is properly configured
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless sessions
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // Stateless sessions
                 .authorizeHttpRequests(auth -> auth
                         // Static resources - allow public access
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
