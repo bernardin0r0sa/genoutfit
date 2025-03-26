@@ -46,28 +46,29 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
             return;
         }
 
+        // Store in session FIRST
+        HttpSession session = request.getSession(true); // Ensure session exists
+        session.setAttribute(SESSION_AUTHORIZATION_REQUEST_KEY, authorizationRequest);
+        System.out.println("Authorization request saved in SESSION.");
+
         try {
-            // Encode and store in a cookie
+            // Also store in cookie as a backup
             String encodedValue = Base64.getEncoder().encodeToString(SerializationUtils.serialize(authorizationRequest));
             Cookie cookie = new Cookie(OAUTH2_AUTHORIZATION_REQUEST_COOKIE_NAME, encodedValue);
             cookie.setPath("/");
             cookie.setHttpOnly(true);
             cookie.setMaxAge(COOKIE_EXPIRE_SECONDS);
             cookie.setSecure(true);
-            cookie.setAttribute("SameSite", "None"); // Required for cross-site OAuth2 authentication
+            cookie.setAttribute("SameSite", "None");
             response.addCookie(cookie);
 
-            // Also store in session as a fallback for mobile devices
-            HttpSession session = request.getSession();
-            session.setAttribute(SESSION_AUTHORIZATION_REQUEST_KEY, authorizationRequest);
-
-            System.out.println("Authorization request saved in cookie and session.");
-
+            System.out.println("Authorization request saved in COOKIE.");
         } catch (Exception e) {
-            System.out.println("Error saving authorization request: " + e.getMessage());
+            System.out.println("Error saving authorization request in cookie: " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
     @Override
     public OAuth2AuthorizationRequest removeAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -83,15 +84,17 @@ public class CookieOAuth2AuthorizationRequestRepository implements Authorization
     private OAuth2AuthorizationRequest getAuthorizationRequestFromSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
+            System.out.println("Session ID: " + session.getId()); // Log session ID
             OAuth2AuthorizationRequest authRequest = (OAuth2AuthorizationRequest) session.getAttribute(SESSION_AUTHORIZATION_REQUEST_KEY);
             if (authRequest != null) {
-                System.out.println("Authorization request retrieved from session.");
+                System.out.println("Authorization request FOUND in session.");
                 return authRequest;
             }
         }
         System.out.println("No authorization request found in session.");
         return null;
     }
+
 
     private void removeAuthorizationRequestFromSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
