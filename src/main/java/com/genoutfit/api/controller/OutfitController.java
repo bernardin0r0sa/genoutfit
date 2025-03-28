@@ -239,6 +239,118 @@ public class OutfitController {
         }
     }
 
+    @GetMapping("/plus-size-outfit-ideas")
+    public String plusSize(Model model, HttpServletRequest request, Authentication authentication) {
+        // Check if user is already authenticated
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+
+            try {
+                // Get the user principal
+                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                User user = userService.getCurrentUser(userPrincipal);
+
+                // Check if user is a paid user and has completed onboarding
+                if (user.isPremiumUser() && user.getOnboardingStatus() == OnboardingStatus.COMPLETED) {
+                    // User is paid and has completed onboarding, redirect to dashboard
+                    return "redirect:/dashboard";
+                } else {
+                    // User is authenticated but either not paid or not completed onboarding
+                    // Determine the next step in the onboarding process
+                    String nextStep = getNextStep(user);
+                    return "redirect:" + nextStep;
+                }
+            } catch (Exception e) {
+                // If there's an error, log it and continue to landing page
+                log.error("Error checking user status: {}", e.getMessage());
+            }
+        }
+
+        // Not authenticated or error occurred, show landing page
+        model.addAllAttributes(createOpenGraphData(
+                "GenOutfit - AI-Powered Outfit Generator",
+                request.getRequestURL().toString(),
+                "/assets/images/homepage-banner.jpg",
+                "Get personalized outfit recommendations tailored to your style, body type, and occasion"
+        ));
+        return "plus_size";
+    }
+
+    @GetMapping("/outfit-ideas-for-women")
+    public String outfitForWm(Model model, HttpServletRequest request, Authentication authentication) {
+        // Check if user is already authenticated
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+
+            try {
+                // Get the user principal
+                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                User user = userService.getCurrentUser(userPrincipal);
+
+                // Check if user is a paid user and has completed onboarding
+                if (user.isPremiumUser() && user.getOnboardingStatus() == OnboardingStatus.COMPLETED) {
+                    // User is paid and has completed onboarding, redirect to dashboard
+                    return "redirect:/dashboard";
+                } else {
+                    // User is authenticated but either not paid or not completed onboarding
+                    // Determine the next step in the onboarding process
+                    String nextStep = getNextStep(user);
+                    return "redirect:" + nextStep;
+                }
+            } catch (Exception e) {
+                // If there's an error, log it and continue to landing page
+                log.error("Error checking user status: {}", e.getMessage());
+            }
+        }
+
+        // Not authenticated or error occurred, show landing page
+        model.addAllAttributes(createOpenGraphData(
+                "GenOutfit - AI-Powered Outfit Generator",
+                request.getRequestURL().toString(),
+                "/assets/images/homepage-banner.jpg",
+                "Get personalized outfit recommendations tailored to your style, body type, and occasion"
+        ));
+        return "outfits_wm";
+    }
+
+    @GetMapping("/outfit-ideas")
+    public String outfitIdeas(Model model, HttpServletRequest request, Authentication authentication) {
+        // Check if user is already authenticated
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+
+            try {
+                // Get the user principal
+                UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                User user = userService.getCurrentUser(userPrincipal);
+
+                // Check if user is a paid user and has completed onboarding
+                if (user.isPremiumUser() && user.getOnboardingStatus() == OnboardingStatus.COMPLETED) {
+                    // User is paid and has completed onboarding, redirect to dashboard
+                    return "redirect:/dashboard";
+                } else {
+                    // User is authenticated but either not paid or not completed onboarding
+                    // Determine the next step in the onboarding process
+                    String nextStep = getNextStep(user);
+                    return "redirect:" + nextStep;
+                }
+            } catch (Exception e) {
+                // If there's an error, log it and continue to landing page
+                log.error("Error checking user status: {}", e.getMessage());
+            }
+        }
+
+        // Not authenticated or error occurred, show landing page
+        model.addAllAttributes(createOpenGraphData(
+                "GenOutfit - AI-Powered Outfit Generator",
+                request.getRequestURL().toString(),
+                "/assets/images/homepage-banner.jpg",
+                "Get personalized outfit recommendations tailored to your style, body type, and occasion"
+        ));
+        return "outfits_general";
+    }
+
+
     private Map<String, String> createOpenGraphData(String title, String url, String imageUrl, String description) {
         Map<String, String> attributes = new HashMap<>();
         attributes.put("ogPageTitle", title);

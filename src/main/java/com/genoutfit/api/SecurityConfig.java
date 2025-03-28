@@ -58,8 +58,10 @@ public class SecurityConfig {
                         .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico").permitAll()
                         // Public endpoints
                         .requestMatchers("/", "/home", "/login", "/register", "/auth/**", "/oauth2/**", "/onboard", "/terms", "/privacy").permitAll()
+                        .requestMatchers("/plus-size-outfit-ideas","/plus-size-outfits/**","/outfit-ideas-for-women","/women-outfits/**","/outfit-ideas","/outfit-ideas/**").permitAll()
+                        .requestMatchers("/sitemap.xml", "/robots.txt").permitAll()
                         // Public API endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login","/process-login").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/validate-token").permitAll()
                         // Plan selection endpoints (public)

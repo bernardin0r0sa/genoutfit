@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Disallow private/admin access
+Disallow: /account
+Disallow: /dashboard
+Disallow: /api/
+Disallow: /onboarding/
+
+# Sitemap location
+Sitemap: https://genoutfit.com/sitemap.xml

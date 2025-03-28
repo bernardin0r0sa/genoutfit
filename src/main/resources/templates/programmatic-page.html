@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${page.title}">Plus Size Outfit Ideas</title>
+  <meta name="description" th:content="'Find flattering plus size ' + ${keyword} + ' outfit ideas for every body type and personal style. Discover fashion that celebrates curves.'">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="16x16" th:href="@{/assets/logoOnly.png}">
+
+  <!-- Fonts and Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            teal: '#2A9D8F',
+            'teal-dark': '#264653',
+            'teal-light': '#4ECDC4',
+            coral: '#FF8A71',
+            charcoal: '#2C3E50',
+            offwhite: '#F7F7F7',
+            primary: {
+              500: '#2A9D8F'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- HTMX for interactive components -->
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+</head>
+<body class="bg-white font-sans">
+<!-- Navigation Fragment -->
+<nav class="fixed w-full bg-white/90 backdrop-blur z-50 border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <a th:href="@{/}" class="flex items-center hover:opacity-80 transition-opacity">
+        <img th:src="@{/assets/logoOnly.png}" alt="GenOutfit Logo" class="h-8 w-8 rounded-lg mr-2">
+        <span class="text-lg font-normal text-charcoal">GenOutfit</span>
+      </a>
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="/#features" class="text-charcoal hover:text-teal">Features</a>
+        <a href="/#how-it-works" class="text-charcoal hover:text-teal">How It Works</a>
+        <a href="/#pricing" class="text-charcoal hover:text-teal">Pricing</a>
+        <a th:href="@{/login}" class="text-charcoal hover:text-teal">Login</a>
+        <a href="/#pricing" class="text-teal hover:text-teal-dark px-4 py-2 rounded-lg border border-teal hover:border-teal-dark">
+          Get Started
+        </a>
+      </div>
+      <div class="md:hidden flex items-center">
+        <button id="mobile-menu-button" class="text-charcoal hover:text-teal focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden">
+    <a href="/#features" class="block px-4 py-2 text-charcoal hover:text-teal">Features</a>
+    <a href="/#how-it-works" class="block px-4 py-2 text-charcoal hover:text-teal">How It Works</a>
+    <a href="/#pricing" class="block px-4 py-2 text-charcoal hover:text-teal">Pricing</a>
+    <a th:href="@{/login}" class="block px-4 py-2 text-charcoal hover:text-teal">Login</a>
+    <a href="/#pricing" class="block px-4 py-2 text-teal hover:text-teal-dark border border-teal hover:border-teal-dark rounded-lg">
+      Get Started
+    </a>
+  </div>
+</nav>
+
+<!-- Main Content with proper padding to avoid navigation overlap -->
+<main class="container mx-auto px-4 pt-24 pb-8">
+  <!-- Hero Section -->
+  <section class="mb-12">
+    <h1 class="text-3xl md:text-4xl font-bold text-primary-500 mb-4" th:text="${page.title}">Plus Size Outfit Ideas</h1>
+
+    <div class="prose max-w-none mb-8">
+      <p class="text-base text-gray-600" th:utext="${dynamicIntroduction}">
+        Introduction text for this specific outfit type...
+      </p>
+    </div>
+
+    <!-- Image Gallery -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+      <!-- Updated to use the proper image relationship -->
+      <div th:each="image : ${page.images}" class="rounded-lg overflow-hidden shadow-md">
+        <img th:src="${image.imageUrl}" th:alt="${page.title}" class="w-full h-auto object-cover">
+      </div>
+    </div>
+  </section>
+
+  <!-- Styling Tips Section - Static across pages -->
+  <section class="mb-12 bg-gray-50 p-6 rounded-lg">
+    <h2 class="text-2xl font-semibold text-primary-500 mb-4">Styling Tips</h2>
+    <div class="prose max-w-none">
+      <ul class="list-disc pl-5 space-y-2 text-gray-600">
+        <li>Focus on flattering silhouettes that enhance your natural curves</li>
+        <li>Choose fabrics that provide structure and comfort</li>
+        <li>Don't be afraid to experiment with colors and patterns</li>
+        <li>Accessorize to elevate simple outfits</li>
+        <li>Pay attention to fit - proper sizing is essential for your fashion</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- NEW: Value Proposition / SaaS Information Section -->
+  <section class="mb-12 bg-teal/10 p-8 rounded-lg">
+    <div class="flex flex-col md:flex-row gap-8 items-center">
+      <div class="md:w-1/2">
+        <h2 class="text-2xl font-bold text-primary-500 mb-4">Stop Stressing About What to Wear</h2>
+        <p class="text-gray-700 mb-4">
+          Finding the perfect outfit can be challenging, especially when you want something that flatters your body type and matches your personal style.
+        </p>
+        <p class="text-gray-700 mb-6">
+          GenOutfit uses cutting-edge AI technology to generate personalized outfit recommendations tailored specifically to your body type, style preferences, and the occasion you're dressing for.
+        </p>
+        <ul class="mb-6 space-y-2">
+          <li class="flex items-center">
+            <i class="fas fa-check-circle text-teal mr-2"></i>
+            <span>Personalized to your body type and style</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check-circle text-teal mr-2"></i>
+            <span>100+ outfit recommendations monthly</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check-circle text-teal mr-2"></i>
+            <span>Always on-trend styles for any occasion</span>
+          </li>
+        </ul>
+      </div>
+      <div class="md:w-1/2">
+        <img src="/assets/images/Dashboard.png" alt="GenOutfit App Preview" class="rounded-lg shadow-lg w-full h-auto">
+      </div>
+    </div>
+
+    <!-- NEW: Strong CTA -->
+    <div class="mt-8 text-center">
+      <a href="/#pricing" class="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-primary-500 rounded-lg shadow-md hover:bg-teal-dark transition-colors duration-300">
+        Generate Your Perfect Outfit Now
+        <i class="fas fa-arrow-right ml-2"></i>
+      </a>
+      <p class="mt-3 text-sm text-gray-600">Join  our happy customers who love their personalized outfit recommendations</p>
+    </div>
+  </section>
+
+  <!-- Related Pages Section -->
+  <section class="mb-12" th:if="${!relatedPages.empty}">
+    <h3 class="text-xl font-semibold text-primary-500 mb-4">Related Outfit Ideas</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <a th:each="related : ${relatedPages}"
+         th:href="@{'/' + ${related.slug}}"
+         class="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-all">
+        <p class="font-medium text-primary-500" th:text="${related.title}">Related page title</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="py-16 bg-offwhite rounded-lg">
+    <!-- Include the pricing fragment -->
+    <div th:replace="fragments/pricing-plans :: pricing-plans"></div>
+  </section>
+
+  <!-- Additional CTA at bottom -->
+  <section class="my-12 text-center">
+    <h2 class="text-2xl font-bold text-primary-500 mb-4">Ready to Transform Your Style?</h2>
+    <p class="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
+      Join thousands of fashion-forward individuals who have discovered their perfect style with GenOutfit.
+    </p>
+    <a href="/#pricing" class="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-primary-500 rounded-lg shadow-md hover:bg-teal-dark transition-colors duration-300">
+      Get Started Today
+      <i class="fas fa-arrow-right ml-2"></i>
+    </a>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-charcoal text-white py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Logo & Description -->
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center mb-4">
+          <img th:src="@{/assets/logoOnly.png}" alt="GenOutfit Logo" class="h-8 w-8 rounded-lg mr-2">
+          <span class="text-lg font-semibold">GenOutfit</span>
+        </div>
+        <p class="text-gray-400 max-w-md">
+          Empowering individuals to look and feel their best with AI-powered fashion recommendations tailored to their unique style and body type.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+        <ul class="space-y-2">
+          <li><a href="/#features" class="text-gray-400 hover:text-white transition-colors">Features</a></li>
+          <li><a href="/#how-it-works" class="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
+          <li><a href="/#pricing" class="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+          <li><a href="/terms" class="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+          <li><a href="/privacy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Contact Us</h3>
+        <ul class="space-y-2">
+          <li class="text-gray-400">
+            <a href="mailto:info@genoutfit.com" class="hover:text-white transition-colors">
+              info@genoutfit.com
+            </a>
+          </li>
+          <li class="text-gray-400">Follow us:</li>
+          <li class="flex space-x-4 mt-2">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-instagram text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-twitter text-xl"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-linkedin text-xl"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 pt-8 border-t border-gray-700 text-center">
+      <p class="text-gray-500">
+        &copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> GenOutfit. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<!-- JavaScript for mobile menu toggle -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (menuButton && mobileMenu) {
+      menuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
