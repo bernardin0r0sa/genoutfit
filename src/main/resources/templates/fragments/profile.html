@@ -1,3 +1,27 @@
+<style>
+    .checkbox-list {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-item {
+      display: grid;
+      grid-template-columns: auto 30px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .style-label {
+      text-align: left;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      justify-self: center;
+    }
+  </style>
+
 <div th:fragment="profile">
   <h2>Complete Your Profile</h2>
   <p>Help us customize your experience</p>
@@ -29,11 +53,11 @@
 
     <div class="style-prefs">
       <label>Style Preferences (optional)</label>
-      <div class="checkbox-group">
-        <label th:each="style : ${styleOptions}">
-          <input type="checkbox" name="stylePreferences" th:value="${style}">
-          <span th:text="${style}"></span>
-        </label>
+      <div class="checkbox-list">
+        <div class="checkbox-item" th:each="style : ${styleOptions}">
+          <label th:for="${'style-' + style}" th:text="${style}" class="style-label"></label>
+          <input type="checkbox" name="stylePreferences" th:value="${style}" th:id="${'style-' + style}">
+        </div>
       </div>
     </div>
 

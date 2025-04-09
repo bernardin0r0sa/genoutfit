@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "https://www.genoutfit.com",  // Production web domain
                         "https://genoutfit.com",  // Production web domain
-                        "https://6cf7-85-138-22-109.ngrok-free.app",  // Mobile/Development temporary domain
+                        "https://693a-2607-fea8-86e4-fa00-f464-e4d0-7f5f-c6dd.ngrok-free.app",  // Mobile/Development temporary domain
                         "https://localhost:8080"  // Local development
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Allowed HTTP methods

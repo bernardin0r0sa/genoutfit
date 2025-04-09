@@ -3,6 +3,13 @@
 <body>
 <header th:fragment="header" class="bg-white shadow-sm py-4 px-6 sticky top-0 z-10 border-b border-gray-100">
   <div class="flex justify-between items-center">
+    <!-- Add mobile menu toggle button -->
+    <div class="md:hidden mr-3">
+      <button class="text-charcoal hover:text-teal transition-colors" id="mobileSidebarToggle">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+    </div>
+
     <div>
       <p class="text-gray-500 text-sm" th:text="${headerSubtitle ?: 'Personalize / Trending'}">Personalize / Trending</p>
       <h1 class="text-2xl font-semibold text-charcoal" th:text="${headerTitle ?: 'Generate your next outfit'}">Generate your next outfit</h1>
